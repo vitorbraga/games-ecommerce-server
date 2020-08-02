@@ -1,0 +1,21 @@
+{
+   "compilerOptions": {
+        "target": "es2017",
+        "module": "commonjs",
+        "lib": [
+            "es2017",
+            "dom"
+        ],
+        "moduleResolution": "node",
+        "outDir": "./build",
+        "emitDecoratorMetadata": true,
+        "experimentalDecorators": true,
+        "strictNullChecks": true,
+        "sourceMap": true,
+        "declaration": true,
+        "noUnusedLocals": true
+    },
+    "include": [
+        "src/**/*"
+    ]
+}

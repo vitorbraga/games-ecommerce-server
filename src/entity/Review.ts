@@ -1,0 +1,28 @@
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne } from 'typeorm';
+import { Product } from './Product';
+
+@Entity()
+export class Review {
+    @PrimaryGeneratedColumn()
+    public id: number;
+
+    @Column()
+    public rating: number;
+
+    @Column()
+    public title: string;
+
+    @Column()
+    public description: string;
+
+    @Column()
+    @CreateDateColumn()
+    public createdAt: Date;
+
+    @Column()
+    @UpdateDateColumn()
+    public updatedAt: Date;
+
+    @ManyToOne((type) => Product, (product) => product.reviews)
+    public product: Product;
+}
