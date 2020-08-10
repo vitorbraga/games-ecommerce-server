@@ -9,3 +9,8 @@ export enum UserProductStatus {
     DELIVERED = 'DELIVERED',
     CANCELLED = 'CANCELLED'
 }
+
+export enum UserRole {
+    ADMIN = 'ADMIN',
+    USER = 'USER'
+}

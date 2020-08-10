@@ -2,6 +2,7 @@ import { ConnectionOptions } from 'typeorm';
 
 export const getConnectionConfig = (): ConnectionOptions => {
     return {
+        name: 'default',
         type: 'sqlite',
         database: 'database.sqlite',
         // type: 'mysql',

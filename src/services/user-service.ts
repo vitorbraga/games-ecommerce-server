@@ -1,0 +1,6 @@
+class UserService {
+
+    public getUserById() {
+        
+    }
+}

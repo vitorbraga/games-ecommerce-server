@@ -4,7 +4,7 @@ import * as express from 'express';
 import * as bodyParser from 'body-parser';
 import * as helmet from 'helmet';
 import * as cors from 'cors';
-import { routes } from './routes';
+import { getRoutes } from './routes';
 import * as dotenv from 'dotenv';
 import { getConnectionConfig } from './config/ormconfig';
 
@@ -27,7 +27,7 @@ process.on('SIGINT', () => {
 
 const connectionConfig = getConnectionConfig();
 createConnection(connectionConfig)
-    .then(async (connection) => {
+    .then((connection) => {
         // Create a new express application instance
         const app = express();
 
@@ -37,10 +37,11 @@ createConnection(connectionConfig)
         app.use(bodyParser.json());
 
         // Set all routes from routes folder
-        app.use('/', routes);
+        app.use('/', getRoutes());
 
         app.listen(4000, () => {
             console.log('Server started on port 4000!');
         });
     })
     .catch((error) => console.log(error));
+
