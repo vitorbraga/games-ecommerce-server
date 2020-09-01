@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { getAuthRoutes } from './auth';
 import { getUserRoutes } from './user';
-import { categoriesRouter } from './category';
+import { getCategoriesRouter } from './category';
 
 export function getRoutes() {
     const routes = Router();
@@ -9,7 +9,7 @@ export function getRoutes() {
     routes.use('/auth', getAuthRoutes());
     routes.use('/users', getUserRoutes());
     // routes.use('/test', testRouter);
-    routes.use('/categories', categoriesRouter);
+    routes.use('/categories', getCategoriesRouter());
 
     return routes;
 }

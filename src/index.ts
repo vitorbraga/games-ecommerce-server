@@ -28,15 +28,12 @@ process.on('SIGINT', () => {
 const connectionConfig = getConnectionConfig();
 createConnection(connectionConfig)
     .then((connection) => {
-        // Create a new express application instance
         const app = express();
 
-        // Call midlewares
         app.use(cors());
         app.use(helmet());
         app.use(bodyParser.json());
 
-        // Set all routes from routes folder
         app.use('/', getRoutes());
 
         app.listen(4000, () => {

@@ -79,7 +79,6 @@ export class AuthController {
             if (error instanceof NotFoundError) {
                 return res.status(404).send({ success: false, error: 'LOGIN_ADMIN_USER_NOT_FOUND' });
             } else {
-                console.log(error);
                 return res.status(500).send({ success: false, error: 'LOGIN_ADMIN_FAILED' });
             }
         }

@@ -1,49 +1,45 @@
 import { Request, Response } from 'express';
-import { getRepository, getManager, IsNull } from 'typeorm';
 import { Category } from '../entity/Category';
+import { CategoryDAO } from '../dao/category-dao';
 
 export class CategoryController {
-    public static getFullTree = async (req: Request, res: Response) => {
-        const manager = getManager();
-        const trees = await manager.getTreeRepository(Category).findTrees();
-        
-        res.status(200).send({ success: true, categories: trees });
-        return;
+    private categoryDAO: CategoryDAO;
+
+    constructor() {
+        this.categoryDAO = new CategoryDAO();
+    }
+
+    public getFullTree = async (req: Request, res: Response) => {
+        const trees = await this.categoryDAO.getFullTree();
+        return res.status(200).send({ success: true, categories: trees });
     };
 
-    public static getRootCategories = async (req: Request, res: Response) => {
-        const categoryRepository = getRepository(Category);
-        const rootCategories = await categoryRepository.find({ where: { parent: IsNull() }, relations: ['subCategories'] });
-        
-        res.status(200).send({ success: true, categories: rootCategories });
-        return;
+    public getRootCategories = async (req: Request, res: Response) => {
+        const rootCategories = await this.categoryDAO.getRootCategories();
+        return res.status(200).send({ success: true, categories: rootCategories });
     };
 
-    public static getSubCategoriesByParentId = async (req: Request, res: Response) => {
+    public getSubCategoriesByParentId = async (req: Request, res: Response) => {
         const parentId = req.params.id || null;
-        const categoryRepository = getRepository(Category);
 
         let parentCategory: Category | undefined;
         if (parentId) {
-            parentCategory = await categoryRepository.findOne(parentId);
+            parentCategory = await this.categoryDAO.findById(parentId);
         }
 
-        const categories = await categoryRepository.find({ where: { parent: parentCategory || null }, relations: ['subCategories'] });
-        
-        res.status(200).send({ success: true, subCategories: categories });
-        return;
+        const categories = await this.categoryDAO.getSubCategoriesFromParent(parentCategory || null);
+        return res.status(200).send({ success: true, subCategories: categories });
     };
 
-    public static createCategory = async (req: Request, res: Response) => {
+    public createCategory = async (req: Request, res: Response) => {
         const { key, label, parentId } = req.body;
 
-        const categoryRepository = getRepository(Category);
         const category = new Category();
         category.key = key;
         category.label = label;
 
         if (parentId) {
-            const parentCategory = await categoryRepository.findOne(parentId);
+            const parentCategory = await this.categoryDAO.findById(parentId);
             if (parentCategory) {
                 category.parent = parentCategory;
             }
@@ -51,17 +47,13 @@ export class CategoryController {
 
         let newCategory;
         try {
-            newCategory = await categoryRepository.save(category);
+            newCategory = await this.categoryDAO.save(category);
         } catch (e) {
-            res.status(500).send({ success: false, error: 'FAILED_INSERTING_CATEGORY' });
-            return;
+            return res.status(500).send({ success: false, error: 'FAILED_INSERTING_CATEGORY' });
         }
 
-        res.status(200).send({ success: true, category: newCategory });
-        return;
+        return res.status(200).send({ success: true, category: newCategory });
     };
 
-    // TODO remove caegory => remove cascade, update parent
-
-    // TODO 
+    // TODO remove category => remove cascade, update parent
 }
