@@ -4,6 +4,19 @@ import { User } from '../entity/User';
 import { UserRole } from '../entity/model';
 import { UserDAO } from '../dao/user-dao';
 import { NotFoundError } from '../errors/not-found-error';
+import { CustomRequest } from '../utils/api-utils';
+
+interface UpdateUserBody {
+    firstName: string;
+    lastName: string;
+}
+
+interface CreateUserBody {
+    firstName: string;
+    lastName: string;
+    email: string;
+    password: string;
+}
 
 export class UserController {
     private userDAO: UserDAO;
@@ -32,7 +45,7 @@ export class UserController {
         }
     }
 
-    private buildUserFromBody({ email, firstName, lastName, password }: any) {
+    private buildUserFromBody({ email, firstName, lastName, password }: CreateUserBody) {
         const user = new User();
         user.email = email;
         user.firstName = firstName;
@@ -43,7 +56,7 @@ export class UserController {
         return user;
     }
 
-    public newUser = async (req: Request, res: Response) => {        
+    public createUser = async (req: CustomRequest<CreateUserBody>, res: Response) => {        
         try {
             const user = this.buildUserFromBody(req.body);
     
@@ -69,7 +82,7 @@ export class UserController {
         }
     }
 
-    public updateUser = async (req: Request, res: Response) => {
+    public updateUser = async (req: CustomRequest<UpdateUserBody>, res: Response) => {
         try {
             const id = req.params.id;
             const { firstName, lastName } = req.body;
@@ -92,9 +105,9 @@ export class UserController {
             return res.status(200).send({ success: true, user: updatedUser });
         } catch (error) {
             if (error instanceof NotFoundError) {
-                res.status(404).send({ success: false, error: 'UPDATE_USER_NOT_FOUND' });
+                return res.status(404).send({ success: false, error: 'UPDATE_USER_NOT_FOUND' });
             } else {
-                res.status(500).send({ success: false, error: 'UPDATE_USER_FAILED' });
+                return res.status(500).send({ success: false, error: 'UPDATE_USER_FAILED' });
             }
         }
     }

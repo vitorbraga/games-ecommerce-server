@@ -14,7 +14,7 @@ export function getUserRoutes(): Router {
     userRouter.get('/:id([0-9]+)', [checkJwt, checkRole(['ADMIN', 'USER'])], userController.getUserById);
     
     // Create a new user
-    userRouter.post('/', userController.newUser);
+    userRouter.post('/', userController.createUser);
     
     // Edit one user
     userRouter.patch('/:id([0-9]+)', [checkJwt, checkRole(['USER'])], userController.updateUser);
