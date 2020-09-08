@@ -1,6 +1,8 @@
 import { getRepository, Repository } from 'typeorm';
 import { Product } from '../entity/Product';
 import { NotFoundError } from '../errors/not-found-error';
+import { Review } from '../entity/Review';
+import { Picture } from '../entity/Picture';
 
 export class ProductDAO {
     private productRepository: Repository<Product>;
@@ -35,5 +37,23 @@ export class ProductDAO {
 
     public async delete(productId: string): Promise<void> {
         await this.productRepository.delete(productId);
+    }
+
+    public async getReviewsByProductIdOrFail(productId: string): Promise<Review[]> {
+        try {
+            const product = await this.productRepository.findOneOrFail(productId);
+            return product.reviews;
+        } catch (error) {
+            throw new NotFoundError('Product not found.');
+        }
+    }
+
+    public async getPicturesByProductIdOrFail(productId: string): Promise<Picture[]> {
+        try {
+            const product = await this.productRepository.findOneOrFail(productId);
+            return product.pictures;
+        } catch (error) {
+            throw new NotFoundError('Product not found.');
+        }
     }
 }

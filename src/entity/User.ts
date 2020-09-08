@@ -36,7 +36,7 @@ export class User {
     @UpdateDateColumn()
     public updatedAt: Date;
 
-    @OneToMany((type) => PasswordReset, (passwordReset) => passwordReset.user, { cascade: true, eager: true })
+    @OneToMany((type) => PasswordReset, (passwordReset) => passwordReset.user, { cascade: true })
     public passwordResets: PasswordReset[];
 
     @OneToMany((type) => UserProduct, (userProduct) => userProduct.user)

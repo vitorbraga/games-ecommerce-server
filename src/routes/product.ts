@@ -19,5 +19,9 @@ export function getProductRouter(): Router {
 
     productRouter.delete('/:id', [checkJwt, checkRole(['ADMIN'])], productController.deleteProduct);
 
+    productRouter.get('/:id/reviews', productController.getProductReviews);
+
+    productRouter.get('/:id/pictures', productController.getProductPictures);
+
     return productRouter;
 }

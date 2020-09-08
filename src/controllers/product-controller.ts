@@ -173,4 +173,34 @@ export class ProductController {
             }
         }
     };
+
+    public getProductReviews = async (req: Request, res: Response) => {
+        try {
+            if (!req.params.id) {
+                return res.status(422).json({ success: false, error: 'MISSING_PRODUCT_ID' });
+            }
+
+            const productId: string = req.params.id;
+
+            const reviews = await this.productDAO.getReviewsByProductIdOrFail(productId);
+            return res.json({ success: true, reviews });
+        } catch (error) {
+            return res.status(404).send({ success: false, error: 'PRODUCT_NOT_FOUND' });
+        }
+    };
+
+    public getProductPictures = async (req: Request, res: Response) => {
+        try {
+            if (!req.params.id) {
+                return res.status(422).json({ success: false, error: 'MISSING_PRODUCT_ID' });
+            }
+
+            const productId: string = req.params.id;
+
+            const pictures = await this.productDAO.getPicturesByProductIdOrFail(productId);
+            return res.json({ success: true, pictures });
+        } catch (error) {
+            return res.status(404).send({ success: false, error: 'PRODUCT_NOT_FOUND' });
+        }
+    };
 }

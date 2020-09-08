@@ -11,16 +11,19 @@ export function getUserRoutes(): Router {
     userRouter.get('/', [checkJwt, checkRole(['ADMIN'])], userController.listAll);
     
     // Get one user
-    userRouter.get('/:id([0-9]+)', [checkJwt, checkRole(['ADMIN', 'USER'])], userController.getUserById);
+    userRouter.get('/:id', [checkJwt, checkRole(['ADMIN', 'USER'])], userController.getUserById);
     
     // Create a new user
     userRouter.post('/', userController.createUser);
     
     // Edit one user
-    userRouter.patch('/:id([0-9]+)', [checkJwt, checkRole(['USER'])], userController.updateUser);
+    userRouter.patch('/:id', [checkJwt, checkRole(['ADMIN', 'USER'])], userController.updateUser);
     
     // Delete one user
-    userRouter.delete('/:id([0-9]+)', [checkJwt, checkRole(['ADMIN'])], userController.deleteUser);
+    userRouter.delete('/:id', [checkJwt, checkRole(['ADMIN'])], userController.deleteUser);
+
+    // Get user's password resets
+    userRouter.get('/:id/passwordResets', [checkJwt, checkRole(['ADMIN', 'USER'])], userController.getUserPasswordResets);
 
     return userRouter;
 }

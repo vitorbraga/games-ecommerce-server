@@ -42,7 +42,7 @@
         "pm2": "^4.4.0",
         "pug": "^2.0.4",
         "reflect-metadata": "^0.1.10",
-        "sqlite3": "^4.0.3",
+        "sqlite3": "^5.0.0",
         "ts-node-dev": "^1.0.0-pre.43",
         "tslint": "^5.12.1",
         "typeorm": "0.2.20",

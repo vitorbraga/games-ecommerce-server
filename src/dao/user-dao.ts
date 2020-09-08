@@ -1,6 +1,7 @@
 import { Repository, getRepository } from 'typeorm';
 import { User } from '../entity/User';
 import { NotFoundError } from '../errors/not-found-error';
+import { PasswordReset } from '../entity/PasswordReset';
 
 export class UserDAO {
     private userRepository: Repository<User>;
@@ -22,8 +23,17 @@ export class UserDAO {
             const user = await this.userRepository.findOneOrFail(userId, {
                 select: ['id', 'email', 'firstName', 'lastName', 'role', 'createdAt', 'updatedAt']
             });
-    
+
             return user;
+        } catch (error) {
+            throw new NotFoundError('User not found.');
+        }
+    }
+
+    public async getPasswordResetsByUserIdOrFail(userId: string): Promise<PasswordReset[]> {
+        try {
+            const result = await this.userRepository.findOneOrFail(userId, { relations: ["passwordResets"] });
+            return result.passwordResets;
         } catch (error) {
             throw new NotFoundError('User not found.');
         }

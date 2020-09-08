@@ -45,6 +45,21 @@ export class UserController {
         }
     }
 
+    public getUserPasswordResets = async (req: Request, res: Response) => {
+        try {
+            if (!req.params.id) {
+                return res.status(422).json({ success: false, error: 'MISSING_USER_ID' });
+            }
+
+            const userId: string = req.params.id;
+
+            const passwordResets = await this.userDAO.getPasswordResetsByUserIdOrFail(userId);
+            return res.json({ success: true, passwordResets });
+        } catch (error) {
+            res.status(404).send({ success: false, error: 'USER_NOT_FOUND' });
+        }
+    }
+
     private buildUserFromBody({ email, firstName, lastName, password }: CreateUserBody) {
         const user = new User();
         user.email = email;

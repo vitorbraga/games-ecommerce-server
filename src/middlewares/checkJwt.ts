@@ -19,12 +19,11 @@ export const checkJwt = (req: Request, res: Response, next: NextFunction) => {
 
     // The token is valid for 2 hour
     // We want to send a new token on every request
-    const { userId, email } = jwtPayload;
-    const newToken = jwt.sign({ userId, email }, jwtConfig.secret, {
+    const { user } = jwtPayload;
+    const newToken = jwt.sign({ user }, jwtConfig.secret, {
         expiresIn: '2h'
     });
     res.setHeader('token', newToken);
 
-    // Call the next middleware or controller
     next();
 };
