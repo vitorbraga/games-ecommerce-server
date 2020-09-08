@@ -43,7 +43,10 @@ export class AuthController {
                 return res.status(401).send({ success: false, error: 'LOGIN_UNMATCHED_EMAIL_PWD' });
             }
     
-            const token = jwt.sign({ userId: user.id, email: user.email }, jwtConfig.secret, { expiresIn: '2h' });
+            delete user.password;
+            delete user.passwordResets; // TODO implement a DAO method to return only the desired data 
+    
+            const token = jwt.sign({ user }, jwtConfig.secret, { expiresIn: '2h' });
     
             return res.send({ success: true, jwt: token });
         } catch (error) {
@@ -72,7 +75,10 @@ export class AuthController {
                 return res.status(403).send({ success: false, error: 'USER_NOT_AUTHORIZED' });
             }
     
-            const token = jwt.sign({ userId: user.id, email: user.email }, jwtConfig.secret, { expiresIn: '2h' });
+            delete user.password;
+            delete user.passwordResets; // TODO implement a DAO method to return only the desired data 
+
+            const token = jwt.sign({ user }, jwtConfig.secret, { expiresIn: '2h' });
     
             return res.send({ success: true, jwt: token });
         } catch (error) {

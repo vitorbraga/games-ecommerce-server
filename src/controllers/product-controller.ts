@@ -25,6 +25,10 @@ interface UpdateProductBody {
     categoryId: string;
 }
 
+interface ChangeProductStatusBody {
+    newStatus: ProductStatus;
+}
+
 export class ProductController {
     private productDAO: ProductDAO;
     private categoryDAO: CategoryDAO;
@@ -122,6 +126,32 @@ export class ProductController {
             } else {
                 return res.status(500).send({ success: false, error: 'FAILED_UPDATING_PRODUCT' });
             }
+        }
+    };
+
+    public changeProductStatus = async (req: CustomRequest<ChangeProductStatusBody>, res: Response) => {
+        try {
+            if (!req.params.id) {
+                return res.status(422).json({ success: false, error: 'MISSING_PRODUCT_ID' });
+            }
+
+            if (!req.body || !req.body.newStatus) {
+                return res.status(422).json({ success: false, error: 'MISSING_PRODUCT_STATUS_INFORMATION' });
+            }
+
+            const productId: string = req.params.id;
+
+            const product = await this.productDAO.findById(productId);
+            if (!product) {
+                return res.status(404).send({ success: false, error: 'PRODUCT_NOT_FOUND' });
+            }
+
+            const { newStatus } = req.body;
+
+            const updatedProduct = await this.productDAO.save({ ...product, status: newStatus });
+            return res.json({ success: true, product: updatedProduct });
+        } catch (error) {
+            return res.status(500).send({ success: false, error: 'FAILED_UPDATING_PRODUCT' });
         }
     };
 

@@ -15,6 +15,8 @@ export function getProductRouter(): Router {
 
     productRouter.put('/:id', [checkJwt, checkRole(['ADMIN'])], productController.updateProduct);
 
+    productRouter.patch('/:id/status', [checkJwt, checkRole(['ADMIN'])], productController.changeProductStatus);
+
     productRouter.delete('/:id', [checkJwt, checkRole(['ADMIN'])], productController.deleteProduct);
 
     return productRouter;

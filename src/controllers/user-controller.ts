@@ -66,7 +66,7 @@ export class UserController {
                 return res.status(400).send({ success: false, fields });
             }
     
-            if (this.userDAO.findByEmail(user.email)) {
+            if (await this.userDAO.findByEmail(user.email)) {
                 return res.status(409).send({ success: false, error: 'REGISTER_EMAIL_IN_USE' });
             }
 
