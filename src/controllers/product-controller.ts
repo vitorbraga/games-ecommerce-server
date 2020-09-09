@@ -7,6 +7,7 @@ import { Picture } from '../entity/Picture';
 import { Product } from '../entity/Product';
 import { NotFoundError } from '../errors/not-found-error';
 import { CustomRequest } from '../utils/api-utils';
+import * as path from 'path';
 
 interface CreateProductBody {
     title: string;
@@ -164,14 +165,16 @@ export class ProductController {
 
             const productId: string = req.params.id;
 
+            const product = await this.productDAO.findById(productId);
+            if (!product) {
+                return res.status(404).send({ success: false, error: 'PRODUCT_NOT_FOUND' });
+            }
+
             await this.productDAO.delete(productId);
+
             return res.json({ success: true });
         } catch (error) {
-            if (error instanceof NotFoundError) {
-                return res.status(404).send({ success: false, error: 'PRODUCT_NOT_FOUND' });
-            } else {
-                return res.status(500).send({ success: false, error: 'FAILED_DELETING_PRODUCT' });
-            }
+            return res.status(500).send({ success: false, error: 'FAILED_DELETING_PRODUCT' });
         }
     };
 
