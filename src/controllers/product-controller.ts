@@ -7,7 +7,6 @@ import { Picture } from '../entity/Picture';
 import { Product } from '../entity/Product';
 import { NotFoundError } from '../errors/not-found-error';
 import { CustomRequest } from '../utils/api-utils';
-import * as path from 'path';
 
 interface CreateProductBody {
     title: string;
@@ -208,6 +207,26 @@ export class ProductController {
         }
     };
 
+    // private buildPath(picturepath: string) {
+    //     return picturepath.substring(0, picturepath.indexOf('.')) + '-new' + picturepath.substring(picturepath.indexOf('.'), picturepath.length);
+    // }
+
+    // private async resizePictures(pictures: Express.Multer.File[]) {
+    //     for (const picture of pictures) {
+    //         const sharped = sharp(picture.path);
+    //         const { height, width } = await sharped.metadata();
+    //         let newWidth = width && width > 2000 ? 2000 : undefined;
+    //         let newHeight = height && height > 2000 ? 2000 : undefined;
+
+    //         if (newWidth && newHeight) {
+    //             newHeight = undefined;
+    //         }
+
+    //         sharp(picture.path).resize({ width: newWidth, height: newHeight })
+    //             .toFile(this.buildPath(picture.path));
+    //     }
+    // }
+
     public uploadPictures = async (req: Request, res: Response) => {
         try {
             if (!req.params.id) {
@@ -237,6 +256,9 @@ export class ProductController {
                 return { ...other };
             });
 
+            // Resizing is working, but we need to find a way to swap the new smaller file with the old big file
+            // this.resizePictures(req.files as Express.Multer.File[]);
+            
             return res.json({ success: true, pictures: allProductPictures });
         } catch (error) {
             if (error instanceof NotFoundError) {
