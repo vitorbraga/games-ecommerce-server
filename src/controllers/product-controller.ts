@@ -1,11 +1,12 @@
+import { validate, ValidationError } from 'class-validator';
 import { Request, Response } from 'express';
-import { ProductDAO } from '../dao/product-dao';
-import { Product } from '../entity/Product';
-import { ValidationError, validate } from 'class-validator';
 import { CategoryDAO } from '../dao/category-dao';
+import { ProductDAO } from '../dao/product-dao';
+import { ProductStatus } from '../entity/model';
+import { Picture } from '../entity/Picture';
+import { Product } from '../entity/Product';
 import { NotFoundError } from '../errors/not-found-error';
 import { CustomRequest } from '../utils/api-utils';
-import { ProductStatus } from '../entity/model';
 
 interface CreateProductBody {
     title: string;
@@ -201,6 +202,46 @@ export class ProductController {
             return res.json({ success: true, pictures });
         } catch (error) {
             return res.status(404).send({ success: false, error: 'PRODUCT_NOT_FOUND' });
+        }
+    };
+
+    public uploadPictures = async (req: Request, res: Response) => {
+        try {
+            if (!req.params.id) {
+                return res.status(422).json({ success: false, error: 'MISSING_PRODUCT_ID' });
+            }
+
+            const productId: string = req.params.id;
+
+            const product = await this.productDAO.findByIdOrFail(productId);
+
+            const pictures: Picture[] = [];
+            for (let i = 0; i < req.files.length; i++) {
+                const picture = new Picture();
+                picture.filename = (req.files[i] as Express.Multer.File).filename;
+                picture.product = product;
+
+                pictures.push(picture);
+            }
+
+            product.pictures = [...product.pictures, ...pictures];
+
+            const updatedProduct = await this.productDAO.save(product);
+
+            // TODO Create utility function for this
+            const allProductPictures = updatedProduct.pictures.map((picture) => {
+                const { product, ...other } = picture;
+                return { ...other };
+            });
+
+            return res.json({ success: true, pictures: allProductPictures });
+        } catch (error) {
+            if (error instanceof NotFoundError) {
+                return res.status(404).send({ success: false, error: 'PRODUCT_NOT_FOUND' });
+            } else {
+                console.log(error);
+                return res.status(500).send({ success: false, error: 'FAILED_UPLOADING_PICTURES' });
+            }
         }
     };
 }

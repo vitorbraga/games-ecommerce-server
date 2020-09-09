@@ -34,6 +34,8 @@ createConnection(connectionConfig)
         app.use(helmet());
         app.use(bodyParser.json());
 
+        app.use('/public', express.static('public'));
+
         app.use('/', getRoutes());
 
         app.listen(4000, () => {

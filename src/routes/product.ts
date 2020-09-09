@@ -2,7 +2,8 @@ import { Router } from 'express';
 import { checkRole } from '../middlewares/checkRole';
 import { checkJwt } from '../middlewares/checkJwt';
 import { ProductController } from '../controllers/product-controller';
-    
+import { uploadFilterMiddleware } from '../middlewares/pictures-upload';
+
 export function getProductRouter(): Router {
     const productController = new ProductController();
     const productRouter = Router();
@@ -22,6 +23,8 @@ export function getProductRouter(): Router {
     productRouter.get('/:id/reviews', productController.getProductReviews);
 
     productRouter.get('/:id/pictures', productController.getProductPictures);
+
+    productRouter.post('/:id/pictures', [checkJwt, checkRole(['ADMIN']), uploadFilterMiddleware.array('imgCollection', 6)], productController.uploadPictures);
 
     return productRouter;
 }
