@@ -39,7 +39,7 @@ export class AuthController {
 
             const user = await this.userDAO.findByEmailOrFail(username);
 
-            if (!user.checkIfUnencryptedPasswordIsValid(password)) {
+            if (!await user.checkIfUnencryptedPasswordIsValid(password)) {
                 return res.status(401).send({ success: false, error: 'LOGIN_UNMATCHED_EMAIL_PWD' });
             }
     
@@ -67,7 +67,7 @@ export class AuthController {
     
             const user = await this.userDAO.findByEmailOrFail(username);
 
-            if (!user.checkIfUnencryptedPasswordIsValid(password)) {
+            if (!await user.checkIfUnencryptedPasswordIsValid(password)) {
                 return res.status(401).send({ success: false, error: 'LOGIN_UNMATCHED_EMAIL_PWD' });
             }
     
@@ -174,7 +174,7 @@ export class AuthController {
                 return res.status(500).send({ success: false, error: 'UNEXPECTED_ERROR' }); // FIXME user better message
             }
 
-            user.hashPassword();
+            await user.hashPassword();
             await userRepository.save(user);
 
             res.status(200).send({ success: true });
@@ -237,7 +237,7 @@ export class AuthController {
     
             const user = await this.userDAO.findByIdOrFail(id);
 
-            if (!user.checkIfUnencryptedPasswordIsValid(currentPassword)) {
+            if (!await user.checkIfUnencryptedPasswordIsValid(currentPassword)) {
                 return res.status(401).send({ success: false, error: 'CHANGE_PASSWORD_INCORRECT_CURRENT_PASSWORD' });
             }
     
@@ -247,7 +247,7 @@ export class AuthController {
                 return res.status(400).send({ success: false, error: 'CHANGE_PASSWORD_PASSWORD_COMPLEXITY' });
             }
 
-            user.hashPassword();
+            await user.hashPassword();
             const updatedUser = await this.userDAO.save(user);
             
             delete updatedUser.password;

@@ -1,6 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, Unique, CreateDateColumn, UpdateDateColumn, OneToMany } from 'typeorm';
 import { IsNotEmpty, MinLength, IsEmail } from 'class-validator';
-import * as bcrypt from 'bcryptjs';
+import * as argon2 from 'argon2';
 import { PasswordReset } from './PasswordReset';
 import { UserProduct } from './UserProduct';
 
@@ -42,11 +42,18 @@ export class User {
     @OneToMany((type) => UserProduct, (userProduct) => userProduct.user)
     public userProducts!: UserProduct[];
 
-    hashPassword() {
-        this.password = bcrypt.hashSync(this.password, 8);
+    async hashPassword(): Promise<void> {
+        const hash = await argon2.hash(this.password);
+        this.password = hash;
     }
 
-    checkIfUnencryptedPasswordIsValid(unencryptedPassword: string) {
-        return bcrypt.compareSync(unencryptedPassword, this.password);
+    async checkIfUnencryptedPasswordIsValid(unencryptedPassword: string): Promise<boolean> {
+        try {
+            const isValid = await argon2.verify(this.password, unencryptedPassword);
+            return isValid;
+        } catch (err) {
+            console.log('Failed checking password.', err);
+            return false;
+        }
     }
 }

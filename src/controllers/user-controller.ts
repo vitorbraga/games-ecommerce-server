@@ -86,7 +86,7 @@ export class UserController {
             }
 
             // Hash the password, to securely store on DB
-            user.hashPassword();
+            await user.hashPassword();
             const newUser = await this.userDAO.save(user);
 
             delete newUser.password;
