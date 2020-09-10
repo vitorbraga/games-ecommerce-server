@@ -6,8 +6,8 @@ import { UserProduct } from './UserProduct';
 
 @Entity()
 export class Product {
-    @PrimaryGeneratedColumn()
-    public id: number;
+    @PrimaryGeneratedColumn('uuid')
+    public id: string;
 
     @Column()
     public title: string;

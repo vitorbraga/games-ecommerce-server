@@ -4,8 +4,8 @@ import { User } from './User';
 @Entity()
 @Unique(['token'])
 export class PasswordReset {
-    @PrimaryGeneratedColumn()
-    public id: number;
+    @PrimaryGeneratedColumn('uuid')
+    public id: string;
 
     @Column()
     public token: string;

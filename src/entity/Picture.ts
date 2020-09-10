@@ -3,8 +3,8 @@ import { Product } from './Product';
 
 @Entity()
 export class Picture {
-    @PrimaryGeneratedColumn()
-    public id: number;
+    @PrimaryGeneratedColumn('uuid')
+    public id: string;
 
     @Column()
     public filename: string;

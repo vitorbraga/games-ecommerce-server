@@ -3,8 +3,8 @@ import { Product } from './Product';
 
 @Entity()
 export class Review {
-    @PrimaryGeneratedColumn()
-    public id: number;
+    @PrimaryGeneratedColumn('uuid')
+    public id: string;
 
     @Column()
     public rating: number;

@@ -4,7 +4,7 @@ import { Review } from '../entity/Review';
 import { Picture } from '../entity/Picture';
 
 export interface ProductOutput {
-    id: number;
+    id: string;
     title: string;
     description: string;
     discount: number | null;
@@ -19,20 +19,21 @@ export interface ProductOutput {
 }
 
 export interface CategoryOutput {
-    id: number;
+    id: string;
     key: string;
     label: string;
+    subCategories: CategoryOutput[];
 }
 
 export interface ReviewOutput {
-    id: number;
+    id: string;
     title: string;
     description: string;
     rating: number;
 }
 
 export interface PictureOutput {
-    id: number;
+    id: string;
     filename: string;
 }
 
@@ -48,8 +49,8 @@ export function buildProductOutput(product: Product): ProductOutput {
         price: product.price,
         rating: product.rating,
         category: buildCategoryOutput(product.category),
-        reviews: product.reviews.map(buildReviewOutput),
-        pictures: product.pictures.map(buildPictureOutput)
+        reviews: product.reviews ? product.reviews.map(buildReviewOutput) : [],
+        pictures: product.pictures ? product.pictures.map(buildPictureOutput) : []
     }
 }
 
@@ -57,7 +58,8 @@ export function buildCategoryOutput(category: Category): CategoryOutput {
     return {
         id: category.id,
         key: category.key,
-        label: category.label
+        label: category.label,
+        subCategories: category.subCategories ? category.subCategories.map(buildCategoryOutput) : []
     }
 }
 
@@ -78,5 +80,5 @@ export function buildPictureOutput(picture: Picture): PictureOutput {
 }
 
 export function notUndefined<T>(x: T | undefined): x is T {
-    return x !== undefined;
+    return x !== undefined && x !== null;
 }

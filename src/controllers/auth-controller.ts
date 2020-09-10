@@ -25,7 +25,7 @@ export class AuthController {
         this.passwordResetDAO = new PasswordResetDAO();
     }
 
-    private static createPasswordResetUrl(token: string, userId: number): string {
+    private static createPasswordResetUrl(token: string, userId: string): string {
         const encryptedUserId = encrypt(userId.toString());
         return `${process.env.APP_SERVER_URL}/change-password?token=${token}&u=${encryptedUserId}`;
     };
@@ -156,7 +156,7 @@ export class AuthController {
 
             const decryptedUserId = decrypt(encryptedUserId);
 
-            if (parseInt(decryptedUserId, 10) !== passwordReset.user.id) {
+            if (decryptedUserId !== passwordReset.user.id) {
                 return res.status(401).send({ success: false, error: 'PASSWORD_RESET_TOKEN_AND_ID_NOT_MATCH' });
             }
 
@@ -206,7 +206,7 @@ export class AuthController {
 
             const decryptedUserId = decrypt(encryptedUserId);
     
-            if (parseInt(decryptedUserId, 10) !== passwordReset.user.id) {
+            if (decryptedUserId !== passwordReset.user.id) {
                 return res.status(401).send({ success: false, error: 'PASSWORD_RESET_TOKEN_AND_ID_NOT_MATCH' });
             }
     

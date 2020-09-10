@@ -11,7 +11,7 @@ export function getCategoriesRouter(): Router {
     
     categoriesRouter.get('/', categoryController.getFullTree);
     
-    categoriesRouter.get('/parent/:id([0-9]+)', categoryController.getSubCategoriesByParentId);
+    categoriesRouter.get('/parent/:id', categoryController.getSubCategoriesByParentId);
     
     categoriesRouter.post('/', [checkJwt, checkRole(['ADMIN'])], categoryController.createCategory);
 

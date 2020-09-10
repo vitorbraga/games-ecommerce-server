@@ -18,7 +18,7 @@ export class PasswordResetDAO {
         }
     }
 
-    public async findActivePasswordRecoveriesFromUser(userId: number, limitDate: number): Promise<PasswordReset[]> {
+    public async findActivePasswordRecoveriesFromUser(userId: string, limitDate: number): Promise<PasswordReset[]> {
         const recoveries = await this.passwordResetRepository
             .createQueryBuilder('passwordReset')
             .select('passwordReset.id')

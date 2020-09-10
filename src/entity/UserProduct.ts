@@ -4,11 +4,11 @@ import { Product } from './Product';
 
 @Entity()
 export class UserProduct {
-    @PrimaryGeneratedColumn()
-    public id!: number;
+    @PrimaryGeneratedColumn('uuid')
+    public id!: string;
 
     @Column()
-    public userId!: number;
+    public userId!: string;
 
     @Column()
     // FIXME UserProductStatus, sqlite doesnt support enum

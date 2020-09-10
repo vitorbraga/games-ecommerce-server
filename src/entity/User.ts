@@ -7,8 +7,8 @@ import { UserProduct } from './UserProduct';
 @Entity()
 @Unique(['email'])
 export class User {
-    @PrimaryGeneratedColumn()
-    public id: number;
+    @PrimaryGeneratedColumn('uuid')
+    public id: string;
 
     @Column()
     @IsEmail({}, { message: 'REGISTER_INVALID_EMAIL' })
