@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { Category } from '../entity/Category';
 import { CategoryDAO } from '../dao/category-dao';
+import { buildCategoryOutput } from '../utils/data-filters';
 
 export class CategoryController {
     private categoryDAO: CategoryDAO;
@@ -11,12 +12,12 @@ export class CategoryController {
 
     public getFullTree = async (req: Request, res: Response) => {
         const trees = await this.categoryDAO.getFullTree();
-        return res.status(200).send({ success: true, categories: trees });
+        return res.status(200).send({ success: true, categories: trees.map(buildCategoryOutput) });
     };
 
     public getRootCategories = async (req: Request, res: Response) => {
         const rootCategories = await this.categoryDAO.getRootCategories();
-        return res.status(200).send({ success: true, categories: rootCategories });
+        return res.status(200).send({ success: true, categories: rootCategories.map(buildCategoryOutput) });
     };
 
     public getSubCategoriesByParentId = async (req: Request, res: Response) => {
@@ -28,7 +29,7 @@ export class CategoryController {
         }
 
         const categories = await this.categoryDAO.getSubCategoriesFromParent(parentCategory || null);
-        return res.status(200).send({ success: true, subCategories: categories });
+        return res.status(200).send({ success: true, subCategories: categories.map(buildCategoryOutput) });
     };
 
     public createCategory = async (req: Request, res: Response) => {
@@ -52,7 +53,7 @@ export class CategoryController {
             return res.status(500).send({ success: false, error: 'FAILED_INSERTING_CATEGORY' });
         }
 
-        return res.status(200).send({ success: true, category: newCategory });
+        return res.status(200).send({ success: true, category: buildCategoryOutput(newCategory) });
     };
 
     // TODO remove category => remove cascade, update parent

@@ -48,7 +48,7 @@ export class Product {
     @OneToMany((type) => Picture, (picture) => picture.product, { cascade: true, eager: true })
     public pictures: Picture[];
 
-    @ManyToOne((type) => Category, (category) => category.products)
+    @ManyToOne((type) => Category, (category) => category.products, { cascade: true, eager: true })
     public category: Category;
 
     @OneToMany((type) => UserProduct, (userProduct) => userProduct.product)

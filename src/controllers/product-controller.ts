@@ -7,6 +7,7 @@ import { Picture } from '../entity/Picture';
 import { Product } from '../entity/Product';
 import { NotFoundError } from '../errors/not-found-error';
 import { CustomRequest } from '../utils/api-utils';
+import { buildProductOutput, buildReviewOutput, buildPictureOutput } from '../utils/data-filters';
 
 interface CreateProductBody {
     title: string;
@@ -41,7 +42,7 @@ export class ProductController {
 
     public getAllProducts = async (req: Request, res: Response) => {
         const products = await this.productDAO.findAll()
-        return res.status(200).send({ success: true, products });
+        return res.status(200).send({ success: true, products: products.map(buildProductOutput) });
     };
 
     public getProduct = async (req: Request, res: Response) => {
@@ -53,7 +54,7 @@ export class ProductController {
             const productId: string = req.params.id;
 
             const product = await this.productDAO.findByIdOrFail(productId);
-            return res.json({ success: true, product });
+            return res.json({ success: true, product: buildProductOutput(product) });
         } catch (error) {
             return res.status(404).send({ success: false, error: 'PRODUCT_NOT_FOUND' });
         }
@@ -87,7 +88,7 @@ export class ProductController {
             product.status = ProductStatus.NOT_AVAILABLE;
 
             const newProduct = await this.productDAO.save(product);
-            return res.status(200).send({ success: true, product: newProduct });
+            return res.status(200).send({ success: true, product: buildProductOutput(newProduct) });
         } catch (error) {
             if (error instanceof NotFoundError) {
                 return res.status(404).send({ success: false, error: 'CATEGORY_NOT_FOUND' });
@@ -120,7 +121,7 @@ export class ProductController {
             }
 
             const updatedProduct = await this.productDAO.save({ ...product, ...productFromBody });
-            return res.json({ success: true, product: updatedProduct });
+            return res.json({ success: true, product: buildProductOutput(updatedProduct) });
         } catch (error) {
             if (error instanceof NotFoundError) {
                 return res.status(404).send({ success: false, error: 'CATEGORY_NOT_FOUND' });
@@ -150,7 +151,7 @@ export class ProductController {
             const { newStatus } = req.body;
 
             const updatedProduct = await this.productDAO.save({ ...product, status: newStatus });
-            return res.json({ success: true, product: updatedProduct });
+            return res.json({ success: true, product: buildProductOutput(updatedProduct) });
         } catch (error) {
             return res.status(500).send({ success: false, error: 'FAILED_UPDATING_PRODUCT' });
         }
@@ -186,7 +187,7 @@ export class ProductController {
             const productId: string = req.params.id;
 
             const reviews = await this.productDAO.getReviewsByProductIdOrFail(productId);
-            return res.json({ success: true, reviews });
+            return res.json({ success: true, reviews: reviews.map(buildReviewOutput) });
         } catch (error) {
             return res.status(404).send({ success: false, error: 'PRODUCT_NOT_FOUND' });
         }
@@ -201,7 +202,7 @@ export class ProductController {
             const productId: string = req.params.id;
 
             const pictures = await this.productDAO.getPicturesByProductIdOrFail(productId);
-            return res.json({ success: true, pictures });
+            return res.json({ success: true, pictures: pictures.map(buildPictureOutput) });
         } catch (error) {
             return res.status(404).send({ success: false, error: 'PRODUCT_NOT_FOUND' });
         }
@@ -250,16 +251,10 @@ export class ProductController {
 
             const updatedProduct = await this.productDAO.save(product);
 
-            // TODO Create utility function for this
-            const allProductPictures = updatedProduct.pictures.map((picture) => {
-                const { product, ...other } = picture;
-                return { ...other };
-            });
-
             // Resizing is working, but we need to find a way to swap the new smaller file with the old big file
             // this.resizePictures(req.files as Express.Multer.File[]);
             
-            return res.json({ success: true, pictures: allProductPictures });
+            return res.json({ success: true, pictures: updatedProduct.pictures.map(buildPictureOutput) });
         } catch (error) {
             if (error instanceof NotFoundError) {
                 return res.status(404).send({ success: false, error: 'PRODUCT_NOT_FOUND' });

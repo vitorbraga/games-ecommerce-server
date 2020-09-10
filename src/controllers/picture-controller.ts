@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import * as fs from 'fs';
 import * as path from 'path';
 import { PictureDAO } from '../dao/picture-dao';
+import { buildPictureOutput } from '../utils/data-filters';
 
 export class PictureController {
     private pictureDAO: PictureDAO;
@@ -12,7 +13,7 @@ export class PictureController {
 
     public getAllPictures = async (req: Request, res: Response) => {
         const pictures = await this.pictureDAO.findAll()
-        return res.status(200).send({ success: true, pictures });
+        return res.status(200).send({ success: true, pictures: pictures.map(buildPictureOutput) });
     };
 
     public getPicture = async (req: Request, res: Response) => {
@@ -24,7 +25,7 @@ export class PictureController {
             const pictureId: string = req.params.id;
 
             const picture = await this.pictureDAO.findByIdOrFail(pictureId);
-            return res.json({ success: true, picture });
+            return res.json({ success: true, picture: buildPictureOutput(picture) });
         } catch (error) {
             return res.status(404).send({ success: false, error: 'PICTURE_NOT_FOUND' });
         }

@@ -27,6 +27,6 @@ export class Category {
     @TreeParent()
     public parent: Category;
 
-    @OneToMany((product: Product) => Product, (product) => product.category, { cascade: true, eager: true })
+    @OneToMany((product: Product) => Product, (product) => product.category)
     public products: Product[];
 }
