@@ -14,7 +14,7 @@ export const decrypt = (encryptedText: string): string => {
         const decipher = crypto.createDecipheriv('aes-128-cbc', process.env.ENCRYPT_SECRET, null);
         let decryptedText = decipher.update(encryptedText, 'hex', 'utf8');
         decryptedText += decipher.final('utf8');
-    
+
         return decryptedText;
     } catch (error) {
         throw new DecryptError('Decrypt error.');

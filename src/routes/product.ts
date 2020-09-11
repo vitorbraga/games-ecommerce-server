@@ -7,11 +7,11 @@ import { uploadFilterMiddleware } from '../middlewares/picturesUpload';
 export function getProductRouter(): Router {
     const productController = new ProductController();
     const productRouter = Router();
-    
+
     productRouter.get('/', productController.getAllProducts);
 
     productRouter.get('/:id', productController.getProduct);
-    
+
     productRouter.post('/', [checkJwt, checkRole(['ADMIN'])], productController.createProduct);
 
     productRouter.put('/:id', [checkJwt, checkRole(['ADMIN'])], productController.updateProduct);

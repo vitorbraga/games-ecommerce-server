@@ -15,10 +15,10 @@ const storage = multer.diskStorage({
 });
 
 export const uploadFilterMiddleware = multer({
-    storage: storage,
+    storage,
     limits: { fileSize: maxFileSize },
     fileFilter: (req, file, callback) => {
-        if (file.mimetype == 'image/png' || file.mimetype == 'image/jpg' || file.mimetype == 'image/jpeg') {
+        if (file.mimetype === 'image/png' || file.mimetype === 'image/jpg' || file.mimetype === 'image/jpeg') {
             callback(null, true);
         } else {
             callback(null, false);

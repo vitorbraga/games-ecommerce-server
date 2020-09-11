@@ -32,7 +32,7 @@ export class UserDAO {
 
     public async getPasswordResetsByUserIdOrFail(userId: string): Promise<PasswordReset[]> {
         try {
-            const result = await this.userRepository.findOneOrFail(userId, { relations: ["passwordResets"] });
+            const result = await this.userRepository.findOneOrFail(userId, { relations: ['passwordResets'] });
             return result.passwordResets;
         } catch (error) {
             throw new NotFoundError('User not found.');
@@ -50,7 +50,7 @@ export class UserDAO {
 
     public async findByEmail(email: string): Promise<User | undefined> {
         const user = await this.userRepository.findOne({ where: { email } });
-        return user
+        return user;
     }
 
     public async findByEmailOrFail(email: string): Promise<User> {

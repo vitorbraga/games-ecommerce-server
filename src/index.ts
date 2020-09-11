@@ -43,4 +43,3 @@ createConnection(connectionConfig)
         });
     })
     .catch((error) => console.log(error));
-

@@ -2,7 +2,7 @@ import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateCol
 import { Product } from './Product';
 
 @Entity()
-@Tree("closure-table")
+@Tree('closure-table')
 export class Category {
     @PrimaryGeneratedColumn('uuid')
     public id: string;

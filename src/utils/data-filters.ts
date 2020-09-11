@@ -2,6 +2,7 @@ import { Product } from '../entity/Product';
 import { Category } from '../entity/Category';
 import { Review } from '../entity/Review';
 import { Picture } from '../entity/Picture';
+import { User } from '../entity/User';
 
 export interface ProductOutput {
     id: string;
@@ -37,6 +38,14 @@ export interface PictureOutput {
     filename: string;
 }
 
+export interface UserOutput {
+    id: string;
+    email: string;
+    firstName: string;
+    lastName: string;
+    role: string;
+}
+
 export function buildProductOutput(product: Product): ProductOutput {
     return {
         id: product.id,
@@ -51,7 +60,7 @@ export function buildProductOutput(product: Product): ProductOutput {
         category: buildCategoryOutput(product.category),
         reviews: product.reviews ? product.reviews.map(buildReviewOutput) : [],
         pictures: product.pictures ? product.pictures.map(buildPictureOutput) : []
-    }
+    };
 }
 
 export function buildCategoryOutput(category: Category): CategoryOutput {
@@ -60,7 +69,7 @@ export function buildCategoryOutput(category: Category): CategoryOutput {
         key: category.key,
         label: category.label,
         subCategories: category.subCategories ? category.subCategories.map(buildCategoryOutput) : []
-    }
+    };
 }
 
 export function buildReviewOutput(review: Review): ReviewOutput {
@@ -69,14 +78,24 @@ export function buildReviewOutput(review: Review): ReviewOutput {
         title: review.title,
         description: review.description,
         rating: review.rating
-    }
+    };
 }
 
 export function buildPictureOutput(picture: Picture): PictureOutput {
     return {
         id: picture.id,
         filename: picture.filename
-    }
+    };
+}
+
+export function buildUserOutput(user: User): UserOutput {
+    return {
+        id: user.id,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        role: user.role
+    };
 }
 
 export function notUndefined<T>(x: T | undefined): x is T {

@@ -12,7 +12,7 @@ export class CategoryDAO {
     public async getFullTree(): Promise<Category[]> {
         const manager = getManager();
         const trees = await manager.getTreeRepository(Category).findTrees();
-        
+
         return trees;
     };
 

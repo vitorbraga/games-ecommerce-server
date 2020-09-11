@@ -12,7 +12,7 @@ export class PictureController {
     }
 
     public getAllPictures = async (req: Request, res: Response) => {
-        const pictures = await this.pictureDAO.findAll()
+        const pictures = await this.pictureDAO.findAll();
         return res.status(200).send({ success: true, pictures: pictures.map(buildPictureOutput) });
     };
 

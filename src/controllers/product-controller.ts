@@ -41,7 +41,7 @@ export class ProductController {
     }
 
     public getAllProducts = async (req: Request, res: Response) => {
-        const products = await this.productDAO.findAll()
+        const products = await this.productDAO.findAll();
         return res.status(200).send({ success: true, products: products.map(buildProductOutput) });
     };
 
@@ -64,7 +64,7 @@ export class ProductController {
         const product = new Product();
         product.title = body.title;
         product.description = body.description;
-        product.price = parseInt(body.price); // TODO check this
+        product.price = parseInt(body.price, 10); // TODO check this
         product.quantityInStock = body.quantityInStock;
         product.tags = body.tags;
         product.rating = 0;
@@ -78,7 +78,7 @@ export class ProductController {
     public createProduct = async (req: CustomRequest<CreateProductBody>, res: Response) => {
         try {
             const product = await this.buildProductFromBody(req.body);
-        
+
             const errors: ValidationError[] = await validate(product);
             if (errors.length > 0) {
                 const fields = errors.map((item) => ({ field: item.property, constraints: item.constraints }));
@@ -239,9 +239,9 @@ export class ProductController {
             const product = await this.productDAO.findByIdOrFail(productId);
 
             const pictures: Picture[] = [];
-            for (let i = 0; i < req.files.length; i++) {
+            for (const file of req.files as Express.Multer.File[]) {
                 const picture = new Picture();
-                picture.filename = (req.files[i] as Express.Multer.File).filename;
+                picture.filename = file.filename;
                 picture.product = product;
 
                 pictures.push(picture);
@@ -253,7 +253,7 @@ export class ProductController {
 
             // Resizing is working, but we need to find a way to swap the new smaller file with the old big file
             // this.resizePictures(req.files as Express.Multer.File[]);
-            
+
             return res.json({ success: true, pictures: updatedProduct.pictures.map(buildPictureOutput) });
         } catch (error) {
             if (error instanceof NotFoundError) {

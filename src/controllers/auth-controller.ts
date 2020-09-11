@@ -14,21 +14,17 @@ import { UserDAO } from '../dao/user-dao';
 import { NotFoundError } from '../errors/not-found-error';
 import { PasswordResetDAO } from '../dao/password-reset-dao';
 import { DecryptError } from '../errors/decrypt-error';
+import { buildUserOutput } from '../utils/data-filters';
 
 export class AuthController {
+    private static PASSWORD_RESET_TOKEN_EXPIRATION_MS = 18000000; // 5 hours
     private userDAO: UserDAO;
     private passwordResetDAO: PasswordResetDAO;
-    private static PASSWORD_RESET_TOKEN_EXPIRATION_MS = 18000000; // 5 hours
 
     constructor() {
         this.userDAO = new UserDAO();
         this.passwordResetDAO = new PasswordResetDAO();
     }
-
-    private static createPasswordResetUrl(token: string, userId: string): string {
-        const encryptedUserId = encrypt(userId.toString());
-        return `${process.env.APP_SERVER_URL}/change-password?token=${token}&u=${encryptedUserId}`;
-    };
 
     public login = async (req: Request, res: Response) => {
         try {
@@ -42,12 +38,9 @@ export class AuthController {
             if (!await user.checkIfUnencryptedPasswordIsValid(password)) {
                 return res.status(401).send({ success: false, error: 'LOGIN_UNMATCHED_EMAIL_PWD' });
             }
-    
-            delete user.password;
-            delete user.passwordResets; // TODO implement a DAO method to return only the desired data 
-    
-            const token = jwt.sign({ user }, jwtConfig.secret, { expiresIn: '2h' });
-    
+
+            const token = jwt.sign({ user: buildUserOutput(user) }, jwtConfig.secret, { expiresIn: '2h' });
+
             return res.send({ success: true, jwt: token });
         } catch (error) {
             if (error instanceof NotFoundError) {
@@ -56,7 +49,7 @@ export class AuthController {
                 return res.status(500).send({ success: false, error: 'LOGIN_ADMIN_FAILED' });
             }
         }
-    }
+    };
 
     public loginAdmin = async (req: Request, res: Response) => {
         try {
@@ -64,22 +57,19 @@ export class AuthController {
             if (!(username && password)) {
                 return res.status(400).send({ success: false, error: 'LOGIN_MISSING_CREDENTIALS' });
             }
-    
+
             const user = await this.userDAO.findByEmailOrFail(username);
 
             if (!await user.checkIfUnencryptedPasswordIsValid(password)) {
                 return res.status(401).send({ success: false, error: 'LOGIN_UNMATCHED_EMAIL_PWD' });
             }
-    
+
             if (user.role !== UserRole.ADMIN) {
                 return res.status(403).send({ success: false, error: 'USER_NOT_AUTHORIZED' });
             }
-    
-            delete user.password;
-            delete user.passwordResets; // TODO implement a DAO method to return only the desired data 
 
-            const token = jwt.sign({ user }, jwtConfig.secret, { expiresIn: '2h' });
-    
+            const token = jwt.sign({ user: buildUserOutput(user) }, jwtConfig.secret, { expiresIn: '2h' });
+
             return res.send({ success: true, jwt: token });
         } catch (error) {
             if (error instanceof NotFoundError) {
@@ -88,7 +78,7 @@ export class AuthController {
                 return res.status(500).send({ success: false, error: 'LOGIN_ADMIN_FAILED' });
             }
         }
-    }
+    };
 
     private sendPasswordRecoveryEmail(user: User, token: string) {
         const emailOptions: EmailOptions = {
@@ -114,7 +104,7 @@ export class AuthController {
 
             const limitDate = Date.now() - AuthController.PASSWORD_RESET_TOKEN_EXPIRATION_MS;
             const result = await this.passwordResetDAO.findActivePasswordRecoveriesFromUser(user.id, limitDate);
-    
+
             if (result.length > 0) {
                 return res.status(401).send({ success: false, error: 'PASSWORD_RESET_ONGOING_RECOVERY_PROCESS' });
             }
@@ -123,10 +113,10 @@ export class AuthController {
             const passwordReset = new PasswordReset();
             passwordReset.token = token;
             passwordReset.user = user;
-    
+
             user.passwordResets = user.passwordResets ? [...user.passwordResets, passwordReset] : [passwordReset];
             await this.userDAO.save(user);
-    
+
             return res.status(200).send({ success: true });
         } catch (error) {
             if (error instanceof NotFoundError) {
@@ -143,7 +133,7 @@ export class AuthController {
             if (!(newPassword && token && encryptedUserId)) {
                 return res.status(400).send({ success: false, error: 'RESET_MISSING_DATA' });
             }
-    
+
             if (!checkPasswordComplexity(newPassword)) {
                 return res.status(401).send({ success: false, error: 'REGISTER_PASSWORD_COMPLEXITY' });
             }
@@ -197,7 +187,7 @@ export class AuthController {
             if (!token) {
                 return res.status(400).send({ success: false, error: 'PASSWORD_TOKEN_REQUIRED' });
             }
-    
+
             if (!encryptedUserId) {
                 return res.status(400).send({ success: false, error: 'PASSWORD_USER_ID_REQUIRED' });
             }
@@ -205,11 +195,11 @@ export class AuthController {
             const passwordReset = await this.passwordResetDAO.findByTokenOrFail(token);
 
             const decryptedUserId = decrypt(encryptedUserId);
-    
+
             if (decryptedUserId !== passwordReset.user.id) {
                 return res.status(401).send({ success: false, error: 'PASSWORD_RESET_TOKEN_AND_ID_NOT_MATCH' });
             }
-    
+
             if (passwordReset.createdAt.getTime() + AuthController.PASSWORD_RESET_TOKEN_EXPIRATION_MS < Date.now()) {
                 return res.status(401).send({ success: false, error: 'PASSWORD_TOKEN_EXPIRED' });
             }
@@ -229,18 +219,18 @@ export class AuthController {
     public changePassword = async (req: Request, res: Response) => {
         try {
             const id = res.locals.jwtPayload.userId;
-    
+
             const { currentPassword, newPassword } = req.body;
             if (!(currentPassword && newPassword)) {
                 return res.status(400).send({ success: false, error: 'CHANGE_PASSWORD_MISSING_PASSWORDS' });
             }
-    
+
             const user = await this.userDAO.findByIdOrFail(id);
 
             if (!await user.checkIfUnencryptedPasswordIsValid(currentPassword)) {
                 return res.status(401).send({ success: false, error: 'CHANGE_PASSWORD_INCORRECT_CURRENT_PASSWORD' });
             }
-    
+
             user.password = newPassword;
             const errors = await validate(user);
             if (errors.length > 0) {
@@ -249,10 +239,8 @@ export class AuthController {
 
             await user.hashPassword();
             const updatedUser = await this.userDAO.save(user);
-            
-            delete updatedUser.password;
 
-            return res.status(200).send({ success: true, user: updatedUser });
+            return res.status(200).send({ success: true, user: buildUserOutput(updatedUser) });
         } catch (error) {
             if (error instanceof NotFoundError) {
                 return res.status(404).send({ success: false, error: 'CHANGE_PASSWORD_USER_NOT_FOUND' });
@@ -260,5 +248,10 @@ export class AuthController {
                 return res.status(500).send({ success: false, error: 'CHANGE_PASSWORD_FAILED' });
             }
         }
+    };
+
+    private static createPasswordResetUrl(token: string, userId: string): string {
+        const encryptedUserId = encrypt(userId.toString());
+        return `${process.env.APP_SERVER_URL}/change-password?token=${token}&u=${encryptedUserId}`;
     };
 }
