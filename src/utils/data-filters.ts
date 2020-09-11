@@ -44,6 +44,8 @@ export interface UserOutput {
     firstName: string;
     lastName: string;
     role: string;
+    createdAt: number;
+    updatedAt: number;
 }
 
 export function buildProductOutput(product: Product): ProductOutput {
@@ -94,7 +96,9 @@ export function buildUserOutput(user: User): UserOutput {
         firstName: user.firstName,
         lastName: user.lastName,
         email: user.email,
-        role: user.role
+        role: user.role,
+        createdAt: user.createdAt.getTime(),
+        updatedAt: user.createdAt.getTime()
     };
 }
 

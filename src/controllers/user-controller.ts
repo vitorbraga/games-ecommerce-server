@@ -28,7 +28,7 @@ export class UserController {
 
     public listAll = async (req: Request, res: Response) => {
         const users = await this.userDAO.list();
-        return res.send(users);
+        return res.send({ success: true, users: users.map(buildUserOutput) });
     };
 
     public getUserById = async (req: Request, res: Response) => {
@@ -40,7 +40,8 @@ export class UserController {
             const userId: string = req.params.id;
 
             const user = await this.userDAO.findByIdOrFail(userId);
-            return res.json({ success: true, user });
+
+            return res.json({ success: true, user: buildUserOutput(user) });
         } catch (error) {
             res.status(404).send({ success: false, error: 'USER_NOT_FOUND' });
         }

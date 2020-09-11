@@ -20,9 +20,7 @@ export class UserDAO {
 
     public async findByIdOrFail(userId: string): Promise<User> {
         try {
-            const user = await this.userRepository.findOneOrFail(userId, {
-                select: ['id', 'email', 'firstName', 'lastName', 'role', 'createdAt', 'updatedAt']
-            });
+            const user = await this.userRepository.findOneOrFail(userId);
 
             return user;
         } catch (error) {
