@@ -45,6 +45,18 @@ export class ProductController {
         return res.status(200).send({ success: true, products: products.map(buildProductOutput) });
     };
 
+    public searchProducts = async (req: Request, res: Response) => {
+        try {
+            const searchTerm = req.query.searchTerm as string;
+
+            const products = await this.productDAO.search(searchTerm);
+            return res.json({ success: true, products: products.map(buildProductOutput) });
+        } catch (error) {
+            console.log(error);
+            return res.status(404).send({ success: false, error: 'SOME_ SDSDDS fixme' });
+        }
+    };
+
     public getProduct = async (req: Request, res: Response) => {
         try {
             if (!req.params.id) {

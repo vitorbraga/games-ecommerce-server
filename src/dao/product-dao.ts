@@ -30,6 +30,18 @@ export class ProductDAO {
         }
     }
 
+    public async search(searchTerm: string): Promise<Product[]> {
+        const ilikeTerm = `%${searchTerm}%`;
+        const result = await this.productRepository
+            .createQueryBuilder('product')
+            .leftJoinAndSelect('product.category', 'category')
+            .leftJoinAndSelect('product.reviews', 'reviews')
+            .leftJoinAndSelect('product.pictures', 'pictures')
+            .where('product.title LIKE :title OR product.tags LIKE :tags OR product.description LIKE :description', { title: ilikeTerm, tags: ilikeTerm, description: ilikeTerm })
+            .getMany();
+        return result;
+    }
+
     public async save(product: Product): Promise<Product> {
         const savedProduct = await this.productRepository.save(product);
         return savedProduct;

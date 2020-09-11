@@ -8,6 +8,8 @@ export function getProductRouter(): Router {
     const productController = new ProductController();
     const productRouter = Router();
 
+    productRouter.get('/search', productController.searchProducts);
+
     productRouter.get('/', productController.getAllProducts);
 
     productRouter.get('/:id', productController.getProduct);
