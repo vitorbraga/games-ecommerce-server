@@ -49,9 +49,10 @@ export class ProductController {
         try {
             const searchTerm = req.query.searchTerm as string;
             const categories = req.query.categories as string;
+            const sortType = req.query.sortType as string;
 
             const categoriesArray = categories ? categories.split(',') : [];
-            const products = await this.productDAO.search(searchTerm, categoriesArray);
+            const products = await this.productDAO.search(searchTerm, categoriesArray, sortType);
 
             return res.json({ success: true, products: products.map(buildProductOutput) });
         } catch (error) {
@@ -62,7 +63,7 @@ export class ProductController {
 
     public getFeaturedProducts = async (req: Request, res: Response) => {
         try {
-            const products = await this.productDAO.search('', []);
+            const products = await this.productDAO.search('', [], 'none');
             return res.json({ success: true, products: products.slice(0, 4).map(buildProductOutput) });
             // TODO implement this logic to get featured products for the homepage
         } catch (error) {

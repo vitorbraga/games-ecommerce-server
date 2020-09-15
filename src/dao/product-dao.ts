@@ -3,7 +3,7 @@ import { Product } from '../entity/Product';
 import { NotFoundError } from '../errors/not-found-error';
 import { Review } from '../entity/Review';
 import { Picture } from '../entity/Picture';
-import { ProductStatus } from '../entity/model';
+import { ProductStatus, SearchSortType } from '../entity/model';
 
 export class ProductDAO {
     private productRepository: Repository<Product>;
@@ -31,10 +31,10 @@ export class ProductDAO {
         }
     }
 
-    public async search(searchTerm: string, categories: string[]): Promise<Product[]> {
+    public async search(searchTerm: string, categories: string[], sortType: string): Promise<Product[]> {
         const ilikeTerm = `%${searchTerm}%`;
 
-        let queryBuilder = await this.productRepository
+        let queryBuilder = this.productRepository
             .createQueryBuilder('product')
             .leftJoinAndSelect('product.category', 'category')
             .leftJoinAndSelect('product.reviews', 'reviews')
@@ -46,7 +46,15 @@ export class ProductDAO {
             queryBuilder = queryBuilder.andWhere('category.id IN (:...categories)', { categories });
         }
 
-        return queryBuilder.getMany();
+        if (sortType === SearchSortType.PRICE_LOW_HIGH) {
+            queryBuilder = queryBuilder.orderBy('product.price', 'ASC');
+        } else if (sortType === SearchSortType.PRICE_HIGH_LOW) {
+            queryBuilder = queryBuilder.orderBy('product.price', 'DESC');
+        }
+
+        const results = await queryBuilder.getMany();
+
+        return results;
     }
 
     public async save(product: Product): Promise<Product> {
