@@ -10,7 +10,9 @@ export function getProductRouter(): Router {
 
     productRouter.get('/search', productController.searchProducts);
 
-    productRouter.get('/', productController.getAllProducts);
+    productRouter.get('/featured', productController.getFeaturedProducts);
+
+    productRouter.get('/', [checkJwt, checkRole(['ADMIN'])], productController.getAllProducts);
 
     productRouter.get('/:id', productController.getProduct);
 

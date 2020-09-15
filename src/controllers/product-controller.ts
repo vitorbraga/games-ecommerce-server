@@ -48,12 +48,26 @@ export class ProductController {
     public searchProducts = async (req: Request, res: Response) => {
         try {
             const searchTerm = req.query.searchTerm as string;
+            const categories = req.query.categories as string;
 
-            const products = await this.productDAO.search(searchTerm);
+            const categoriesArray = categories ? categories.split(',') : [];
+            const products = await this.productDAO.search(searchTerm, categoriesArray);
+
             return res.json({ success: true, products: products.map(buildProductOutput) });
         } catch (error) {
             console.log(error);
-            return res.status(404).send({ success: false, error: 'SOME_ SDSDDS fixme' });
+            return res.status(500).send({ success: false, error: 'FAILED_SEARCHING_PRODUCTS' });
+        }
+    };
+
+    public getFeaturedProducts = async (req: Request, res: Response) => {
+        try {
+            const products = await this.productDAO.search('', []);
+            return res.json({ success: true, products: products.slice(0, 4).map(buildProductOutput) });
+            // TODO implement this logic to get featured products for the homepage
+        } catch (error) {
+            console.log(error);
+            return res.status(500).send({ success: false, error: 'FAILED_SEARCHING_PRODUCTS' });
         }
     };
 

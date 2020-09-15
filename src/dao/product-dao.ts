@@ -3,6 +3,7 @@ import { Product } from '../entity/Product';
 import { NotFoundError } from '../errors/not-found-error';
 import { Review } from '../entity/Review';
 import { Picture } from '../entity/Picture';
+import { ProductStatus } from '../entity/model';
 
 export class ProductDAO {
     private productRepository: Repository<Product>;
@@ -30,16 +31,22 @@ export class ProductDAO {
         }
     }
 
-    public async search(searchTerm: string): Promise<Product[]> {
+    public async search(searchTerm: string, categories: string[]): Promise<Product[]> {
         const ilikeTerm = `%${searchTerm}%`;
-        const result = await this.productRepository
+
+        let queryBuilder = await this.productRepository
             .createQueryBuilder('product')
             .leftJoinAndSelect('product.category', 'category')
             .leftJoinAndSelect('product.reviews', 'reviews')
             .leftJoinAndSelect('product.pictures', 'pictures')
-            .where('product.title LIKE :title OR product.tags LIKE :tags OR product.description LIKE :description', { title: ilikeTerm, tags: ilikeTerm, description: ilikeTerm })
-            .getMany();
-        return result;
+            .where('(product.title LIKE :title OR product.tags LIKE :tags OR product.description LIKE :description)', { title: ilikeTerm, tags: ilikeTerm, description: ilikeTerm })
+            .andWhere('product.status = :status', { status: ProductStatus.AVAILABLE });
+
+        if (categories.length > 0) {
+            queryBuilder = queryBuilder.andWhere('category.id IN (:...categories)', { categories });
+        }
+
+        return queryBuilder.getMany();
     }
 
     public async save(product: Product): Promise<Product> {
