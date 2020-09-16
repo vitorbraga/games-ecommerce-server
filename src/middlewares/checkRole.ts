@@ -5,13 +5,13 @@ import { User } from '../entity/User';
 export const checkRole = (roles: Array<string>) => {
     return async (req: Request, res: Response, next: NextFunction) => {
         // Get the user ID from previous midleware
-        const id = res.locals.jwtPayload.userId;
+        const userPayload = res.locals.jwtPayload.user;
 
         // Get user role from the database
         const userRepository = getRepository(User);
         let user: User;
         try {
-            user = await userRepository.findOneOrFail(id);
+            user = await userRepository.findOneOrFail(userPayload.id);
         } catch (id) {
             res.status(401).send({ success: false, error: 'Could not find user from token.' });
             return;

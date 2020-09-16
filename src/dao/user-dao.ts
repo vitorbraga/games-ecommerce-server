@@ -18,14 +18,19 @@ export class UserDAO {
         return users;
     }
 
-    public async findByIdOrFail(userId: string): Promise<User> {
+    public async findByIdOrFail(userId: string, relations?: string[]): Promise<User> {
         try {
-            const user = await this.userRepository.findOneOrFail(userId);
+            const user = await this.userRepository.findOneOrFail(userId, { relations });
 
             return user;
         } catch (error) {
             throw new NotFoundError('User not found.');
         }
+    }
+
+    public async findById(userId: string, relations?: string[]): Promise<User | undefined> {
+        const user = await this.userRepository.findOne(userId, { relations });
+        return user;
     }
 
     public async getPasswordResetsByUserIdOrFail(userId: string): Promise<PasswordReset[]> {

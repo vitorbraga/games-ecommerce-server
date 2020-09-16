@@ -25,5 +25,14 @@ export function getUserRoutes(): Router {
     // Get user's password resets
     userRouter.get('/:id/passwordResets', [checkJwt, checkRole(['ADMIN', 'USER'])], userController.getUserPasswordResets);
 
+    // Get user's addresses
+    userRouter.get('/:id/addresses', [checkJwt, checkRole(['USER'])], userController.getUserAddresses);
+
+    // Create a new address
+    userRouter.post('/:id/addresses', [checkJwt, checkRole(['USER'])], userController.createAddress);
+
+    // Set main address
+    userRouter.patch('/:userId/addresses/:addressId', [checkJwt, checkRole(['USER'])], userController.setMainAddress);
+
     return userRouter;
 }

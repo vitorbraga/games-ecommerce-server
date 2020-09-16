@@ -234,6 +234,7 @@ export class AuthController {
             user.password = newPassword;
             const errors = await validate(user);
             if (errors.length > 0) {
+                // TODO check this
                 return res.status(400).send({ success: false, error: 'CHANGE_PASSWORD_PASSWORD_COMPLEXITY' });
             }
 

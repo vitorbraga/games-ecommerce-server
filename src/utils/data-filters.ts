@@ -3,6 +3,8 @@ import { Category } from '../entity/Category';
 import { Review } from '../entity/Review';
 import { Picture } from '../entity/Picture';
 import { User } from '../entity/User';
+import { Address } from '../entity/Address';
+import { Country } from '../entity/Country';
 
 export interface ProductOutput {
     id: string;
@@ -38,12 +40,32 @@ export interface PictureOutput {
     filename: string;
 }
 
+export interface CountryOutput {
+    id: string;
+    name: string;
+}
+
 export interface UserOutput {
     id: string;
     email: string;
     firstName: string;
     lastName: string;
     role: string;
+    mainAddress: AddressOutput | null;
+    addresses: AddressOutput[];
+    createdAt: number;
+    updatedAt: number;
+}
+
+export interface AddressOutput {
+    id: string;
+    fullName: string;
+    line1: string;
+    line2: string;
+    city: string;
+    zipCode: string;
+    country: CountryOutput;
+    info: string;
     createdAt: number;
     updatedAt: number;
 }
@@ -90,6 +112,13 @@ export function buildPictureOutput(picture: Picture): PictureOutput {
     };
 }
 
+export function buildCountryOutput(country: Country): CountryOutput {
+    return {
+        id: country.id,
+        name: country.name
+    };
+}
+
 export function buildUserOutput(user: User): UserOutput {
     return {
         id: user.id,
@@ -97,8 +126,25 @@ export function buildUserOutput(user: User): UserOutput {
         lastName: user.lastName,
         email: user.email,
         role: user.role,
+        mainAddress: user.mainAddress ? buildAddressOutput(user.mainAddress) : null,
+        addresses: user.addresses ? user.addresses.map(buildAddressOutput) : [],
         createdAt: user.createdAt.getTime(),
         updatedAt: user.createdAt.getTime()
+    };
+}
+
+export function buildAddressOutput(address: Address): AddressOutput {
+    return {
+        id: address.id,
+        fullName: address.fullName,
+        line1: address.line1,
+        line2: address.line2,
+        city: address.city,
+        zipCode: address.zipCode,
+        country: buildCountryOutput(address.country),
+        info: address.info,
+        createdAt: address.createdAt.getTime(),
+        updatedAt: address.createdAt.getTime()
     };
 }
 

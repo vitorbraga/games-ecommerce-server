@@ -1,8 +1,9 @@
-import { Entity, PrimaryGeneratedColumn, Column, Unique, CreateDateColumn, UpdateDateColumn, OneToMany } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, Unique, CreateDateColumn, UpdateDateColumn, OneToMany, OneToOne, JoinColumn } from 'typeorm';
 import { IsNotEmpty, MinLength, IsEmail } from 'class-validator';
 import * as argon2 from 'argon2';
 import { PasswordReset } from './PasswordReset';
 import { UserProduct } from './UserProduct';
+import { Address } from './Address';
 
 @Entity()
 @Unique(['email'])
@@ -15,9 +16,11 @@ export class User {
     public email: string;
 
     @Column()
+    @IsNotEmpty()
     public firstName: string;
 
     @Column()
+    @IsNotEmpty()
     public lastName: string;
 
     @Column()
@@ -38,6 +41,13 @@ export class User {
 
     @OneToMany((type) => PasswordReset, (passwordReset) => passwordReset.user, { cascade: true })
     public passwordResets: PasswordReset[];
+
+    @OneToOne((type) => Address, { cascade: true })
+    @JoinColumn()
+    public mainAddress: Address;
+
+    @OneToMany((type) => Address, (address) => address.user, { cascade: true })
+    public addresses: Address[];
 
     @OneToMany((type) => UserProduct, (userProduct) => userProduct.user)
     public userProducts!: UserProduct[];

@@ -5,7 +5,11 @@ import { UserRole } from '../entity/model';
 import { UserDAO } from '../dao/user-dao';
 import { NotFoundError } from '../errors/not-found-error';
 import { CustomRequest } from '../utils/api-utils';
-import { buildUserOutput } from '../utils/data-filters';
+import { buildAddressOutput, buildUserOutput } from '../utils/data-filters';
+import { Address } from '../entity/Address';
+import { validationErrorsToErrorFields } from '../utils/validators';
+import { AddressDAO } from '../dao/address-dao';
+import { CountryDAO } from '../dao/country-dao';
 
 interface UpdateUserBody {
     firstName: string;
@@ -19,11 +23,26 @@ interface CreateUserBody {
     password: string;
 }
 
+interface CreateAddressBody {
+    fullName: string;
+    line1: string;
+    line2: string;
+    city: string;
+    zipCode: string;
+    countryId: string;
+    info: string;
+    mainAddress: boolean;
+}
+
 export class UserController {
     private userDAO: UserDAO;
+    private addressDAO: AddressDAO;
+    private countryDAO: CountryDAO;
 
     constructor() {
         this.userDAO = new UserDAO();
+        this.addressDAO = new AddressDAO();
+        this.countryDAO = new CountryDAO();
     }
 
     public listAll = async (req: Request, res: Response) => {
@@ -43,7 +62,7 @@ export class UserController {
 
             return res.json({ success: true, user: buildUserOutput(user) });
         } catch (error) {
-            res.status(404).send({ success: false, error: 'USER_NOT_FOUND' });
+            return res.status(404).send({ success: false, error: 'USER_NOT_FOUND' });
         }
     };
 
@@ -58,11 +77,11 @@ export class UserController {
             const passwordResets = await this.userDAO.getPasswordResetsByUserIdOrFail(userId);
             return res.json({ success: true, passwordResets });
         } catch (error) {
-            res.status(404).send({ success: false, error: 'USER_NOT_FOUND' });
+            return res.status(404).send({ success: false, error: 'USER_NOT_FOUND' });
         }
     };
 
-    private buildUserFromBody({ email, firstName, lastName, password }: CreateUserBody) {
+    private buildUserFromBody({ email, firstName, lastName, password }: CreateUserBody): User {
         const user = new User();
         user.email = email;
         user.firstName = firstName;
@@ -79,7 +98,7 @@ export class UserController {
 
             const errors: ValidationError[] = await validate(user);
             if (errors.length > 0) {
-                const fields = errors.map((item) => ({ field: item.property, constraints: item.constraints }));
+                const fields = validationErrorsToErrorFields(errors);
                 return res.status(400).send({ success: false, fields });
             }
 
@@ -109,7 +128,7 @@ export class UserController {
 
             const errors = await validate(user);
             if (errors.length > 0) {
-                const fields = errors.map((item) => ({ field: item.property, constraints: item.constraints }));
+                const fields = validationErrorsToErrorFields(errors);
                 return res.status(400).send({ success: false, fields });
             }
 
@@ -141,6 +160,119 @@ export class UserController {
             } else {
                 return res.status(500).send({ success: false, error: 'DELETE_USER_FAILED' });
             }
+        }
+    };
+
+    private buildAddressFromBody(createAddressBody: CreateAddressBody): Address {
+        const address = new Address();
+        address.fullName = createAddressBody.fullName;
+        address.line1 = createAddressBody.line1;
+        address.line2 = createAddressBody.line2;
+        address.city = createAddressBody.city;
+        address.zipCode = createAddressBody.zipCode;
+        address.info = createAddressBody.info;
+
+        return address;
+    }
+
+    public getUserAddresses = async (req: Request, res: Response) => {
+        try {
+            if (!req.params.id) {
+                return res.status(422).json({ success: false, error: 'MISSING_USER_ID' });
+            }
+
+            const userId: string = req.params.id;
+
+            const user = await this.userDAO.findByIdOrFail(userId, ['addresses']);
+            return res.json({ success: true, addresses: user.addresses.map(buildAddressOutput) });
+        } catch (error) {
+            console.log(error);
+            if (error instanceof NotFoundError) {
+                return res.status(404).send({ success: false, error: 'USER_NOT_FOUND' });
+            } else {
+                return res.status(500).send({ success: false, error: 'FETCHING_USER_ADDRESSES_FAILED' });
+            }
+        }
+    };
+
+    public createAddress = async (req: CustomRequest<CreateAddressBody>, res: Response) => {
+        try {
+            if (!req.params.id) {
+                return res.status(422).json({ success: false, error: 'MISSING_USER_ID' });
+            }
+
+            if (!req.body.countryId) {
+                return res.status(422).json({ success: false, error: 'MISSING_COUNTRY_ID' });
+            }
+
+            const userId: string = req.params.id;
+
+            const user = await this.userDAO.findByIdOrFail(userId, ['addresses']);
+
+            const address = this.buildAddressFromBody(req.body);
+
+            const country = await this.countryDAO.findById(req.body.countryId);
+            if (!country) {
+                return res.status(404).send({ success: false, error: 'COUNTRY_NOT_FOUND' });
+            }
+            address.country = country;
+
+            const errors = await validate(address);
+            if (errors.length > 0) {
+                const fields = validationErrorsToErrorFields(errors);
+                return res.status(400).send({ success: false, fields });
+            }
+
+            if (req.body.mainAddress) {
+                user.mainAddress = address;
+            }
+
+            user.addresses = user.addresses ? [...user.addresses, address] : [address];
+
+            const updatedUser = await this.userDAO.save(user);
+
+            return res.json({ success: true, addresses: updatedUser.addresses.map(buildAddressOutput) });
+        } catch (error) {
+            if (error instanceof NotFoundError) {
+                return res.status(404).send({ success: false, error: 'USER_NOT_FOUND' });
+            } else {
+                console.log(error);
+                return res.status(500).send({ success: false, error: 'FAILED_CREATING_ADDRESS' });
+            }
+        }
+    };
+
+    public setMainAddress = async (req: Request, res: Response) => {
+        try {
+            const userId = req.params.userId;
+            const addressId = req.params.addressId;
+
+            if (!userId) {
+                return res.status(422).json({ success: false, error: 'MISSING_USER_ID' });
+            }
+
+            if (!addressId) {
+                return res.status(422).json({ success: false, error: 'MISSING_ADDRESS_ID' });
+            }
+
+            const user = await this.userDAO.findById(userId);
+            if (!user) {
+                return res.status(422).json({ success: false, error: 'USER_NOT_FOUND' });
+            }
+
+            const address = await this.addressDAO.findById(addressId);
+            if (!address) {
+                return res.status(422).json({ success: false, error: 'ADDRESS_NOT_FOUND' });
+            }
+
+            user.mainAddress = address;
+
+            const updatedUser = await this.userDAO.save(user);
+
+            return res.status(200).send({ success: true, user: buildUserOutput(updatedUser) });
+        } catch (error) {
+            console.log(error);
+            return res.status(500).send({ success: false, error: 'SET_MAIN_ADDRESS_FAILED' });
         }
     };
 }
