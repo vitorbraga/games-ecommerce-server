@@ -5,6 +5,7 @@ import { Picture } from '../entity/Picture';
 import { User } from '../entity/User';
 import { Address } from '../entity/Address';
 import { Country } from '../entity/Country';
+import { PasswordReset } from '../entity/PasswordReset';
 
 export interface ProductOutput {
     id: string;
@@ -53,6 +54,7 @@ export interface UserOutput {
     role: string;
     mainAddress: AddressOutput | null;
     addresses: AddressOutput[];
+    passwordResets: PasswordResetOutput[];
     createdAt: number;
     updatedAt: number;
 }
@@ -66,6 +68,13 @@ export interface AddressOutput {
     zipCode: string;
     country: CountryOutput;
     info: string;
+    createdAt: number;
+    updatedAt: number;
+}
+
+export interface PasswordResetOutput {
+    id: string;
+    token: string;
     createdAt: number;
     updatedAt: number;
 }
@@ -105,6 +114,15 @@ export function buildReviewOutput(review: Review): ReviewOutput {
     };
 }
 
+export function buildPasswordResetOutput(passwordReset: PasswordReset): PasswordResetOutput {
+    return {
+        id: passwordReset.id,
+        token: passwordReset.token,
+        createdAt: passwordReset.createdAt.getTime(),
+        updatedAt: passwordReset.createdAt.getTime()
+    };
+}
+
 export function buildPictureOutput(picture: Picture): PictureOutput {
     return {
         id: picture.id,
@@ -128,6 +146,7 @@ export function buildUserOutput(user: User): UserOutput {
         role: user.role,
         mainAddress: user.mainAddress ? buildAddressOutput(user.mainAddress) : null,
         addresses: user.addresses ? user.addresses.map(buildAddressOutput) : [],
+        passwordResets: user.passwordResets ? user.passwordResets.map(buildPasswordResetOutput) : [],
         createdAt: user.createdAt.getTime(),
         updatedAt: user.createdAt.getTime()
     };

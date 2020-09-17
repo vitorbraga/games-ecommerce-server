@@ -66,6 +66,22 @@ export class UserController {
         }
     };
 
+    public getUserFullDataById = async (req: Request, res: Response) => {
+        try {
+            if (!req.params.id) {
+                return res.status(422).json({ success: false, error: 'MISSING_USER_ID' });
+            }
+
+            const userId: string = req.params.id;
+
+            const user = await this.userDAO.findByIdOrFail(userId, ['mainAddress', 'addresses', 'passwordResets']);
+
+            return res.json({ success: true, user: buildUserOutput(user) });
+        } catch (error) {
+            return res.status(404).send({ success: false, error: 'USER_NOT_FOUND' });
+        }
+    };
+
     public getUserPasswordResets = async (req: Request, res: Response) => {
         try {
             if (!req.params.id) {
