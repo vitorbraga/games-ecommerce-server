@@ -34,5 +34,8 @@ export function getUserRoutes(): Router {
     // Set main address
     userRouter.patch('/:userId/addresses/:addressId', [checkJwt, checkRole(['USER'])], userController.setMainAddress);
 
+    // Delete user's address
+    userRouter.delete('/:userId/addresses/:addressId', [checkJwt, checkRole(['USER'])], userController.deleteUserAddress);
+
     return userRouter;
 }

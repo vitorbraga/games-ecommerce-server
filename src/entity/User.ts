@@ -44,7 +44,7 @@ export class User {
 
     @OneToOne((type) => Address, { cascade: true })
     @JoinColumn()
-    public mainAddress: Address;
+    public mainAddress: Address | null;
 
     @OneToMany((type) => Address, (address) => address.user, { cascade: true })
     public addresses: Address[];

@@ -231,7 +231,7 @@ export class UserController {
 
             const updatedUser = await this.userDAO.save(user);
 
-            return res.json({ success: true, addresses: updatedUser.addresses.map(buildAddressOutput) });
+            return res.json({ success: true, user: buildUserOutput(updatedUser) });
         } catch (error) {
             if (error instanceof NotFoundError) {
                 return res.status(404).send({ success: false, error: 'USER_NOT_FOUND' });
@@ -273,6 +273,44 @@ export class UserController {
         } catch (error) {
             console.log(error);
             return res.status(500).send({ success: false, error: 'SET_MAIN_ADDRESS_FAILED' });
+        }
+    };
+
+    public deleteUserAddress = async (req: Request, res: Response) => {
+        try {
+            const userId = req.params.userId;
+            const addressId = req.params.addressId;
+
+            if (!userId) {
+                return res.status(422).json({ success: false, error: 'MISSING_USER_ID' });
+            }
+
+            if (!addressId) {
+                return res.status(422).json({ success: false, error: 'MISSING_ADDRESS_ID' });
+            }
+
+            const user = await this.userDAO.findById(userId);
+            if (!user) {
+                return res.status(422).json({ success: false, error: 'USER_NOT_FOUND' });
+            }
+
+            const address = await this.addressDAO.findById(addressId);
+            if (!address) {
+                return res.status(422).json({ success: false, error: 'ADDRESS_NOT_FOUND' });
+            }
+
+            if (user.mainAddress && user.mainAddress.id === addressId) {
+                user.mainAddress = null;
+            }
+
+            const updatedUser = await this.userDAO.save(user);
+
+            await this.addressDAO.delete(addressId);
+
+            return res.status(200).send({ success: true, user: buildUserOutput(updatedUser) });
+        } catch (error) {
+            console.log(error);
+            return res.status(500).send({ success: false, error: 'DELETE_ADDRESS_FAILED' });
         }
     };
 }
