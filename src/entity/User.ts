@@ -2,8 +2,8 @@ import { Entity, PrimaryGeneratedColumn, Column, Unique, CreateDateColumn, Updat
 import { IsNotEmpty, MinLength, IsEmail } from 'class-validator';
 import * as argon2 from 'argon2';
 import { PasswordReset } from './PasswordReset';
-import { UserProduct } from './UserProduct';
 import { Address } from './Address';
+import { Order } from './Order';
 
 @Entity()
 @Unique(['email'])
@@ -49,8 +49,8 @@ export class User {
     @OneToMany((type) => Address, (address) => address.user, { cascade: true })
     public addresses: Address[];
 
-    @OneToMany((type) => UserProduct, (userProduct) => userProduct.user)
-    public userProducts!: UserProduct[];
+    @OneToMany((type) => Order, (order) => order.user)
+    public orders!: Order[];
 
     async hashPassword(): Promise<void> {
         const hash = await argon2.hash(this.password);

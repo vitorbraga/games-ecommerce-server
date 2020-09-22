@@ -127,6 +127,7 @@ export class AuthController {
         }
     };
 
+    // Reset password when user does not remember it
     public resetPassword = async (req: Request, res: Response) => {
         try {
             const { newPassword, token, userId: encryptedUserId } = req.body;
@@ -216,9 +217,10 @@ export class AuthController {
         }
     };
 
+    // Change password inside account area
     public changePassword = async (req: Request, res: Response) => {
         try {
-            const id = res.locals.jwtPayload.userId;
+            const id = res.locals.jwtPayload.user.id;
 
             const { currentPassword, newPassword } = req.body;
             if (!(currentPassword && newPassword)) {

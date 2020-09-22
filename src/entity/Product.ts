@@ -1,8 +1,8 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany, ManyToOne } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany, ManyToOne, Index } from 'typeorm';
 import { Review } from './Review';
 import { Picture } from './Picture';
 import { Category } from './Category';
-import { UserProduct } from './UserProduct';
+import { OrderItem } from './OrderItem';
 
 @Entity()
 export class Product {
@@ -10,6 +10,7 @@ export class Product {
     public id: string;
 
     @Column()
+    @Index()
     public title: string;
 
     @Column()
@@ -32,6 +33,7 @@ export class Product {
     public quantityInStock: number;
 
     @Column()
+    @Index()
     public tags: string; // because of simplicity and sqlite, using a comma-separated list as tags
 
     @Column()
@@ -51,6 +53,6 @@ export class Product {
     @ManyToOne((type) => Category, (category) => category.products, { cascade: true, eager: true })
     public category: Category;
 
-    @OneToMany((type) => UserProduct, (userProduct) => userProduct.product)
-    public userProducts!: UserProduct[];
+    @OneToMany((type) => OrderItem, (orderItem) => orderItem.product)
+    public orderItems!: OrderItem[];
 }

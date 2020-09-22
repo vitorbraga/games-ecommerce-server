@@ -1,6 +1,7 @@
 import { IsNotEmpty } from 'class-validator';
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, OneToMany } from 'typeorm';
 import { Country } from './Country';
+import { Order } from './Order';
 import { User } from './User';
 
 @Entity()
@@ -43,4 +44,7 @@ export class Address {
 
     @ManyToOne((type) => User, (user) => user.addresses)
     public user: User;
+
+    @OneToMany((type) => Order, (order) => order.deliveryAddress)
+    public orders!: Order[];
 }

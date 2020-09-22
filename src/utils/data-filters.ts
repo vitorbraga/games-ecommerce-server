@@ -6,6 +6,10 @@ import { User } from '../entity/User';
 import { Address } from '../entity/Address';
 import { Country } from '../entity/Country';
 import { PasswordReset } from '../entity/PasswordReset';
+import { Order } from '../entity/Order';
+import { OrderItem } from '../entity/OrderItem';
+
+// FIXME separate this, improve it (naming, place, where to put - rethink it)
 
 export interface ProductOutput {
     id: string;
@@ -79,6 +83,23 @@ export interface PasswordResetOutput {
     updatedAt: number;
 }
 
+export interface OrderItemOutput {
+    id: string;
+    quantity: number;
+}
+
+export interface OrderOutput {
+    id: string;
+    orderNumber: number;
+    deliveryFee: number;
+    total: number;
+    coupon: string | null;
+    orderItems: OrderItemOutput[];
+    deliveryAddress: AddressOutput;
+    createdAt: number;
+    updatedAt: number;
+}
+
 export function buildProductOutput(product: Product): ProductOutput {
     return {
         id: product.id,
@@ -148,7 +169,7 @@ export function buildUserOutput(user: User): UserOutput {
         addresses: user.addresses ? user.addresses.map(buildAddressOutput) : [],
         passwordResets: user.passwordResets ? user.passwordResets.map(buildPasswordResetOutput) : [],
         createdAt: user.createdAt.getTime(),
-        updatedAt: user.createdAt.getTime()
+        updatedAt: user.updatedAt.getTime()
     };
 }
 
@@ -163,7 +184,28 @@ export function buildAddressOutput(address: Address): AddressOutput {
         country: buildCountryOutput(address.country),
         info: address.info,
         createdAt: address.createdAt.getTime(),
-        updatedAt: address.createdAt.getTime()
+        updatedAt: address.updatedAt.getTime()
+    };
+}
+
+export function buildOrderItemOutput(orderItem: OrderItem): OrderItemOutput {
+    return {
+        id: orderItem.id,
+        quantity: orderItem.quantity
+    };
+}
+
+export function buildOrderOutput(order: Order): OrderOutput {
+    return {
+        id: order.id,
+        deliveryFee: order.deliveryFee,
+        total: order.total,
+        coupon: order.coupon,
+        orderNumber: order.orderNumber,
+        deliveryAddress: buildAddressOutput(order.deliveryAddress),
+        orderItems: order.orderItems.map(buildOrderItemOutput),
+        createdAt: order.createdAt.getTime(),
+        updatedAt: order.updatedAt.getTime()
     };
 }
 

@@ -9,7 +9,7 @@ export function getCountriesRouter(): Router {
 
     countriesRouter.get('/', countryController.getAllCountries);
 
-    countriesRouter.get('/id', countryController.getCountry);
+    countriesRouter.get('/:id', countryController.getCountry);
 
     countriesRouter.post('/', countryController.createCountry);
     // categoriesRouter.post('/', [checkJwt, checkRole(['ADMIN'])], countryController.createCountry);

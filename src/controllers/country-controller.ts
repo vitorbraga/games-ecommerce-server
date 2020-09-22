@@ -40,7 +40,7 @@ export class CountryController {
             const newCountry = await this.countryDAO.save(country);
             return res.status(200).send({ success: true, category: buildCountryOutput(newCountry) });
         } catch (e) {
-            return res.status(500).send({ success: false, error: 'FAILED_INSERTING_COUNTRY' });
+            return res.status(500).send({ success: false, error: 'FAILED_CREATING_COUNTRY' });
         }
     };
 }
