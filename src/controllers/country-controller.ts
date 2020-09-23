@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { CountryDAO } from '../dao/country-dao';
 import { Country } from '../entity/Country';
 import { buildCountryOutput } from '../utils/data-filters';
+import logger from '../utils/logger';
 
 export class CountryController {
     private countryDAO: CountryDAO;
@@ -39,7 +40,8 @@ export class CountryController {
 
             const newCountry = await this.countryDAO.save(country);
             return res.status(200).send({ success: true, category: buildCountryOutput(newCountry) });
-        } catch (e) {
+        } catch (error) {
+            logger.error(error.message);
             return res.status(500).send({ success: false, error: 'FAILED_CREATING_COUNTRY' });
         }
     };

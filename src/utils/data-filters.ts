@@ -90,8 +90,8 @@ export interface OrderItemOutput {
 
 export interface OrderOutput {
     id: string;
-    orderNumber: number;
-    deliveryFee: number;
+    orderNumber: string;
+    shippingCosts: number;
     total: number;
     coupon: string | null;
     orderItems: OrderItemOutput[];
@@ -198,7 +198,7 @@ export function buildOrderItemOutput(orderItem: OrderItem): OrderItemOutput {
 export function buildOrderOutput(order: Order): OrderOutput {
     return {
         id: order.id,
-        deliveryFee: order.deliveryFee,
+        shippingCosts: order.shippingCosts,
         total: order.total,
         coupon: order.coupon,
         orderNumber: order.orderNumber,

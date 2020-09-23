@@ -8,6 +8,7 @@ import { Product } from '../entity/Product';
 import { NotFoundError } from '../errors/not-found-error';
 import { CustomRequest } from '../utils/api-utils';
 import { buildProductOutput, buildReviewOutput, buildPictureOutput } from '../utils/data-filters';
+import logger from '../utils/logger';
 
 interface CreateProductBody {
     title: string;
@@ -56,7 +57,7 @@ export class ProductController {
 
             return res.json({ success: true, products: products.map(buildProductOutput) });
         } catch (error) {
-            console.log(error);
+            logger.error(error.message);
             return res.status(500).send({ success: false, error: 'FAILED_SEARCHING_PRODUCTS' });
         }
     };
@@ -67,7 +68,7 @@ export class ProductController {
             return res.json({ success: true, products: products.slice(0, 4).map(buildProductOutput) });
             // TODO implement this logic to get featured products for the homepage
         } catch (error) {
-            console.log(error);
+            logger.error(error.message);
             return res.status(500).send({ success: false, error: 'FAILED_SEARCHING_PRODUCTS' });
         }
     };
@@ -120,7 +121,7 @@ export class ProductController {
             if (error instanceof NotFoundError) {
                 return res.status(404).send({ success: false, error: 'CATEGORY_NOT_FOUND' });
             } else {
-                console.log(error);
+                logger.error(error.message);
                 return res.status(500).send({ success: false, error: 'FAILED_INSERTING_PRODUCT' });
             }
         }
@@ -153,6 +154,7 @@ export class ProductController {
             if (error instanceof NotFoundError) {
                 return res.status(404).send({ success: false, error: 'CATEGORY_NOT_FOUND' });
             } else {
+                logger.error(error.message);
                 return res.status(500).send({ success: false, error: 'FAILED_UPDATING_PRODUCT' });
             }
         }
@@ -180,6 +182,7 @@ export class ProductController {
             const updatedProduct = await this.productDAO.save({ ...product, status: newStatus });
             return res.json({ success: true, product: buildProductOutput(updatedProduct) });
         } catch (error) {
+            logger.error(error.message);
             return res.status(500).send({ success: false, error: 'FAILED_UPDATING_PRODUCT' });
         }
     };
@@ -201,6 +204,7 @@ export class ProductController {
 
             return res.json({ success: true });
         } catch (error) {
+            logger.error(error.message);
             return res.status(500).send({ success: false, error: 'FAILED_DELETING_PRODUCT' });
         }
     };
@@ -286,7 +290,7 @@ export class ProductController {
             if (error instanceof NotFoundError) {
                 return res.status(404).send({ success: false, error: 'PRODUCT_NOT_FOUND' });
             } else {
-                console.log(error);
+                logger.error(error.message);
                 return res.status(500).send({ success: false, error: 'FAILED_UPLOADING_PICTURES' });
             }
         }

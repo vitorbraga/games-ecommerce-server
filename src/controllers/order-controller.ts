@@ -9,7 +9,9 @@ import { OrderItem } from '../entity/OrderItem';
 import { NotFoundError } from '../errors/not-found-error';
 import { CustomRequest } from '../utils/api-utils';
 import * as CalculationUtils from '../utils/calculation-utils';
+import * as PaymentValidator from '../utils/payment-validator';
 import { buildOrderOutput } from '../utils/data-filters';
+import logger from '../utils/logger';
 
 interface CreateOrderBody {
     orderItems: {
@@ -17,7 +19,13 @@ interface CreateOrderBody {
         quantity: number;
     }[];
     addressId: string;
-    deliveryFee: number;
+    shippingCosts: number;
+    paymentInfo: { // FIXME Im not using it yet, but I will
+        name: string;
+        cardNumber: string;
+        expirationDate: string;
+        securityCode: string;
+    };
 }
 
 export class OrderController {
@@ -78,8 +86,9 @@ export class OrderController {
 
     public createOrder = async (req: CustomRequest<CreateOrderBody>, res: Response) => {
         const id = res.locals.jwtPayload.user.id;
+
         const order = new Order();
-        order.deliveryFee = req.body.deliveryFee;
+        order.shippingCosts = req.body.shippingCosts;
         order.orderItems = [];
 
         try {
@@ -97,8 +106,13 @@ export class OrderController {
         }
 
         try {
+            // TODO check stock
             for (const orderItem of req.body.orderItems) {
                 const product = await this.productDAO.findByIdOrFail(orderItem.productId);
+                if (orderItem.quantity > product.quantityInStock) {
+                    return res.status(422).send({ success: false, error: 'PRODUCT_OUT_OF_STOCK' });
+                }
+
                 const newOrderItem = new OrderItem();
                 newOrderItem.product = product;
                 newOrderItem.quantity = orderItem.quantity;
@@ -116,14 +130,22 @@ export class OrderController {
         }
 
         try {
-            order.status = OrderStatus.AWAITING_PAYMENT;
+            const creditCardNumber = req.body.paymentInfo.cardNumber.trim().replace(/ /g, '');
+            if (PaymentValidator.validatePayment(creditCardNumber)) {
+                // Order will be created and stock will be deducted
+                order.status = OrderStatus.AWAITING_DELIVERY;
 
-            order.orderNumber = await this.generateOrderNumber();
+                order.orderNumber = await this.generateOrderNumber();
 
-            const newOrder = await this.orderDAO.save(order);
+                const newOrder = await this.orderDAO.createOrderTransaction(order);
 
-            return res.status(200).send({ success: true, order: newOrder });
-        } catch (e) {
+                return res.status(200).send({ success: true, order: newOrder });
+            } else {
+                // Payment failed. Order will not be created.
+                return res.status(500).send({ success: false, error: 'PAYMENT_FAILED' });
+            }
+        } catch (error) {
+            logger.error(error.message);
             return res.status(500).send({ success: false, error: 'FAILED_CREATING_ORDER' });
         }
     };

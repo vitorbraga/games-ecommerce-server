@@ -10,6 +10,7 @@ import { Address } from '../entity/Address';
 import { validationErrorsToErrorFields } from '../utils/validators';
 import { AddressDAO } from '../dao/address-dao';
 import { CountryDAO } from '../dao/country-dao';
+import logger from '../utils/logger';
 
 interface UpdateUserBody {
     firstName: string;
@@ -127,7 +128,8 @@ export class UserController {
             const newUser = await this.userDAO.save(user);
 
             return res.status(201).send({ success: true, user: buildUserOutput(newUser) });
-        } catch (e) {
+        } catch (error) {
+            logger.error(error.message);
             return res.status(500).send({ success: false, error: 'CREATE_USER_FAILED' });
         }
     };
@@ -155,6 +157,7 @@ export class UserController {
             if (error instanceof NotFoundError) {
                 return res.status(404).send({ success: false, error: 'UPDATE_USER_NOT_FOUND' });
             } else {
+                logger.error(error.message);
                 return res.status(500).send({ success: false, error: 'UPDATE_USER_FAILED' });
             }
         }
@@ -174,6 +177,7 @@ export class UserController {
             if (error instanceof NotFoundError) {
                 return res.status(404).send({ success: false, error: 'DELETE_USER_NOT_FOUND' });
             } else {
+                logger.error(error.message);
                 return res.status(500).send({ success: false, error: 'DELETE_USER_FAILED' });
             }
         }
@@ -206,6 +210,7 @@ export class UserController {
             if (error instanceof NotFoundError) {
                 return res.status(404).send({ success: false, error: 'USER_NOT_FOUND' });
             } else {
+                logger.error(error.message);
                 return res.status(500).send({ success: false, error: 'FETCHING_USER_ADDRESSES_FAILED' });
             }
         }
@@ -252,7 +257,7 @@ export class UserController {
             if (error instanceof NotFoundError) {
                 return res.status(404).send({ success: false, error: 'USER_NOT_FOUND' });
             } else {
-                console.log(error);
+                logger.error(error.message);
                 return res.status(500).send({ success: false, error: 'FAILED_CREATING_ADDRESS' });
             }
         }
@@ -287,7 +292,7 @@ export class UserController {
 
             return res.status(200).send({ success: true, user: buildUserOutput(updatedUser) });
         } catch (error) {
-            console.log(error);
+            logger.error(error.message);
             return res.status(500).send({ success: false, error: 'SET_MAIN_ADDRESS_FAILED' });
         }
     };
@@ -325,7 +330,7 @@ export class UserController {
 
             return res.status(200).send({ success: true, user: buildUserOutput(updatedUser) });
         } catch (error) {
-            console.log(error);
+            logger.error(error.message);
             return res.status(500).send({ success: false, error: 'DELETE_ADDRESS_FAILED' });
         }
     };

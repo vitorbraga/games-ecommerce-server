@@ -17,7 +17,7 @@ export class Order {
     public status: string;
 
     @Column()
-    public deliveryFee: number;
+    public shippingCosts: number;
 
     @Column()
     public total: number;

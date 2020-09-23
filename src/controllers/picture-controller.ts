@@ -3,6 +3,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { PictureDAO } from '../dao/picture-dao';
 import { buildPictureOutput } from '../utils/data-filters';
+import logger from '../utils/logger';
 
 export class PictureController {
     private pictureDAO: PictureDAO;
@@ -52,6 +53,7 @@ export class PictureController {
 
             return res.json({ success: true });
         } catch (error) {
+            logger.error(error.message);
             return res.status(500).send({ success: false, error: 'FAILED_DELETING_PICTURE' });
         }
     };

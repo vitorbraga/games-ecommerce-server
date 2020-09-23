@@ -1,6 +1,7 @@
-import { getRepository, Repository } from 'typeorm';
+import { getManager, getRepository, Repository } from 'typeorm';
 import { Order } from '../entity/Order';
 import { NotFoundError } from '../errors/not-found-error';
+import logger from '../utils/logger';
 
 export class OrderDAO {
     private orderRepository: Repository<Order>;
@@ -12,6 +13,24 @@ export class OrderDAO {
     public async save(order: Order): Promise<Order> {
         const savedOrder = await this.orderRepository.save(order);
         return savedOrder;
+    }
+
+    public async createOrderTransaction(order: Order): Promise<Order | null> {
+        let newOrder: Order | null = null;
+        await getManager().transaction(async (transactionalEntityManager) => {
+            for (const orderItem of order.orderItems) {
+                const { product } = orderItem;
+                product.quantityInStock = product.quantityInStock - orderItem.quantity;
+                if (product.quantityInStock < 0) {
+                    throw new Error('Quantity not available in stock');
+                }
+                await transactionalEntityManager.save(product);
+            }
+
+            newOrder = await transactionalEntityManager.save(order);
+        });
+
+        return newOrder;
     }
 
     public async findAll(): Promise<Order[]> {

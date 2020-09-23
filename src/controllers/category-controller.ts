@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { Category } from '../entity/Category';
 import { CategoryDAO } from '../dao/category-dao';
 import { buildCategoryOutput } from '../utils/data-filters';
+import logger from '../utils/logger';
 
 export class CategoryController {
     private categoryDAO: CategoryDAO;
@@ -49,7 +50,8 @@ export class CategoryController {
         let newCategory;
         try {
             newCategory = await this.categoryDAO.save(category);
-        } catch (e) {
+        } catch (error) {
+            logger.error(error.message);
             return res.status(500).send({ success: false, error: 'FAILED_INSERTING_CATEGORY' });
         }
 

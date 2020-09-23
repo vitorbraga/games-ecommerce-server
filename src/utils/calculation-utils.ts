@@ -10,5 +10,5 @@ function calculateOrderItemsTotal(orderItems: OrderItem[]): number {
 
 export function calculateOrderTotalValue(order: Order): number {
     const orderItemsTotal = calculateOrderItemsTotal(order.orderItems);
-    return Dinero({ amount: orderItemsTotal }).add(Dinero({ amount: order.deliveryFee })).getAmount();
+    return Dinero({ amount: orderItemsTotal }).add(Dinero({ amount: order.shippingCosts })).getAmount();
 }
