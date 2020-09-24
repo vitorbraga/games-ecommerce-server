@@ -18,7 +18,7 @@ export class OrderItem {
     @UpdateDateColumn()
     public updatedAt: Date;
 
-    @ManyToOne((type) => Product, (product) => product.orderItems)
+    @ManyToOne((type) => Product, (product) => product.orderItems, { eager: true })
     public product!: Product;
 
     @ManyToOne((type) => Order, (order) => order.orderItems)

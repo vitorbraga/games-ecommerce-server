@@ -5,7 +5,7 @@ import { UserRole } from '../entity/model';
 import { UserDAO } from '../dao/user-dao';
 import { NotFoundError } from '../errors/not-found-error';
 import { CustomRequest } from '../utils/api-utils';
-import { buildAddressOutput, buildUserOutput } from '../utils/data-filters';
+import { buildAddressOutput, buildOrderOutput, buildUserOutput } from '../utils/data-filters';
 import { Address } from '../entity/Address';
 import { validationErrorsToErrorFields } from '../utils/validators';
 import { AddressDAO } from '../dao/address-dao';
@@ -206,7 +206,6 @@ export class UserController {
             const user = await this.userDAO.findByIdOrFail(userId, ['addresses']);
             return res.json({ success: true, addresses: user.addresses.map(buildAddressOutput) });
         } catch (error) {
-            console.log(error);
             if (error instanceof NotFoundError) {
                 return res.status(404).send({ success: false, error: 'USER_NOT_FOUND' });
             } else {
@@ -332,6 +331,26 @@ export class UserController {
         } catch (error) {
             logger.error(error.message);
             return res.status(500).send({ success: false, error: 'DELETE_ADDRESS_FAILED' });
+        }
+    };
+
+    public getUserOrders = async (req: Request, res: Response) => {
+        try {
+            if (!req.params.id) {
+                return res.status(422).json({ success: false, error: 'MISSING_USER_ID' });
+            }
+
+            const userId: string = req.params.id;
+
+            const user = await this.userDAO.findByIdOrFail(userId, ['orders']);
+            return res.json({ success: true, orders: user.orders.map(buildOrderOutput) });
+        } catch (error) {
+            if (error instanceof NotFoundError) {
+                return res.status(404).send({ success: false, error: 'USER_NOT_FOUND' });
+            } else {
+                logger.error(error.message);
+                return res.status(500).send({ success: false, error: 'FETCHING_USER_ORDERS_FAILED' });
+            }
         }
     };
 }

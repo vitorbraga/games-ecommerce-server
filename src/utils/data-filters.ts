@@ -86,6 +86,7 @@ export interface PasswordResetOutput {
 export interface OrderItemOutput {
     id: string;
     quantity: number;
+    product: ProductOutput;
 }
 
 export interface OrderOutput {
@@ -96,6 +97,7 @@ export interface OrderOutput {
     coupon: string | null;
     orderItems: OrderItemOutput[];
     deliveryAddress: AddressOutput;
+    user: UserOutput;
     createdAt: number;
     updatedAt: number;
 }
@@ -191,7 +193,8 @@ export function buildAddressOutput(address: Address): AddressOutput {
 export function buildOrderItemOutput(orderItem: OrderItem): OrderItemOutput {
     return {
         id: orderItem.id,
-        quantity: orderItem.quantity
+        quantity: orderItem.quantity,
+        product: buildProductOutput(orderItem.product)
     };
 }
 
@@ -204,6 +207,7 @@ export function buildOrderOutput(order: Order): OrderOutput {
         orderNumber: order.orderNumber,
         deliveryAddress: buildAddressOutput(order.deliveryAddress),
         orderItems: order.orderItems.map(buildOrderItemOutput),
+        user: buildUserOutput(order.user),
         createdAt: order.createdAt.getTime(),
         updatedAt: order.updatedAt.getTime()
     };

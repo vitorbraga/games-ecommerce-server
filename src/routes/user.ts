@@ -40,5 +40,8 @@ export function getUserRoutes(): Router {
     // Delete user's address
     userRouter.delete('/:userId/addresses/:addressId', [checkJwt, checkRole(['USER'])], userController.deleteUserAddress);
 
+    // Get user's orders
+    userRouter.get('/:id/orders', [checkJwt, checkRole(['USER'])], userController.getUserOrders);
+
     return userRouter;
 }

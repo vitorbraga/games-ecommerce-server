@@ -33,12 +33,12 @@ export class Order {
     @UpdateDateColumn()
     public updatedAt: Date;
 
-    @OneToMany((type) => OrderItem, (orderItem) => orderItem.order, { cascade: true })
+    @OneToMany((type) => OrderItem, (orderItem) => orderItem.order, { cascade: true, eager: true })
     public orderItems!: OrderItem[];
 
-    @ManyToOne((type) => User, (user) => user.orders)
+    @ManyToOne((type) => User, (user) => user.orders, { eager: true })
     public user!: User;
 
-    @ManyToOne((type) => Address, (address) => address.orders)
+    @ManyToOne((type) => Address, (address) => address.orders, { eager: true })
     public deliveryAddress!: Address;
 }
