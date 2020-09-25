@@ -106,7 +106,6 @@ export class OrderController {
         }
 
         try {
-            // TODO check stock
             for (const orderItem of req.body.orderItems) {
                 const product = await this.productDAO.findByIdOrFail(orderItem.productId);
                 if (orderItem.quantity > product.quantityInStock) {
@@ -145,7 +144,7 @@ export class OrderController {
                 return res.status(500).send({ success: false, error: 'PAYMENT_FAILED' });
             }
         } catch (error) {
-            logger.error(error.message);
+            logger.error(error.stack);
             return res.status(500).send({ success: false, error: 'FAILED_CREATING_ORDER' });
         }
     };

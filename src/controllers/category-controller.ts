@@ -51,7 +51,7 @@ export class CategoryController {
         try {
             newCategory = await this.categoryDAO.save(category);
         } catch (error) {
-            logger.error(error.message);
+            logger.error(error.stack);
             return res.status(500).send({ success: false, error: 'FAILED_INSERTING_CATEGORY' });
         }
 

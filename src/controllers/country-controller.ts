@@ -41,7 +41,7 @@ export class CountryController {
             const newCountry = await this.countryDAO.save(country);
             return res.status(200).send({ success: true, category: buildCountryOutput(newCountry) });
         } catch (error) {
-            logger.error(error.message);
+            logger.error(error.stack);
             return res.status(500).send({ success: false, error: 'FAILED_CREATING_COUNTRY' });
         }
     };

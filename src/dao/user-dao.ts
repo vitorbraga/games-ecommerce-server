@@ -2,6 +2,7 @@ import { Repository, getRepository } from 'typeorm';
 import { User } from '../entity/User';
 import { NotFoundError } from '../errors/not-found-error';
 import { PasswordReset } from '../entity/PasswordReset';
+import { Order } from '../entity/Order';
 
 export class UserDAO {
     private userRepository: Repository<User>;
@@ -18,9 +19,9 @@ export class UserDAO {
         return users;
     }
 
-    public async findByIdOrFail(userId: string, relations?: string[]): Promise<User> {
+    public async findByIdOrFail(userId: string, relations?: string[], order?: any): Promise<User> {
         try {
-            const user = await this.userRepository.findOneOrFail(userId, { relations });
+            const user = await this.userRepository.findOneOrFail(userId, { relations, order });
 
             return user;
         } catch (error) {
@@ -63,5 +64,20 @@ export class UserDAO {
         } catch (error) {
             throw new NotFoundError('User not found');
         }
+    }
+
+    public async getOrdersByUserIdOrFail(userId: string): Promise<Order[]> {
+        const result = await this.userRepository
+            .createQueryBuilder('user')
+            .leftJoinAndSelect('user.orders', 'orders')
+            .where('user.id = :userId')
+            .orderBy('order.createdAt', 'DESC')
+            .setParameters({ userId })
+            .getOne();
+        if (!result) {
+            throw new NotFoundError('User not found.');
+        }
+
+        return result.orders;
     }
 }

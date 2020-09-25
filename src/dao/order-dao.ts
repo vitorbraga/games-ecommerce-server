@@ -74,4 +74,9 @@ export class OrderDAO {
         const count = await this.orderRepository.count();
         return count;
     }
+
+    public async getOrdersByUser(userId: string): Promise<Order[]> {
+        const orders = await this.orderRepository.find({ where: { user: { id: userId } }, order: { createdAt: 'DESC' } });
+        return orders;
+    }
 }

@@ -5,7 +5,6 @@ export enum ProductStatus {
 
 export enum OrderStatus {
     AWAITING_PAYMENT = 'AWAITING_PAYMENT',
-    SAPARATING = 'SAPARATING',
     AWAITING_DELIVERY = 'AWAITING_DELIVERY',
     DELIVERED = 'DELIVERED',
     CANCELLED = 'CANCELLED'

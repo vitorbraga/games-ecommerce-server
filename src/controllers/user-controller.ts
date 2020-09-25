@@ -11,6 +11,7 @@ import { validationErrorsToErrorFields } from '../utils/validators';
 import { AddressDAO } from '../dao/address-dao';
 import { CountryDAO } from '../dao/country-dao';
 import logger from '../utils/logger';
+import { OrderDAO } from '../dao/order-dao';
 
 interface UpdateUserBody {
     firstName: string;
@@ -39,11 +40,13 @@ export class UserController {
     private userDAO: UserDAO;
     private addressDAO: AddressDAO;
     private countryDAO: CountryDAO;
+    private orderDAO: OrderDAO;
 
     constructor() {
         this.userDAO = new UserDAO();
         this.addressDAO = new AddressDAO();
         this.countryDAO = new CountryDAO();
+        this.orderDAO = new OrderDAO();
     }
 
     public listAll = async (req: Request, res: Response) => {
@@ -129,7 +132,7 @@ export class UserController {
 
             return res.status(201).send({ success: true, user: buildUserOutput(newUser) });
         } catch (error) {
-            logger.error(error.message);
+            logger.error(error.stack);
             return res.status(500).send({ success: false, error: 'CREATE_USER_FAILED' });
         }
     };
@@ -157,7 +160,7 @@ export class UserController {
             if (error instanceof NotFoundError) {
                 return res.status(404).send({ success: false, error: 'UPDATE_USER_NOT_FOUND' });
             } else {
-                logger.error(error.message);
+                logger.error(error.stack);
                 return res.status(500).send({ success: false, error: 'UPDATE_USER_FAILED' });
             }
         }
@@ -177,7 +180,7 @@ export class UserController {
             if (error instanceof NotFoundError) {
                 return res.status(404).send({ success: false, error: 'DELETE_USER_NOT_FOUND' });
             } else {
-                logger.error(error.message);
+                logger.error(error.stack);
                 return res.status(500).send({ success: false, error: 'DELETE_USER_FAILED' });
             }
         }
@@ -209,7 +212,7 @@ export class UserController {
             if (error instanceof NotFoundError) {
                 return res.status(404).send({ success: false, error: 'USER_NOT_FOUND' });
             } else {
-                logger.error(error.message);
+                logger.error(error.stack);
                 return res.status(500).send({ success: false, error: 'FETCHING_USER_ADDRESSES_FAILED' });
             }
         }
@@ -256,7 +259,7 @@ export class UserController {
             if (error instanceof NotFoundError) {
                 return res.status(404).send({ success: false, error: 'USER_NOT_FOUND' });
             } else {
-                logger.error(error.message);
+                logger.error(error.stack);
                 return res.status(500).send({ success: false, error: 'FAILED_CREATING_ADDRESS' });
             }
         }
@@ -291,7 +294,7 @@ export class UserController {
 
             return res.status(200).send({ success: true, user: buildUserOutput(updatedUser) });
         } catch (error) {
-            logger.error(error.message);
+            logger.error(error.stack);
             return res.status(500).send({ success: false, error: 'SET_MAIN_ADDRESS_FAILED' });
         }
     };
@@ -329,7 +332,7 @@ export class UserController {
 
             return res.status(200).send({ success: true, user: buildUserOutput(updatedUser) });
         } catch (error) {
-            logger.error(error.message);
+            logger.error(error.stack);
             return res.status(500).send({ success: false, error: 'DELETE_ADDRESS_FAILED' });
         }
     };
@@ -342,13 +345,13 @@ export class UserController {
 
             const userId: string = req.params.id;
 
-            const user = await this.userDAO.findByIdOrFail(userId, ['orders']);
-            return res.json({ success: true, orders: user.orders.map(buildOrderOutput) });
+            const orders = await this.orderDAO.getOrdersByUser(userId);
+            return res.json({ success: true, orders: orders.map(buildOrderOutput) });
         } catch (error) {
             if (error instanceof NotFoundError) {
                 return res.status(404).send({ success: false, error: 'USER_NOT_FOUND' });
             } else {
-                logger.error(error.message);
+                logger.error(error.stack);
                 return res.status(500).send({ success: false, error: 'FETCHING_USER_ORDERS_FAILED' });
             }
         }

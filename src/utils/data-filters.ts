@@ -91,6 +91,7 @@ export interface OrderItemOutput {
 
 export interface OrderOutput {
     id: string;
+    status: string;
     orderNumber: string;
     shippingCosts: number;
     total: number;
@@ -201,6 +202,7 @@ export function buildOrderItemOutput(orderItem: OrderItem): OrderItemOutput {
 export function buildOrderOutput(order: Order): OrderOutput {
     return {
         id: order.id,
+        status: order.status,
         shippingCosts: order.shippingCosts,
         total: order.total,
         coupon: order.coupon,

@@ -47,7 +47,7 @@ export class AuthController {
             if (error instanceof NotFoundError) {
                 return res.status(404).send({ success: false, error: 'LOGIN_USER_NOT_FOUND' });
             } else {
-                logger.error(error.message);
+                logger.error(error.stack);
                 return res.status(500).send({ success: false, error: 'LOGIN_ADMIN_FAILED' });
             }
         }
@@ -77,7 +77,7 @@ export class AuthController {
             if (error instanceof NotFoundError) {
                 return res.status(404).send({ success: false, error: 'LOGIN_ADMIN_USER_NOT_FOUND' });
             } else {
-                logger.error(error.message);
+                logger.error(error.stack);
                 return res.status(500).send({ success: false, error: 'LOGIN_ADMIN_FAILED' });
             }
         }
@@ -125,7 +125,7 @@ export class AuthController {
             if (error instanceof NotFoundError) {
                 return res.status(404).send({ success: false, error: 'PASSWORD_RESET_USER_NOT_FOUND' });
             } else {
-                logger.error(error.message);
+                logger.error(error.stack);
                 return res.status(500).send({ success: false, error: 'PASSWORD_RESET_FAILED' });
             }
         }
@@ -181,7 +181,7 @@ export class AuthController {
             } else if (error instanceof DecryptError) {
                 return res.status(401).send({ success: false, error: 'PASSWORD_RESET_BAD_USER_ID' });
             } else {
-                logger.error(error.message);
+                logger.error(error.stack);
                 return res.status(500).send({ success: false, error: 'PASSWORD_RESET_FAILED' });
             }
         }
@@ -217,7 +217,7 @@ export class AuthController {
             } else if (error instanceof DecryptError) {
                 return res.status(401).send({ success: false, error: 'PASSWORD_RESET_BAD_USER_ID' });
             } else {
-                logger.error(error.message);
+                logger.error(error.stack);
                 return res.status(500).send({ success: false, error: 'CHECK_PASSWORD_TOKEN_FAILED' });
             }
         }
@@ -254,7 +254,7 @@ export class AuthController {
             if (error instanceof NotFoundError) {
                 return res.status(404).send({ success: false, error: 'CHANGE_PASSWORD_USER_NOT_FOUND' });
             } else {
-                logger.error(error.message);
+                logger.error(error.stack);
                 return res.status(500).send({ success: false, error: 'CHANGE_PASSWORD_FAILED' });
             }
         }

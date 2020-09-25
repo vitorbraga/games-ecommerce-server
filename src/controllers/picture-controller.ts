@@ -53,7 +53,7 @@ export class PictureController {
 
             return res.json({ success: true });
         } catch (error) {
-            logger.error(error.message);
+            logger.error(error.stack);
             return res.status(500).send({ success: false, error: 'FAILED_DELETING_PICTURE' });
         }
     };
