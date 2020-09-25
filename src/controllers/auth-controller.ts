@@ -14,7 +14,7 @@ import { UserDAO } from '../dao/user-dao';
 import { NotFoundError } from '../errors/not-found-error';
 import { PasswordResetDAO } from '../dao/password-reset-dao';
 import { DecryptError } from '../errors/decrypt-error';
-import { buildUserOutput } from '../utils/data-filters';
+import { buildUserOutput, buildUserSession } from '../utils/data-filters';
 import logger from '../utils/logger';
 
 export class AuthController {
@@ -26,6 +26,11 @@ export class AuthController {
         this.userDAO = new UserDAO();
         this.passwordResetDAO = new PasswordResetDAO();
     }
+
+    private createToken = (user: User) => {
+        const token = jwt.sign({ userSession: buildUserSession(user) }, jwtConfig.secret, { expiresIn: '2h' });
+        return token;
+    };
 
     public login = async (req: Request, res: Response) => {
         try {
@@ -40,7 +45,7 @@ export class AuthController {
                 return res.status(401).send({ success: false, error: 'LOGIN_UNMATCHED_EMAIL_PWD' });
             }
 
-            const token = jwt.sign({ user: buildUserOutput(user) }, jwtConfig.secret, { expiresIn: '2h' });
+            const token = this.createToken(user);
 
             return res.send({ success: true, jwt: token });
         } catch (error) {
@@ -70,7 +75,7 @@ export class AuthController {
                 return res.status(403).send({ success: false, error: 'USER_NOT_AUTHORIZED' });
             }
 
-            const token = jwt.sign({ user: buildUserOutput(user) }, jwtConfig.secret, { expiresIn: '2h' });
+            const token = this.createToken(user);
 
             return res.send({ success: true, jwt: token });
         } catch (error) {
@@ -226,7 +231,7 @@ export class AuthController {
     // Change password inside account area
     public changePassword = async (req: Request, res: Response) => {
         try {
-            const id = res.locals.jwtPayload.user.id;
+            const id = res.locals.jwtPayload.userSession.id;
 
             const { currentPassword, newPassword } = req.body;
             if (!(currentPassword && newPassword)) {

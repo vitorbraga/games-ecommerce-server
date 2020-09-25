@@ -53,6 +53,6 @@ export class Product {
     @ManyToOne((type) => Category, (category) => category.products, { cascade: true, eager: true })
     public category: Category;
 
-    @OneToMany((type) => OrderItem, (orderItem) => orderItem.product)
+    @OneToMany((type) => OrderItem, (orderItem) => orderItem.product, { cascade: true })
     public orderItems!: OrderItem[];
 }

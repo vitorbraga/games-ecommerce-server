@@ -14,7 +14,7 @@ export function getUserRoutes(): Router {
     userRouter.get('/:id', [checkJwt, checkRole(['ADMIN', 'USER'])], userController.getUserById);
 
     // Get one user full data
-    userRouter.get('/:id/full', [checkJwt, checkRole(['USER'])], userController.getUserFullDataById);
+    userRouter.get('/:id/full', [checkJwt, checkRole(['USER', 'ADMIN'])], userController.getUserFullDataById);
 
     // Create a new user
     userRouter.post('/', userController.createUser);

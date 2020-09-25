@@ -19,9 +19,9 @@ export class UserDAO {
         return users;
     }
 
-    public async findByIdOrFail(userId: string, relations?: string[], order?: any): Promise<User> {
+    public async findByIdOrFail(userId: string, relations?: string[]): Promise<User> {
         try {
-            const user = await this.userRepository.findOneOrFail(userId, { relations, order });
+            const user = await this.userRepository.findOneOrFail(userId, { relations });
 
             return user;
         } catch (error) {

@@ -85,7 +85,7 @@ export class OrderController {
     };
 
     public createOrder = async (req: CustomRequest<CreateOrderBody>, res: Response) => {
-        const id = res.locals.jwtPayload.user.id;
+        const id = res.locals.jwtPayload.userSession.id;
 
         const order = new Order();
         order.shippingCosts = req.body.shippingCosts;

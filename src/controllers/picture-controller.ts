@@ -1,9 +1,8 @@
 import { Request, Response } from 'express';
-import * as fs from 'fs';
-import * as path from 'path';
 import { PictureDAO } from '../dao/picture-dao';
 import { buildPictureOutput } from '../utils/data-filters';
 import logger from '../utils/logger';
+import * as PicturesUtils from '../utils/pictures-utils';
 
 export class PictureController {
     private pictureDAO: PictureDAO;
@@ -48,8 +47,7 @@ export class PictureController {
             const fileName = picture.filename;
             await this.pictureDAO.delete(pictureId);
 
-            const filePath = path.join(__dirname, '..', '..', 'public', 'product-pictures', fileName);
-            fs.unlinkSync(filePath);
+            PicturesUtils.removePicture(fileName);
 
             return res.json({ success: true });
         } catch (error) {

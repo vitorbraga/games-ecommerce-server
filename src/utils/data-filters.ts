@@ -63,6 +63,11 @@ export interface UserOutput {
     updatedAt: number;
 }
 
+export interface UserSessionOutput {
+    id: string;
+    firstName: string;
+}
+
 export interface AddressOutput {
     id: string;
     fullName: string;
@@ -173,6 +178,13 @@ export function buildUserOutput(user: User): UserOutput {
         passwordResets: user.passwordResets ? user.passwordResets.map(buildPasswordResetOutput) : [],
         createdAt: user.createdAt.getTime(),
         updatedAt: user.updatedAt.getTime()
+    };
+}
+
+export function buildUserSession(user: User): UserSessionOutput {
+    return {
+        id: user.id,
+        firstName: user.firstName
     };
 }
 

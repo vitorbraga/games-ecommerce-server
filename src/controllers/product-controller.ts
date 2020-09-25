@@ -9,6 +9,7 @@ import { NotFoundError } from '../errors/not-found-error';
 import { CustomRequest } from '../utils/api-utils';
 import { buildProductOutput, buildReviewOutput, buildPictureOutput } from '../utils/data-filters';
 import logger from '../utils/logger';
+import * as PicturesUtils from '../utils/pictures-utils';
 
 interface CreateProductBody {
     title: string;
@@ -199,8 +200,14 @@ export class ProductController {
             if (!product) {
                 return res.status(404).send({ success: false, error: 'PRODUCT_NOT_FOUND' });
             }
+            const pictures = product.pictures.map((item) => item.filename);
 
+            // TODO need to think about a solution, because currently it's not possible to remove
             await this.productDAO.delete(productId);
+
+            for (const picture of pictures) {
+                PicturesUtils.removePicture(picture);
+            }
 
             return res.json({ success: true });
         } catch (error) {
