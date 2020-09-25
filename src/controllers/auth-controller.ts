@@ -1,10 +1,8 @@
 import { Request, Response } from 'express';
-import * as jwt from 'jsonwebtoken';
 import { getRepository } from 'typeorm';
 import { validate } from 'class-validator';
 import * as uuidv4 from 'uuid/v4';
 import { User } from '../entity/User';
-import { jwtConfig } from '../config/config';
 import { PasswordReset } from '../entity/PasswordReset';
 import { sendEmail, EmailOptions } from '../utils/email-sender';
 import { encrypt, decrypt } from '../utils/encrypter';
@@ -16,6 +14,7 @@ import { PasswordResetDAO } from '../dao/password-reset-dao';
 import { DecryptError } from '../errors/decrypt-error';
 import { buildUserOutput, buildUserSession } from '../utils/data-filters';
 import logger from '../utils/logger';
+import * as AuthUtils from '../utils/auth-utils';
 
 export class AuthController {
     private static PASSWORD_RESET_TOKEN_EXPIRATION_MS = 18000000; // 5 hours
@@ -26,11 +25,6 @@ export class AuthController {
         this.userDAO = new UserDAO();
         this.passwordResetDAO = new PasswordResetDAO();
     }
-
-    private createToken = (user: User) => {
-        const token = jwt.sign({ userSession: buildUserSession(user) }, jwtConfig.secret, { expiresIn: '2h' });
-        return token;
-    };
 
     public login = async (req: Request, res: Response) => {
         try {
@@ -45,7 +39,7 @@ export class AuthController {
                 return res.status(401).send({ success: false, error: 'LOGIN_UNMATCHED_EMAIL_PWD' });
             }
 
-            const token = this.createToken(user);
+            const token = AuthUtils.createSignedToken(buildUserSession(user));
 
             return res.send({ success: true, jwt: token });
         } catch (error) {
@@ -75,7 +69,7 @@ export class AuthController {
                 return res.status(403).send({ success: false, error: 'USER_NOT_AUTHORIZED' });
             }
 
-            const token = this.createToken(user);
+            const token = AuthUtils.createSignedToken(buildUserSession(user));
 
             return res.send({ success: true, jwt: token });
         } catch (error) {
