@@ -7,15 +7,11 @@ function extractTokenFromBearerAuthorization(authorization: string) {
 }
 
 export const checkJwt = (req: Request, res: Response, next: NextFunction) => {
-    // Get the jwt token from the head
     const authorization = req.headers.authorization as string;
     const token = extractTokenFromBearerAuthorization(authorization);
 
-    let jwtPayload;
-
-    // Try to validate the token and get data
     try {
-        jwtPayload = jwt.verify(token, jwtConfig.secret) as any;
+        const jwtPayload = jwt.verify(token, jwtConfig.secret) as any;
         res.locals.jwtPayload = jwtPayload;
     } catch (error) {
         // Token is not valid

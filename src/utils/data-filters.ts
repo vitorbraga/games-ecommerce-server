@@ -59,6 +59,7 @@ export interface UserOutput {
     mainAddress: AddressOutput | null;
     addresses: AddressOutput[];
     passwordResets: PasswordResetOutput[];
+    orders: OrderOutput[];
     createdAt: number;
     updatedAt: number;
 }
@@ -176,6 +177,7 @@ export function buildUserOutput(user: User): UserOutput {
         mainAddress: user.mainAddress ? buildAddressOutput(user.mainAddress) : null,
         addresses: user.addresses ? user.addresses.map(buildAddressOutput) : [],
         passwordResets: user.passwordResets ? user.passwordResets.map(buildPasswordResetOutput) : [],
+        orders: user.orders ? user.orders.map(buildOrderOutput) : [],
         createdAt: user.createdAt.getTime(),
         updatedAt: user.updatedAt.getTime()
     };

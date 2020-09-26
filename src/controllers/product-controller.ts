@@ -93,7 +93,7 @@ export class ProductController {
         const product = new Product();
         product.title = body.title;
         product.description = body.description;
-        product.price = parseInt(body.price, 10); // TODO check this
+        product.price = parseInt(body.price, 10);
         product.quantityInStock = body.quantityInStock;
         product.tags = body.tags;
         product.rating = 0;

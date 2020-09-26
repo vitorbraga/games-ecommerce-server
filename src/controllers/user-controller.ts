@@ -78,7 +78,7 @@ export class UserController {
 
             const userId: string = req.params.id;
 
-            const user = await this.userDAO.findByIdOrFail(userId, ['mainAddress', 'addresses', 'passwordResets']);
+            const user = await this.userDAO.findByIdOrFail(userId, ['mainAddress', 'addresses', 'passwordResets', 'orders']);
 
             return res.json({ success: true, user: buildUserOutput(user) });
         } catch (error) {
