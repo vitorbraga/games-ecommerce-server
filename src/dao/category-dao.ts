@@ -31,6 +31,11 @@ export class CategoryDAO {
         return category;
     }
 
+    public async findByKey(categoryKey: string): Promise<Category | undefined> {
+        const category = await this.categoryRepository.findOne({ where: { key: categoryKey }, relations: ['subCategories'] });
+        return category;
+    }
+
     public async findByIdOrFail(categoryId: string): Promise<Category> {
         try {
             const category = await this.categoryRepository.findOneOrFail(categoryId);

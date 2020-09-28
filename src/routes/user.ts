@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { UserController } from '../controllers/user-controller';
+import { checkUserId } from '../middlewares/checkUserId';
 import { checkJwt } from '../middlewares/checkJwt';
 import { checkRole } from '../middlewares/checkRole';
 
@@ -11,37 +12,37 @@ export function getUserRoutes(): Router {
     userRouter.get('/', [checkJwt, checkRole(['ADMIN'])], userController.listAll);
 
     // Get one user
-    userRouter.get('/:id', [checkJwt, checkRole(['ADMIN', 'USER'])], userController.getUserById);
+    userRouter.get('/:userId', [checkJwt, checkRole(['ADMIN', 'USER']), checkUserId], userController.getUserById);
 
     // Get one user full data
-    userRouter.get('/:id/full', [checkJwt, checkRole(['USER', 'ADMIN'])], userController.getUserFullDataById);
+    userRouter.get('/:userId/full', [checkJwt, checkRole(['USER', 'ADMIN']), checkUserId], userController.getUserFullDataById);
 
     // Create a new user
     userRouter.post('/', userController.createUser);
 
     // Edit one user
-    userRouter.patch('/:id', [checkJwt, checkRole(['ADMIN', 'USER'])], userController.updateUser);
+    userRouter.patch('/:userId', [checkJwt, checkRole(['ADMIN', 'USER']), checkUserId], userController.updateUser);
 
     // Delete one user
     userRouter.delete('/:id', [checkJwt, checkRole(['ADMIN'])], userController.deleteUser);
 
     // Get user's password resets
-    userRouter.get('/:id/passwordResets', [checkJwt, checkRole(['ADMIN', 'USER'])], userController.getUserPasswordResets);
+    userRouter.get('/:userId/passwordResets', [checkJwt, checkRole(['ADMIN', 'USER']), checkUserId], userController.getUserPasswordResets);
 
     // Get user's addresses
-    userRouter.get('/:id/addresses', [checkJwt, checkRole(['USER'])], userController.getUserAddresses);
+    userRouter.get('/:userId/addresses', [checkJwt, checkRole(['USER']), checkUserId], userController.getUserAddresses);
 
     // Create a new address
-    userRouter.post('/:id/addresses', [checkJwt, checkRole(['USER'])], userController.createAddress);
+    userRouter.post('/:userId/addresses', [checkJwt, checkRole(['USER']), checkUserId], userController.createAddress);
 
     // Set main address
-    userRouter.patch('/:userId/addresses/:addressId', [checkJwt, checkRole(['USER'])], userController.setMainAddress);
+    userRouter.patch('/:userId/addresses/:addressId', [checkJwt, checkRole(['USER']), checkUserId], userController.setMainAddress);
 
     // Delete user's address
-    userRouter.delete('/:userId/addresses/:addressId', [checkJwt, checkRole(['USER'])], userController.deleteUserAddress);
+    userRouter.delete('/:userId/addresses/:addressId', [checkJwt, checkRole(['USER']), checkUserId], userController.deleteUserAddress);
 
     // Get user's orders
-    userRouter.get('/:id/orders', [checkJwt, checkRole(['USER'])], userController.getUserOrders);
+    userRouter.get('/:userId/orders', [checkJwt, checkRole(['USER']), checkUserId], userController.getUserOrders);
 
     return userRouter;
 }

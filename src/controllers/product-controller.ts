@@ -34,6 +34,9 @@ interface ChangeProductStatusBody {
 }
 
 export class ProductController {
+    private static consolesCategoryKey = 'consoles';
+    private static gamesCategoryKey = 'games';
+
     private productDAO: ProductDAO;
     private categoryDAO: CategoryDAO;
 
@@ -65,9 +68,27 @@ export class ProductController {
 
     public getFeaturedProducts = async (req: Request, res: Response) => {
         try {
-            const products = await this.productDAO.search('', [], 'none');
-            return res.json({ success: true, products: products.slice(0, 4).map(buildProductOutput) });
-            // TODO implement this logic to get featured products for the homepage
+            const consoleCategory = await this.categoryDAO.findByKey(ProductController.consolesCategoryKey);
+            const consolesCategoryIds = consoleCategory ? consoleCategory.subCategories.map((item) => item.id) : [];
+            const gamesCategory = await this.categoryDAO.findByKey(ProductController.gamesCategoryKey);
+            const gamesCategoryIds = gamesCategory ? gamesCategory.subCategories.map((item) => item.id) : [];
+
+            let consolesProducts: Product[] = [];
+            if (consolesCategoryIds.length > 0) {
+                consolesProducts = await this.productDAO.search('', consolesCategoryIds, 'none');
+            }
+
+            let gamesProducts: Product[] = [];
+            if (gamesCategoryIds.length > 0) {
+                gamesProducts = await this.productDAO.search('', gamesCategoryIds, 'none');
+            }
+
+            const products = {
+                consoles: consolesProducts.slice(0, 5).map(buildProductOutput),
+                games: gamesProducts.slice(0, 5).map(buildProductOutput)
+            };
+
+            return res.json({ success: true, products });
         } catch (error) {
             logger.error(error.stack);
             return res.status(500).send({ success: false, error: 'FAILED_SEARCHING_PRODUCTS' });

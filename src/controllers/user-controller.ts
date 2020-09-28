@@ -56,11 +56,11 @@ export class UserController {
 
     public getUserById = async (req: Request, res: Response) => {
         try {
-            if (!req.params.id) {
+            if (!req.params.userId) {
                 return res.status(422).json({ success: false, error: 'MISSING_USER_ID' });
             }
 
-            const userId: string = req.params.id;
+            const userId: string = req.params.userId;
 
             const user = await this.userDAO.findByIdOrFail(userId);
 
@@ -72,11 +72,11 @@ export class UserController {
 
     public getUserFullDataById = async (req: Request, res: Response) => {
         try {
-            if (!req.params.id) {
+            if (!req.params.userId) {
                 return res.status(422).json({ success: false, error: 'MISSING_USER_ID' });
             }
 
-            const userId: string = req.params.id;
+            const userId: string = req.params.userId;
 
             const user = await this.userDAO.findByIdOrFail(userId, ['mainAddress', 'addresses', 'passwordResets', 'orders']);
 
@@ -88,11 +88,11 @@ export class UserController {
 
     public getUserPasswordResets = async (req: Request, res: Response) => {
         try {
-            if (!req.params.id) {
+            if (!req.params.userId) {
                 return res.status(422).json({ success: false, error: 'MISSING_USER_ID' });
             }
 
-            const userId: string = req.params.id;
+            const userId: string = req.params.userId;
 
             const passwordResets = await this.userDAO.getPasswordResetsByUserIdOrFail(userId);
             return res.json({ success: true, passwordResets });
@@ -139,10 +139,14 @@ export class UserController {
 
     public updateUser = async (req: CustomRequest<UpdateUserBody>, res: Response) => {
         try {
-            const id = req.params.id;
+            if (!req.params.userId) {
+                return res.status(422).json({ success: false, error: 'MISSING_USER_ID' });
+            }
+
+            const userId = req.params.userId;
             const { firstName, lastName } = req.body;
 
-            const user = await this.userDAO.findByIdOrFail(id);
+            const user = await this.userDAO.findByIdOrFail(userId);
 
             user.firstName = firstName;
             user.lastName = lastName;
@@ -200,11 +204,11 @@ export class UserController {
 
     public getUserAddresses = async (req: Request, res: Response) => {
         try {
-            if (!req.params.id) {
+            if (!req.params.userId) {
                 return res.status(422).json({ success: false, error: 'MISSING_USER_ID' });
             }
 
-            const userId: string = req.params.id;
+            const userId: string = req.params.userId;
 
             const user = await this.userDAO.findByIdOrFail(userId, ['addresses']);
             return res.json({ success: true, addresses: user.addresses.map(buildAddressOutput) });
@@ -220,7 +224,7 @@ export class UserController {
 
     public createAddress = async (req: CustomRequest<CreateAddressBody>, res: Response) => {
         try {
-            if (!req.params.id) {
+            if (!req.params.userId) {
                 return res.status(422).json({ success: false, error: 'MISSING_USER_ID' });
             }
 
@@ -228,7 +232,7 @@ export class UserController {
                 return res.status(422).json({ success: false, error: 'MISSING_COUNTRY_ID' });
             }
 
-            const userId: string = req.params.id;
+            const userId: string = req.params.userId;
 
             const user = await this.userDAO.findByIdOrFail(userId, ['addresses']);
 
@@ -339,11 +343,11 @@ export class UserController {
 
     public getUserOrders = async (req: Request, res: Response) => {
         try {
-            if (!req.params.id) {
+            if (!req.params.userId) {
                 return res.status(422).json({ success: false, error: 'MISSING_USER_ID' });
             }
 
-            const userId: string = req.params.id;
+            const userId: string = req.params.userId;
 
             const orders = await this.orderDAO.getOrdersByUser(userId);
             return res.json({ success: true, orders: orders.map(buildOrderOutput) });

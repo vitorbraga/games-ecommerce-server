@@ -13,11 +13,11 @@ export function getAuthRoutes(): Router {
 
     authRouter.post('/change-password', [checkJwt, checkRole(['ADMIN', 'USER'])], authController.changePassword);
 
-    authRouter.post('/password-recovery', [], authController.passwordRecoveryProcess);
+    authRouter.post('/password-recovery', authController.passwordRecoveryProcess);
 
-    authRouter.post('/reset-password', [], authController.resetPassword);
+    authRouter.post('/reset-password', authController.resetPassword);
 
-    authRouter.get('/check-password-token/:token/:userId', [], authController.checkPasswordToken);
+    authRouter.get('/check-password-token/:token/:userId', authController.checkPasswordToken);
 
     return authRouter;
 }

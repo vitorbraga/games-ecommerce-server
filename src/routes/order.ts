@@ -9,7 +9,7 @@ export function getOrdersRouter(): Router {
 
     ordersRouter.get('/:id', orderController.getOrder);
 
-    ordersRouter.get('/order-number/:orderNumber', orderController.getByOrderNumber);
+    ordersRouter.get('/order-number/:orderNumber', [checkJwt, checkRole(['ADMIN', 'USER'])], orderController.getByOrderNumber);
 
     ordersRouter.post('/', [checkJwt, checkRole(['USER'])], orderController.createOrder);
 

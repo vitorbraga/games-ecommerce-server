@@ -13,6 +13,7 @@ export const checkRole = (roles: Array<string>) => {
         try {
             user = await userRepository.findOneOrFail(userPayload.id);
         } catch (id) {
+            res.setHeader('WWW-Authenticate', 'Bearer realm="DefaultRealm"');
             res.status(401).send({ success: false, error: 'Could not find user from token.' });
             return;
         }
@@ -21,7 +22,8 @@ export const checkRole = (roles: Array<string>) => {
         if (roles.indexOf(user.role) > -1) {
             next();
         } else {
-            res.status(401).send({ success: false, error: 'User does not have proper permission.' });
+            res.setHeader('WWW-Authenticate', 'Bearer realm="DefaultRealm"');
+            return res.status(401).send({ success: false, error: 'User does not have proper permission.' });
         }
     };
 };
