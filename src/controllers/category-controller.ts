@@ -22,10 +22,10 @@ export class CategoryController {
     };
 
     public getSubCategoriesByParentId = async (req: Request, res: Response) => {
-        const parentId = req.params.id || null;
+        const parentId = req.params.id;
 
         let parentCategory: Category | undefined;
-        if (parentId) {
+        if (parentId !== 'none') {
             parentCategory = await this.categoryDAO.findById(parentId);
         }
 

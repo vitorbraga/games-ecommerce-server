@@ -1,7 +1,6 @@
 import { getManager, getRepository, Repository } from 'typeorm';
 import { Order } from '../entity/Order';
 import { NotFoundError } from '../errors/not-found-error';
-import logger from '../utils/logger';
 
 export class OrderDAO {
     private orderRepository: Repository<Order>;

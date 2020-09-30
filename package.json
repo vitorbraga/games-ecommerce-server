@@ -42,14 +42,15 @@
         "jsonwebtoken": "^8.5.1",
         "multer": "^1.4.2",
         "nodemailer": "^6.3.1",
-        "pm2": "^4.4.0",
+        "pg": "^8.3.3",
+        "pm2": "^4.4.1",
         "pug": "^2.0.4",
         "reflect-metadata": "^0.1.10",
         "sharp": "^0.26.0",
         "sqlite3": "^5.0.0",
         "ts-node-dev": "^1.0.0-pre.43",
         "tslint": "^5.12.1",
-        "typeorm": "0.2.20",
+        "typeorm": "0.2.26",
         "uuid": "^3.3.3"
     },
     "scripts": {
@@ -58,7 +59,7 @@
         "build": "rimraf lib/ && npm run lint && tsc",
         "start:dev": "ts-node-dev --respawn --transpileOnly ./src/index.ts",
         "start:prod": "tsc && node ./build/index.js",
-        "start:prod:pm2": "tsc && npx pm2 start pm2.yaml",
+        "start:prod:pm2": "pm2 start pm2.yaml",
         "migration:run": "ts-node ./node_modules/typeorm/cli.js migration:run"
     }
 }

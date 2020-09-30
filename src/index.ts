@@ -5,10 +5,8 @@ import * as bodyParser from 'body-parser';
 import * as helmet from 'helmet';
 import * as cors from 'cors';
 import { getRoutes } from './routes';
-import * as dotenv from 'dotenv';
-import { getConnectionConfig } from './config/ormconfig';
-
-dotenv.config();
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const connectionConfig = require('./config/ormconfig');
 
 process.on('uncaughtException', (e) => {
     console.log('uncaughtException', e);
@@ -25,7 +23,6 @@ process.on('SIGINT', () => {
     process.exit(1);
 });
 
-const connectionConfig = getConnectionConfig();
 createConnection(connectionConfig)
     .then((connection) => {
         const app = express();

@@ -117,9 +117,11 @@ export class AuthController {
             passwordReset.user = user;
 
             user.passwordResets = user.passwordResets ? [...user.passwordResets, passwordReset] : [passwordReset];
-            await this.userDAO.save(user);
+            const updatedUser = await this.userDAO.save(user);
 
-            return res.status(200).send({ success: true });
+            res.status(200).send({ success: true });
+
+            this.sendPasswordRecoveryEmail(updatedUser, token);
         } catch (error) {
             if (error instanceof NotFoundError) {
                 return res.status(404).send({ success: false, error: 'PASSWORD_RESET_USER_NOT_FOUND' });
@@ -171,9 +173,10 @@ export class AuthController {
             await user.hashPassword();
             await userRepository.save(user);
 
-            res.status(200).send({ success: true });
+            return res.status(200).send({ success: true });
 
-            this.sendPasswordRecoveryEmail(user, token);
+            // TODO Send email password reset success
+            // this.sendPasswordRecoveryEmail(user, token);
         } catch (error) {
             if (error instanceof NotFoundError) {
                 return res.status(404).send({ success: false, error: 'PASSWORD_RESET_USER_NOT_FOUND' });
@@ -214,6 +217,7 @@ export class AuthController {
             if (error instanceof NotFoundError) {
                 return res.status(404).send({ success: false, error: 'PASSWORD_RESET_TOKEN_USER_NOT_FOUND' });
             } else if (error instanceof DecryptError) {
+                logger.error(error.stack);
                 return res.status(401).send({ success: false, error: 'PASSWORD_RESET_BAD_USER_ID' });
             } else {
                 logger.error(error.stack);
@@ -261,6 +265,6 @@ export class AuthController {
 
     private static createPasswordResetUrl(token: string, userId: string): string {
         const encryptedUserId = encrypt(userId.toString());
-        return `${process.env.APP_SERVER_URL}/change-password?token=${token}&u=${encryptedUserId}`;
+        return `${process.env.APP_SERVER_URL}/reset-password?token=${token}&u=${encryptedUserId}`;
     };
 }

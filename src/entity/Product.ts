@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany, ManyToOne, Index } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany, ManyToOne } from 'typeorm';
 import { Review } from './Review';
 import { Picture } from './Picture';
 import { Category } from './Category';
@@ -10,7 +10,6 @@ export class Product {
     public id: string;
 
     @Column()
-    @Index()
     public title: string;
 
     @Column()
@@ -33,8 +32,13 @@ export class Product {
     public quantityInStock: number;
 
     @Column()
-    @Index()
-    public tags: string; // because of simplicity and sqlite, using a comma-separated list as tags
+    // TODO For simplicity, we are currently using a comma-separated list as tags. We should create a ManyToMany relation between Product and Tags.
+    // This new approach will make tags be reused. It requires proper implementation in admin-portal and many changes while fetching and showing products
+    public tags: string;
+
+    @Column('tsvector', { select: false })
+    // eslint-disable-next-line camelcase
+    public document_with_weights: any;
 
     @Column()
     @CreateDateColumn()

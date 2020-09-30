@@ -31,7 +31,7 @@ export class ProductDAO {
         }
     }
 
-    public async search(searchTerm: string, categories: string[], sortType: string): Promise<Product[]> {
+    public async searchWithLike(searchTerm: string, categories: string[], sortType: string): Promise<Product[]> {
         const ilikeTerm = `%${searchTerm}%`;
 
         let queryBuilder = this.productRepository
@@ -41,6 +41,38 @@ export class ProductDAO {
             .leftJoinAndSelect('product.pictures', 'pictures')
             .where('(product.title LIKE :title OR product.tags LIKE :tags OR product.description LIKE :description)', { title: ilikeTerm, tags: ilikeTerm, description: ilikeTerm })
             .andWhere('product.status = :status', { status: ProductStatus.AVAILABLE });
+
+        if (categories.length > 0) {
+            queryBuilder = queryBuilder.andWhere('category.id IN (:...categories)', { categories });
+        }
+
+        if (sortType === SearchSortType.PRICE_LOW_HIGH) {
+            queryBuilder = queryBuilder.orderBy('product.price', 'ASC');
+        } else if (sortType === SearchSortType.PRICE_HIGH_LOW) {
+            queryBuilder = queryBuilder.orderBy('product.price', 'DESC');
+        }
+
+        const results = await queryBuilder.getMany();
+
+        return results;
+    }
+
+    public async search(searchTerm: string, categories: string[], sortType: string): Promise<Product[]> {
+        let queryBuilder = this.productRepository
+            .createQueryBuilder('product')
+            .leftJoinAndSelect('product.category', 'category')
+            .leftJoinAndSelect('product.reviews', 'reviews')
+            .leftJoinAndSelect('product.pictures', 'pictures')
+            .select();
+
+        if (searchTerm) {
+            queryBuilder = queryBuilder.where('document_with_weights @@ plainto_tsquery(:query)', {
+                query: searchTerm
+            }).andWhere('product.status = :status', { status: ProductStatus.AVAILABLE }).orderBy(
+                'ts_rank(document_with_weights, plainto_tsquery(:query))',
+                'DESC'
+            );
+        }
 
         if (categories.length > 0) {
             queryBuilder = queryBuilder.andWhere('category.id IN (:...categories)', { categories });
