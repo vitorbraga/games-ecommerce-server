@@ -2,7 +2,7 @@ import * as crypto from 'crypto';
 import { DecryptError } from '../errors/decrypt-error';
 
 export const encrypt = (textToEncrypt: string): string => {
-    const cipher = crypto.createCipheriv('aes-128-cbc', process.env.ENCRYPT_SECRET, null);
+    const cipher = crypto.createCipheriv('aes-128-cbc', process.env.ENCRYPT_SECRET, process.env.ENCRYPT_IV);
     let encryptedText = cipher.update(textToEncrypt, 'utf8', 'hex');
     encryptedText += cipher.final('hex');
 
@@ -11,7 +11,7 @@ export const encrypt = (textToEncrypt: string): string => {
 
 export const decrypt = (encryptedText: string): string => {
     try {
-        const decipher = crypto.createDecipheriv('aes-128-cbc', process.env.ENCRYPT_SECRET, null);
+        const decipher = crypto.createDecipheriv('aes-128-cbc', process.env.ENCRYPT_SECRET, process.env.ENCRYPT_IV);
         let decryptedText = decipher.update(encryptedText, 'hex', 'utf8');
         decryptedText += decipher.final('utf8');
 

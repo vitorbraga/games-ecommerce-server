@@ -21,9 +21,10 @@ export class PasswordResetDAO {
     public async findActivePasswordRecoveriesFromUser(userId: string, limitDate: number): Promise<PasswordReset[]> {
         const recoveries = await this.passwordResetRepository
             .createQueryBuilder('passwordReset')
+            .leftJoinAndSelect('passwordReset.user', 'user')
             .select('passwordReset.id')
-            .andWhere('userId = :userId')
-            .andWhere('createdAt > :limitDate')
+            .andWhere('user.id = :userId')
+            .andWhere('passwordReset.createdAt > :limitDate')
             .setParameters({ userId, limitDate: new Date(limitDate) })
             .getMany();
         return recoveries;
