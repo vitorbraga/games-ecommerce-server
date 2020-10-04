@@ -10,17 +10,17 @@ const connectionConfig = require('./config/ormconfig');
 
 process.on('uncaughtException', (e) => {
     console.log('uncaughtException', e);
-    process.exit(1);
+    // process.exit(1);
 });
 
 process.on('unhandledRejection', (e) => {
     console.log('unhandledRejection', e);
-    process.exit(1);
+    // process.exit(1);
 });
 
 process.on('SIGINT', () => {
     console.log('Received SIGINT, closing server.');
-    process.exit(1);
+    // process.exit(1);
 });
 
 const port = process.env.PORT || 4000;

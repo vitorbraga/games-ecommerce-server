@@ -60,7 +60,7 @@
         "build": "rimraf lib/ && npm run lint && tsc",
         "start:dev": "ts-node-dev --respawn --transpileOnly ./src/index.ts",
         "start2": "node ./build/index.js",
-        "start": "pm2-runtime start ecosystem.config.js --env production -p $PORT",
+        "start": "pm2-runtime start ecosystem.config.js --env production",
         "migration:run": "ts-node ./node_modules/typeorm/cli.js migration:run"
     }
 }

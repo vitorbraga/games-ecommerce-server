@@ -6,6 +6,7 @@ import { getProductRouter } from './product';
 import { getPictureRouter } from './picture';
 import { getCountriesRouter } from './country';
 import { getOrdersRouter } from './order';
+import { getTestRouter } from './test';
 
 export function getRoutes() {
     const routes = Router();
@@ -17,6 +18,7 @@ export function getRoutes() {
     routes.use('/pictures', getPictureRouter());
     routes.use('/countries', getCountriesRouter());
     routes.use('/orders', getOrdersRouter());
+    routes.use('/test', getTestRouter());
 
     return routes;
 }
