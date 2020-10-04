@@ -59,7 +59,7 @@
         "lint": "eslint \"src/**/*.ts\"",
         "build": "rimraf lib/ && npm run lint && tsc",
         "start:dev": "ts-node-dev --respawn --transpileOnly ./src/index.ts",
-        "start": "tsc && node ./build/index.js",
+        "start": "node ./build/index.js",
         "start:prod:pm2": "pm2 start pm2.yaml",
         "migration:run": "ts-node ./node_modules/typeorm/cli.js migration:run"
     }
