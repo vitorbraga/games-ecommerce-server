@@ -209,6 +209,7 @@ export class ProductController {
         }
     };
 
+    // FIXME currently it's not possible to delete a product
     public deleteProduct = async (req: Request, res: Response) => {
         try {
             if (!req.params.id) {

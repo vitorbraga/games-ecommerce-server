@@ -15,5 +15,7 @@ export function getCategoriesRouter(): Router {
 
     categoriesRouter.post('/', [checkJwt, checkRole(['ADMIN'])], categoryController.createCategory);
 
+    categoriesRouter.delete('/sub-categories/:parentId', [checkJwt, checkRole(['ADMIN'])], categoryController.deleteSubCategories);
+
     return categoriesRouter;
 }

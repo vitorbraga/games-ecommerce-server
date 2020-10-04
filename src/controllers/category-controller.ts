@@ -58,5 +58,28 @@ export class CategoryController {
         return res.status(200).send({ success: true, category: buildCategoryOutput(newCategory) });
     };
 
-    // TODO remove category => remove cascade, update parent
+    public deleteSubCategories = async (req: Request, res: Response) => {
+        try {
+            if (!req.params.parentId) {
+                return res.status(422).json({ success: false, error: 'MISSING_CATEGORY_ID' });
+            }
+
+            const parentId: string = req.params.parentId;
+
+            const category = await this.categoryDAO.findById(parentId);
+            if (!category) {
+                return res.status(404).send({ success: false, error: 'CATEGORY_NOT_FOUND' });
+            }
+
+            await this.categoryDAO.deleteSubCategoriesCascade(parentId);
+
+            return res.json({ success: true });
+        } catch (error) {
+            logger.error(error.stack);
+            return res.status(500).send({ success: false, error: 'FAILED_DELETING_PRODUCT' });
+        }
+    };
+
+    // TODO remove leaf (category without descendant)
+    // TOTO merge everything in one method where it will delete a category and all subCategories
 }
