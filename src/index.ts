@@ -23,6 +23,8 @@ process.on('SIGINT', () => {
     process.exit(1);
 });
 
+const port = process.env.PORT || 4000;
+
 createConnection(connectionConfig)
     .then((connection) => {
         const app = express();
@@ -35,8 +37,8 @@ createConnection(connectionConfig)
 
         app.use('/', getRoutes());
 
-        app.listen(4000, () => {
-            console.log('Server started on port 4000!');
+        app.listen(port, () => {
+            console.log(`Server started on port ${port}!`);
         });
     })
     .catch((error) => console.log(error));
