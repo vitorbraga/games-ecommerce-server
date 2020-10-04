@@ -1,4 +1,4 @@
 apps:
   - script: ./build/index.js
-    instances: 4
+    instances: max
     exec_mode: cluster
