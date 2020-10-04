@@ -8,6 +8,7 @@
         ],
         "moduleResolution": "node",
         "outDir": "build",
+        "allowJs": true,
         "emitDecoratorMetadata": true,
         "experimentalDecorators": true,
         "strictNullChecks": true,
@@ -17,5 +18,6 @@
     },
     "include": [
         "src/**/*"
-    ]
+    ],
+    "exclude": ["node_modules", "**/*.spec.ts"]
 }
