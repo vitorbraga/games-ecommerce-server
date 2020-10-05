@@ -255,7 +255,7 @@ const allCountries = [
 
 export class InsertCountries1601408054790 implements MigrationInterface {
     public async up(queryRunner: QueryRunner): Promise<void> {
-        console.log('Insert countries UP.');
+        console.log('Starting InsertCountries up.');
         for (const countryName of allCountries) {
             const country = new Country();
             country.name = countryName;
@@ -263,6 +263,7 @@ export class InsertCountries1601408054790 implements MigrationInterface {
             const countryRepository = getRepository(Country);
             await countryRepository.save(country);
         }
+        console.log('Finished InsertCountries up.');
     }
 
     public async down(queryRunner: QueryRunner): Promise<void> {

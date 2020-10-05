@@ -11,7 +11,7 @@ module.exports = {
         migrationsDir: 'src/migration'
     },
     migrationsRun: false
-    // ssl: true, Uncomment this to connect to Heroku's database locally
+    // ssl: true, // Uncomment to connect to Heroku's database locally
     // extra: {
     //     ssl: {
     //         rejectUnauthorized: false
