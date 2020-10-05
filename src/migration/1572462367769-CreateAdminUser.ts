@@ -6,7 +6,7 @@ export class CreateAdminUser1572462367769 implements MigrationInterface {
     public async up(queryRunner: QueryRunner): Promise<any> {
         const user = new User();
         user.email = 'admin@email.com';
-        user.password = 'admin';
+        user.password = '123admin';
         user.firstName = 'Vitor';
         user.lastName = 'Admin';
         await user.hashPassword();
