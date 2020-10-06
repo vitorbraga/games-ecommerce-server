@@ -272,22 +272,6 @@ export class ProductController {
     //     return picturepath.substring(0, picturepath.indexOf('.')) + '-new' + picturepath.substring(picturepath.indexOf('.'), picturepath.length);
     // }
 
-    // private async resizePictures(pictures: Express.Multer.File[]) {
-    //     for (const picture of pictures) {
-    //         const sharped = sharp(picture.path);
-    //         const { height, width } = await sharped.metadata();
-    //         let newWidth = width && width > 2000 ? 2000 : undefined;
-    //         let newHeight = height && height > 2000 ? 2000 : undefined;
-
-    //         if (newWidth && newHeight) {
-    //             newHeight = undefined;
-    //         }
-
-    //         sharp(picture.path).resize({ width: newWidth, height: newHeight })
-    //             .toFile(this.buildPath(picture.path));
-    //     }
-    // }
-
     public uploadPictures = async (req: Request, res: Response) => {
         try {
             if (!req.params.id) {
@@ -299,9 +283,9 @@ export class ProductController {
             const product = await this.productDAO.findByIdOrFail(productId);
 
             const pictures: Picture[] = [];
-            for (const file of req.files as Express.Multer.File[]) {
+            for (const file of req.files as Express.MulterS3.File[]) {
                 const picture = new Picture();
-                picture.filename = file.filename;
+                picture.filename = file.key;
                 picture.product = product;
 
                 pictures.push(picture);
@@ -310,9 +294,6 @@ export class ProductController {
             product.pictures = [...product.pictures, ...pictures];
 
             const updatedProduct = await this.productDAO.save(product);
-
-            // Resizing is working, but we need to find a way to swap the new smaller file with the old big file
-            // this.resizePictures(req.files as Express.Multer.File[]);
 
             return res.json({ success: true, pictures: updatedProduct.pictures.map(buildPictureOutput) });
         } catch (error) {

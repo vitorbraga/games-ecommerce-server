@@ -1,16 +1,19 @@
 import * as multer from 'multer';
 import * as uuidv4 from 'uuid/v4';
+import * as multerS3 from 'multer-s3';
+import s3 from '../utils/aws-s3';
 
-const directory = './public/product-pictures';
 const maxFileSize = 5 * 1024 * 1024; // 5MB
 
-const storage = multer.diskStorage({
-    destination: (req, file, callback) => {
-        callback(null, directory);
+const storage = multerS3({
+    s3,
+    bucket: process.env.S3_BUCKET_NAME || 'games-ecommerce-dev',
+    metadata: (_, file, cb) => {
+        cb(null, { fieldName: file.fieldname });
     },
-    filename: (req, file, callback) => {
+    key: (req, file, cb) => {
         const fileName = file.originalname.toLowerCase().split(' ').join('-');
-        callback(null, `${uuidv4()}-${fileName}`);
+        cb(null, `product-pictures/${uuidv4()}-${fileName}`);
     }
 });
 
