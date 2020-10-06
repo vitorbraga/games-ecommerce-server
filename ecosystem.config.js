@@ -2,7 +2,7 @@ module.exports = {
     apps: [{
         name: "games-ecommerce-server",
         script: "./build/index.js",
-        instances: "max",
+        instances: "2",
         env: {
             NODE_ENV: "development",
         },

@@ -13,17 +13,17 @@ import { getRoutes } from './routes';
 
 process.on('uncaughtException', (e) => {
     logger.error('uncaughtException', e);
-    // process.exit(1);
+    process.exit(1);
 });
 
 process.on('unhandledRejection', (e) => {
     logger.error('unhandledRejection', e);
-    // process.exit(1);
+    process.exit(1);
 });
 
 process.on('SIGINT', () => {
     logger.info('Received SIGINT, closing server.');
-    // process.exit(1);
+    process.exit(1);
 });
 
 const port = process.env.PORT || 4000;
