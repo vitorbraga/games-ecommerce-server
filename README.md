@@ -12,6 +12,22 @@ There are other two repositories that complement *games-ecommerce-server*:
 
 
 
+The project is in an MVP state. It has a basic ecommerce functionality. It still has lot of features and improvements to make and I plan to implement them over time.
+
+
+
+## Live demo
+
+You can find a live demo of this project hosted in Heroku:
+
+https://games-ecommerce-app.herokuapp.com/
+
+You can create an account and simulate orders. Feel free to explore it 😉
+
+OBS: As this is hosted in a Free Plan in Heroku, the machine where this project is hosted can be idle. So, if you see to response, give it a couple of minutes and the machine will be active again.
+
+
+
 ## Stack
 
 - **NodeJs**: Simple and fast to implement robust applications
@@ -38,6 +54,8 @@ The list above contains the main features of the server.
   - [x] Register, retrieve, change password
   - [x] Password recovery process
     - [x] Sends email to the user, with a link to reset the password
+- [x] Address API
+  - [x] Create, retrieve, delete address
 - [x] Product API
   - [x] Create, retrieve, update
   - [x] Product search: FullText search with weights
@@ -62,10 +80,12 @@ The list above contains the main features of the server.
 - [ ] Prevent same order to be generated
 - [ ] Rate limiting to prevent repeated requests and server flooding
 - [ ] Admin Dashboard Overview
+- [ ] Update address
 - [ ] Product Reviews
 - [ ] Payment Simulator
 - [ ] Discounts/Sale
 - [ ] Coupons
+- [ ] Unit tests
 
 
 
@@ -88,11 +108,11 @@ Run `npm i` command to install the dependencies.
 2. Run `npm run start:prod` command to start production environment
 3. The server will start at `http://localhost:4000`
 
-IMPORTANT: to run the project correctly, you'll need to setup the proper environment variables for the desired environment. Please check the table below to know more about the necessary environment variables.
+***IMPORTANT***: to run the project correctly, you'll need to setup the proper environment variables for the desired environment. Please check the table below to know more about the necessary environment variables.
 
 
 
-## Environment variables:
+## Environment variables
 
 This application is complex, then we have lots of configuration to do. As this configuration is either confidential data or is environment-based, we need to make environment variables out of them, so we are more protected and the application can run properly.
 
