@@ -1,7 +1,7 @@
 module.exports = {
     apps: [{
         name: "games-ecommerce-server",
-        script: "./build/index.js",
+        script: "./build/src/index.js",
         instances: "2",
         env: {
             NODE_ENV: "development",
