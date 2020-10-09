@@ -137,6 +137,42 @@ export class UserController {
         }
     };
 
+    public changePassword = async (req: Request, res: Response) => {
+        try {
+            const id = res.locals.jwtPayload.userSession.id;
+
+            const { currentPassword, newPassword } = req.body;
+            if (!(currentPassword && newPassword)) {
+                return res.status(400).send({ success: false, error: 'CHANGE_PASSWORD_MISSING_PASSWORDS' });
+            }
+
+            const user = await this.userDAO.findByIdOrFail(id);
+
+            if (!await user.checkIfUnencryptedPasswordIsValid(currentPassword)) {
+                return res.status(401).send({ success: false, error: 'CHANGE_PASSWORD_INCORRECT_CURRENT_PASSWORD' });
+            }
+
+            user.password = newPassword;
+            const errors = await validate(user);
+            if (errors.length > 0) {
+                // TODO check this
+                return res.status(400).send({ success: false, error: 'CHANGE_PASSWORD_PASSWORD_COMPLEXITY' });
+            }
+
+            await user.hashPassword();
+            const updatedUser = await this.userDAO.save(user);
+
+            return res.status(200).send({ success: true, user: buildUserOutput(updatedUser) });
+        } catch (error) {
+            if (error instanceof NotFoundError) {
+                return res.status(404).send({ success: false, error: 'CHANGE_PASSWORD_USER_NOT_FOUND' });
+            } else {
+                logger.error(error.stack);
+                return res.status(500).send({ success: false, error: 'CHANGE_PASSWORD_FAILED' });
+            }
+        }
+    };
+
     public updateUser = async (req: CustomRequest<UpdateUserBody>, res: Response) => {
         try {
             if (!req.params.userId) {

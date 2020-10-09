@@ -12,7 +12,11 @@ There are other two repositories that complement *games-ecommerce-server*:
 
 
 
-The project is in an MVP state. It has a basic ecommerce functionality. It still has lot of features and improvements to make and I plan to implement them over time.
+## Current State
+
+The project is in an MVP state. It has a basic e-commerce functionality. I still have a lot of features and improvements to make and I plan to implement them over time.
+There are no tests implemented yet. I focused on features, like it is in a real-world company. Stakeholders want features, especially in the early stages when we are building a MVP. As this project is still a MVP, I decided to focus on fast delivering of the core features first.
+Implementing tests is in my backlog, with a high priority.
 
 
 
@@ -76,6 +80,7 @@ The list above contains the main features of the server.
 ## Next features in the backlog
 
 - [ ] Delete product: currently not working due to the relation with OrderItem
+- [ ] Testing
 - [ ] Products Pagination
 - [ ] Prevent same order to be generated
 - [ ] Rate limiting to prevent repeated requests and server flooding
@@ -85,7 +90,6 @@ The list above contains the main features of the server.
 - [ ] Payment Simulator
 - [ ] Discounts/Sale
 - [ ] Coupons
-- [ ] Unit tests
 
 
 

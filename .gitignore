@@ -6,3 +6,5 @@ tmp/
 temp/
 .env
 public/product-pictures/
+coverage/
+.nyc_output
