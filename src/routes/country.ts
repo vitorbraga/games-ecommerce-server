@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { CountryController } from '../controllers/country-controller';
-// import { checkRole } from '../middlewares/checkRole';
-// import { checkJwt } from '../middlewares/checkJwt';
+import { checkRole } from '../middlewares/checkRole';
+import { checkJwt } from '../middlewares/checkJwt';
 
 export function getCountriesRouter(): Router {
     const countryController = new CountryController();
@@ -11,8 +11,7 @@ export function getCountriesRouter(): Router {
 
     countriesRouter.get('/:id', countryController.getCountry);
 
-    countriesRouter.post('/', countryController.createCountry);
-    // categoriesRouter.post('/', [checkJwt, checkRole(['ADMIN'])], countryController.createCountry);
+    countriesRouter.post('/', [checkJwt, checkRole(['ADMIN'])], countryController.createCountry);
 
     return countriesRouter;
 }

@@ -23,6 +23,9 @@ export function getUserRoutes(): Router {
     // Edit one user
     userRouter.patch('/:userId', [checkJwt, checkRole(['ADMIN', 'USER']), checkUserId], userController.updateUser);
 
+    // Change password
+    userRouter.post('/change-password', [checkJwt, checkRole(['ADMIN', 'USER'])], userController.changePassword);
+
     // Delete one user
     userRouter.delete('/:id', [checkJwt, checkRole(['ADMIN'])], userController.deleteUser);
 

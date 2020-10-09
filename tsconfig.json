@@ -17,7 +17,7 @@
         "noUnusedLocals": true
     },
     "include": [
-        "src/**/*"
+        "src/**/*", "test/**/*"
     ],
     "exclude": ["node_modules", "**/*.spec.ts"]
 }
