@@ -19,7 +19,7 @@ export class PictureController {
 
     public getPicture = async (req: Request, res: Response) => {
         try {
-            if (!Validators.checkUuidV4(req.params.id)) {
+            if (!Validators.validateUuidV4(req.params.id)) {
                 return res.status(422).json({ success: false, error: 'MISSING_PICTURE_ID' });
             }
 
@@ -34,7 +34,7 @@ export class PictureController {
 
     public deletePicture = async (req: Request, res: Response) => {
         try {
-            if (!Validators.checkUuidV4(req.params.id)) {
+            if (!Validators.validateUuidV4(req.params.id)) {
                 return res.status(422).json({ success: false, error: 'MISSING_PICTURE_ID' });
             }
 

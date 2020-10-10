@@ -32,7 +32,7 @@ describe('User API', function () {
         sinon.stub(UserIdMiddleware, 'checkUserId').callsFake((req, res, next): any => next());
 
         server = await app.start();
-        Promise.resolve();
+        return Promise.resolve();
     });
 
     this.beforeEach(() => {
@@ -46,7 +46,8 @@ describe('User API', function () {
     this.afterAll(async () => {
         await server.close();
         app.shutdown();
-        Promise.resolve();
+
+        return Promise.resolve();
     });
 
     describe('GET /', () => {
@@ -165,7 +166,7 @@ describe('User API', function () {
 
         it('Should create user successfully', async () => {
             sinon.stub(ClassValidator, 'validate').resolves([]);
-            sinon.stub(Validators, 'checkPasswordComplexity').returns(true);
+            sinon.stub(Validators, 'validatePasswordComplexity').returns(true);
             sinon.stub(UserDAO.prototype, 'findByEmail').resolves(undefined);
             sinon.stub(User.prototype, 'hashPassword').resolves();
             const userDaoSaveStub = sinon.stub(UserDAO.prototype, 'save');
@@ -255,7 +256,7 @@ describe('User API', function () {
 
         it('Should not create user because of insufficient password complexity', async () => {
             sinon.stub(ClassValidator, 'validate').resolves([]);
-            sinon.stub(Validators, 'checkPasswordComplexity').returns(false);
+            sinon.stub(Validators, 'validatePasswordComplexity').returns(false);
             const userDaoSaveStub = sinon.stub(UserDAO.prototype, 'save');
 
             const response = await request(server)
@@ -274,7 +275,7 @@ describe('User API', function () {
 
         it('Should not create user because email is already in use', async () => {
             sinon.stub(ClassValidator, 'validate').resolves([]);
-            sinon.stub(Validators, 'checkPasswordComplexity').returns(true);
+            sinon.stub(Validators, 'validatePasswordComplexity').returns(true);
             sinon.stub(UserDAO.prototype, 'findByEmail').resolves(Mocks.getRegularUser());
             const userDaoSaveStub = sinon.stub(UserDAO.prototype, 'save');
 
@@ -294,7 +295,7 @@ describe('User API', function () {
 
         it('Should not create user because some error occurred during hashing password', async () => {
             sinon.stub(ClassValidator, 'validate').resolves([]);
-            sinon.stub(Validators, 'checkPasswordComplexity').returns(true);
+            sinon.stub(Validators, 'validatePasswordComplexity').returns(true);
             sinon.stub(UserDAO.prototype, 'findByEmail').resolves(undefined);
             sinon.stub(User.prototype, 'hashPassword').throws(new Error('Error while hashing password'));
             const userDaoSaveStub = sinon.stub(UserDAO.prototype, 'save');
@@ -315,7 +316,7 @@ describe('User API', function () {
 
         it('Should not create user because some error occurred during save', async () => {
             sinon.stub(ClassValidator, 'validate').resolves([]);
-            sinon.stub(Validators, 'checkPasswordComplexity').returns(true);
+            sinon.stub(Validators, 'validatePasswordComplexity').returns(true);
             sinon.stub(UserDAO.prototype, 'findByEmail').resolves(undefined);
             sinon.stub(User.prototype, 'hashPassword').resolves();
             const userDaoSaveStub = sinon.stub(UserDAO.prototype, 'save');
@@ -340,7 +341,7 @@ describe('User API', function () {
         const baseUrl = '/users';
 
         it('Should change user password sucessfully', async () => {
-            sinon.stub(Validators, 'checkPasswordComplexity').returns(true);
+            sinon.stub(Validators, 'validatePasswordComplexity').returns(true);
             sinon.stub(UserDAO.prototype, 'findByIdOrFail').resolves(Mocks.getRegularUser());
             sinon.stub(User.prototype, 'checkIfUnencryptedPasswordIsValid').resolves(true);
             const userDaoSaveStub = sinon.stub(UserDAO.prototype, 'save');
@@ -400,7 +401,7 @@ describe('User API', function () {
         });
 
         it('Should not change user password due to insufficient password complexity', async () => {
-            sinon.stub(Validators, 'checkPasswordComplexity').returns(false);
+            sinon.stub(Validators, 'validatePasswordComplexity').returns(false);
             const userDaoSaveStub = sinon.stub(UserDAO.prototype, 'save');
 
             const response = await request(server)
@@ -416,7 +417,7 @@ describe('User API', function () {
         });
 
         it('Should not change user password because user was not found', async () => {
-            sinon.stub(Validators, 'checkPasswordComplexity').returns(true);
+            sinon.stub(Validators, 'validatePasswordComplexity').returns(true);
             sinon.stub(UserDAO.prototype, 'findByIdOrFail').throws(new NotFoundError('User not found.'));
             const userDaoSaveStub = sinon.stub(UserDAO.prototype, 'save');
 
@@ -433,7 +434,7 @@ describe('User API', function () {
         });
 
         it('Should not change user password because provided password does not match with the one stored in DB', async () => {
-            sinon.stub(Validators, 'checkPasswordComplexity').returns(true);
+            sinon.stub(Validators, 'validatePasswordComplexity').returns(true);
             sinon.stub(UserDAO.prototype, 'findByIdOrFail').resolves(Mocks.getRegularUser());
             sinon.stub(User.prototype, 'checkIfUnencryptedPasswordIsValid').resolves(false);
             const userDaoSaveStub = sinon.stub(UserDAO.prototype, 'save');
@@ -451,7 +452,7 @@ describe('User API', function () {
         });
 
         it('Should not change user password because some error occurred during hashing password', async () => {
-            sinon.stub(Validators, 'checkPasswordComplexity').returns(true);
+            sinon.stub(Validators, 'validatePasswordComplexity').returns(true);
             sinon.stub(UserDAO.prototype, 'findByIdOrFail').resolves(Mocks.getRegularUser());
             sinon.stub(User.prototype, 'checkIfUnencryptedPasswordIsValid').resolves(true);
             sinon.stub(User.prototype, 'hashPassword').throws(new Error('Some hashing error.'));
@@ -470,7 +471,7 @@ describe('User API', function () {
         });
 
         it('Should not change user password because some error occurred during save', async () => {
-            sinon.stub(Validators, 'checkPasswordComplexity').returns(true);
+            sinon.stub(Validators, 'validatePasswordComplexity').returns(true);
             sinon.stub(UserDAO.prototype, 'findByIdOrFail').resolves(Mocks.getRegularUser());
             sinon.stub(User.prototype, 'checkIfUnencryptedPasswordIsValid').resolves(true);
             const userDaoSaveStub = sinon.stub(UserDAO.prototype, 'save');
@@ -996,6 +997,101 @@ describe('User API', function () {
                 .expect(500);
 
             expect(response.body).to.deep.equal({ success: false, error: 'FETCHING_USER_ORDERS_FAILED' });
+        });
+    });
+
+    describe('DELETE /:userId', () => {
+        const baseUrl = '/users';
+
+        it('Should delete user successfully', async () => {
+            sinon.stub(UserDAO.prototype, 'findById').resolves(Mocks.getRegularUser());
+            const userDaoDeleteStub = sinon.stub(UserDAO.prototype, 'deleteById');
+            userDaoDeleteStub.resolves();
+
+            const response = await request(server)
+                .delete(`${baseUrl}/${Mocks.regularUserId}`)
+                .expect(200);
+
+            expect(response.body).to.deep.equal({ success: true });
+            expect(userDaoDeleteStub.callCount).equal(1);
+        });
+
+        it('Should not delete user because user id is invalid', async () => {
+            const userDaoDeleteStub = sinon.stub(UserDAO.prototype, 'deleteById');
+
+            const response = await request(server)
+                .delete(`${baseUrl}/not-valid-id`)
+                .expect(422);
+
+            expect(response.body).to.deep.equal({ success: false, error: 'MISSING_USER_ID' });
+            expect(userDaoDeleteStub.callCount).equal(0);
+        });
+
+        it('Should not delete user because user was not found', async () => {
+            sinon.stub(UserDAO.prototype, 'findById').resolves(undefined);
+            const userDaoDeleteStub = sinon.stub(UserDAO.prototype, 'deleteById');
+
+            const response = await request(server)
+                .delete(`${baseUrl}/57dc5703-623f-412e-af2f-a98972051288`)
+                .expect(404);
+
+            expect(response.body).to.deep.equal({ success: false, error: 'USER_NOT_FOUND' });
+            expect(userDaoDeleteStub.callCount).equal(0);
+        });
+
+        it('Should not delete user because some error occurred on delete', async () => {
+            sinon.stub(UserDAO.prototype, 'findById').resolves(Mocks.getRegularUser());
+            const userDaoDeleteStub = sinon.stub(UserDAO.prototype, 'deleteById');
+            userDaoDeleteStub.throws(new Error('Unexpected error'));
+
+            const response = await request(server)
+                .delete(`${baseUrl}/${Mocks.regularUserId}`)
+                .expect(500);
+
+            expect(response.body).to.deep.equal({ success: false, error: 'DELETE_USER_FAILED' });
+            expect(userDaoDeleteStub.callCount).equal(1);
+        });
+    });
+
+    describe('GET /:userId/addresses', () => {
+        const baseUrl = '/users';
+
+        it('Should get user addresses successfully', async () => {
+            sinon.stub(UserDAO.prototype, 'findByIdOrFail').resolves(Mocks.getRegularUserWithAddresses());
+
+            const response = await request(server)
+                .get(`${baseUrl}/${Mocks.regularUserId}/addresses`)
+                .expect(200);
+
+            expect(response.body).to.deep.equal({ success: true, addresses: [Mocks.addressOutput] });
+        });
+
+        it('Should not get user addresses because user id is invalid', async () => {
+            const response = await request(server)
+                .get(`${baseUrl}/not-a-valid-uuid/addresses`)
+                .expect(422);
+
+            expect(response.body).to.deep.equal({ success: false, error: 'MISSING_USER_ID' });
+        });
+
+        it('Should not get user addresses because user was not found', async () => {
+            sinon.stub(UserDAO.prototype, 'findByIdOrFail').throws(new NotFoundError('User not found'));
+
+            const response = await request(server)
+                .get(`${baseUrl}/57dc5703-623f-412e-af2f-a98972051288/addresses`)
+                .expect(404);
+
+            expect(response.body).to.deep.equal({ success: false, error: 'USER_NOT_FOUND' });
+        });
+
+        it('Should not get user addresses because some enexpected error happened', async () => {
+            sinon.stub(UserDAO.prototype, 'findByIdOrFail').throws(new Error('Unexpected error'));
+
+            const response = await request(server)
+                .get(`${baseUrl}/57dc5703-623f-412e-af2f-a98972051288/addresses`)
+                .expect(500);
+
+            expect(response.body).to.deep.equal({ success: false, error: 'FETCHING_USER_ADDRESSES_FAILED' });
         });
     });
 });

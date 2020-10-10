@@ -24,7 +24,7 @@ describe('Auth API', function () {
         sinon.stub(logger, 'info').returns();
 
         server = await app.start();
-        Promise.resolve();
+        return Promise.resolve();
     });
 
     this.beforeEach(() => {
@@ -38,7 +38,7 @@ describe('Auth API', function () {
     this.afterAll(async () => {
         await server.close();
         app.shutdown();
-        Promise.resolve();
+        return Promise.resolve();
     });
 
     describe('POST /login', () => {
@@ -306,7 +306,7 @@ describe('Auth API', function () {
         const route = '/auth/reset-password';
 
         it('Should reset password successfully', async () => {
-            sinon.stub(Validators, 'checkPasswordComplexity').returns(true);
+            sinon.stub(Validators, 'validatePasswordComplexity').returns(true);
             sinon.stub(PasswordResetDAO.prototype, 'findByTokenOrFail').resolves(Mocks.passwordReset);
             const notExpiredDate = Mocks.createdAt + 1500;
             const clock = sinon.useFakeTimers(notExpiredDate);
@@ -367,7 +367,7 @@ describe('Auth API', function () {
         });
 
         it('Should not reset password due to poor password complexity', async () => {
-            sinon.stub(Validators, 'checkPasswordComplexity').returns(false);
+            sinon.stub(Validators, 'validatePasswordComplexity').returns(false);
 
             const response = await request(server)
                 .post(route)
@@ -382,7 +382,7 @@ describe('Auth API', function () {
         });
 
         it('Should not reset password because password reset process was not found', async () => {
-            sinon.stub(Validators, 'checkPasswordComplexity').returns(true);
+            sinon.stub(Validators, 'validatePasswordComplexity').returns(true);
             sinon.stub(PasswordResetDAO.prototype, 'findByTokenOrFail').throws(new NotFoundError('Password reset not found'));
 
             const response = await request(server)
@@ -398,7 +398,7 @@ describe('Auth API', function () {
         });
 
         it('Should not reset password because password reset process has expired', async () => {
-            sinon.stub(Validators, 'checkPasswordComplexity').returns(true);
+            sinon.stub(Validators, 'validatePasswordComplexity').returns(true);
             sinon.stub(PasswordResetDAO.prototype, 'findByTokenOrFail').resolves(Mocks.passwordReset);
             const expiredDate = Mocks.createdAt + 20000000;
             const clock = sinon.useFakeTimers(expiredDate);
@@ -418,7 +418,7 @@ describe('Auth API', function () {
         });
 
         it('Should not reset password because provided userId is not valid', async () => {
-            sinon.stub(Validators, 'checkPasswordComplexity').returns(true);
+            sinon.stub(Validators, 'validatePasswordComplexity').returns(true);
             sinon.stub(PasswordResetDAO.prototype, 'findByTokenOrFail').resolves(Mocks.passwordReset);
             const notExpiredDate = Mocks.createdAt + 1500;
             const clock = sinon.useFakeTimers(notExpiredDate);
@@ -439,7 +439,7 @@ describe('Auth API', function () {
         });
 
         it('Should not reset password because provided userId does not match with the userId from password reset process', async () => {
-            sinon.stub(Validators, 'checkPasswordComplexity').returns(true);
+            sinon.stub(Validators, 'validatePasswordComplexity').returns(true);
             sinon.stub(PasswordResetDAO.prototype, 'findByTokenOrFail').resolves(Mocks.passwordReset);
             const notExpiredDate = Mocks.createdAt + 1500;
             const clock = sinon.useFakeTimers(notExpiredDate);
@@ -460,7 +460,7 @@ describe('Auth API', function () {
         });
 
         it('Should not reset password because user from userId was not found', async () => {
-            sinon.stub(Validators, 'checkPasswordComplexity').returns(true);
+            sinon.stub(Validators, 'validatePasswordComplexity').returns(true);
             sinon.stub(PasswordResetDAO.prototype, 'findByTokenOrFail').resolves(Mocks.passwordReset);
             const notExpiredDate = Mocks.createdAt + 1500;
             const clock = sinon.useFakeTimers(notExpiredDate);
@@ -482,7 +482,7 @@ describe('Auth API', function () {
         });
 
         it('Should not reset password because a password encrypt error happened', async () => {
-            sinon.stub(Validators, 'checkPasswordComplexity').returns(true);
+            sinon.stub(Validators, 'validatePasswordComplexity').returns(true);
             sinon.stub(PasswordResetDAO.prototype, 'findByTokenOrFail').resolves(Mocks.passwordReset);
             const notExpiredDate = Mocks.createdAt + 1500;
             const clock = sinon.useFakeTimers(notExpiredDate);
@@ -505,7 +505,7 @@ describe('Auth API', function () {
         });
 
         it('Should not reset password because saving user to the datase failed', async () => {
-            sinon.stub(Validators, 'checkPasswordComplexity').returns(true);
+            sinon.stub(Validators, 'validatePasswordComplexity').returns(true);
             sinon.stub(PasswordResetDAO.prototype, 'findByTokenOrFail').resolves(Mocks.passwordReset);
             const notExpiredDate = Mocks.createdAt + 1500;
             const clock = sinon.useFakeTimers(notExpiredDate);

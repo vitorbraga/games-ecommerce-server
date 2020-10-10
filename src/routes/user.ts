@@ -27,7 +27,7 @@ export function getUserRoutes(): Router {
     userRouter.patch('/:userId', [checkJwt, checkRole(['ADMIN', 'USER']), checkUserId], userController.updateUser);
 
     // Delete one user
-    userRouter.delete('/:id', [checkJwt, checkRole(['ADMIN'])], userController.deleteUser);
+    userRouter.delete('/:userId', [checkJwt, checkRole(['ADMIN'])], userController.deleteUser);
 
     // Get user's password resets
     userRouter.get('/:userId/passwordResets', [checkJwt, checkRole(['ADMIN', 'USER']), checkUserId], userController.getUserPasswordResets);

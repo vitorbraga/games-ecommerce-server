@@ -57,7 +57,7 @@ export class UserController {
 
     public getUserById = async (req: Request, res: Response) => {
         try {
-            if (!Validators.checkUuidV4(req.params.userId)) {
+            if (!Validators.validateUuidV4(req.params.userId)) {
                 return res.status(422).json({ success: false, error: 'MISSING_USER_ID' });
             }
 
@@ -73,7 +73,7 @@ export class UserController {
 
     public getUserFullDataById = async (req: Request, res: Response) => {
         try {
-            if (!Validators.checkUuidV4(req.params.userId)) {
+            if (!Validators.validateUuidV4(req.params.userId)) {
                 return res.status(422).json({ success: false, error: 'MISSING_USER_ID' });
             }
 
@@ -89,7 +89,7 @@ export class UserController {
 
     public getUserPasswordResets = async (req: Request, res: Response) => {
         try {
-            if (!Validators.checkUuidV4(req.params.userId)) {
+            if (!Validators.validateUuidV4(req.params.userId)) {
                 return res.status(422).json({ success: false, error: 'MISSING_USER_ID' });
             }
 
@@ -124,7 +124,7 @@ export class UserController {
                 return res.status(422).send({ success: false, fields });
             }
 
-            if (!Validators.checkPasswordComplexity(user.password)) {
+            if (!Validators.validatePasswordComplexity(user.password)) {
                 return res.status(422).send({ success: false, error: 'REGISTER_PASSWORD_COMPLEXITY' });
             }
 
@@ -145,7 +145,7 @@ export class UserController {
 
     public changePassword = async (req: Request, res: Response) => {
         try {
-            if (!Validators.checkUuidV4(req.params.userId)) {
+            if (!Validators.validateUuidV4(req.params.userId)) {
                 return res.status(422).json({ success: false, error: 'MISSING_USER_ID' });
             }
 
@@ -156,7 +156,7 @@ export class UserController {
                 return res.status(422).send({ success: false, error: 'CHANGE_PASSWORD_MISSING_DATA' });
             }
 
-            if (!Validators.checkPasswordComplexity(newPassword)) {
+            if (!Validators.validatePasswordComplexity(newPassword)) {
                 return res.status(422).send({ success: false, error: 'CHANGE_PASSWORD_COMPLEXITY' });
             }
 
@@ -183,7 +183,7 @@ export class UserController {
 
     public updateUser = async (req: CustomRequest<UpdateUserBody>, res: Response) => {
         try {
-            if (!Validators.checkUuidV4(req.params.userId)) {
+            if (!Validators.validateUuidV4(req.params.userId)) {
                 return res.status(422).json({ success: false, error: 'MISSING_USER_ID' });
             }
 
@@ -213,33 +213,35 @@ export class UserController {
 
     public deleteUser = async (req: Request, res: Response) => {
         try {
-            const id = req.params.id;
-
-            await this.userDAO.findByIdOrFail(id);
-
-            await this.userDAO.deleteById(id);
-
-            // After all send a 204 (no content, but accepted) response
-            return res.status(204).send();
-        } catch (error) {
-            if (error instanceof NotFoundError) {
-                return res.status(404).send({ success: false, error: 'DELETE_USER_NOT_FOUND' });
-            } else {
-                logger.error(error.stack);
-                return res.status(500).send({ success: false, error: 'DELETE_USER_FAILED' });
+            if (!Validators.validateUuidV4(req.params.userId)) {
+                return res.status(422).json({ success: false, error: 'MISSING_USER_ID' });
             }
+
+            const userId = req.params.userId;
+
+            if (!await this.userDAO.findById(userId)) {
+                return res.status(404).send({ success: false, error: 'USER_NOT_FOUND' });
+            }
+
+            await this.userDAO.deleteById(userId);
+
+            return res.status(200).send({ success: true });
+        } catch (error) {
+            logger.error(error.stack);
+            return res.status(500).send({ success: false, error: 'DELETE_USER_FAILED' });
         }
     };
 
     public getUserAddresses = async (req: Request, res: Response) => {
         try {
-            if (!Validators.checkUuidV4(req.params.userId)) {
+            if (!Validators.validateUuidV4(req.params.userId)) {
                 return res.status(422).json({ success: false, error: 'MISSING_USER_ID' });
             }
 
             const userId: string = req.params.userId;
 
             const user = await this.userDAO.findByIdOrFail(userId, ['addresses']);
+
             return res.json({ success: true, addresses: user.addresses.map(buildAddressOutput) });
         } catch (error) {
             if (error instanceof NotFoundError) {
@@ -265,11 +267,11 @@ export class UserController {
 
     public createAddress = async (req: CustomRequest<CreateAddressBody>, res: Response) => {
         try {
-            if (!Validators.checkUuidV4(req.params.userId)) {
+            if (!Validators.validateUuidV4(req.params.userId)) {
                 return res.status(422).json({ success: false, error: 'MISSING_USER_ID' });
             }
 
-            if (!Validators.checkUuidV4(req.body.countryId)) {
+            if (!Validators.validateUuidV4(req.body.countryId)) {
                 return res.status(422).json({ success: false, error: 'MISSING_COUNTRY_ID' });
             }
 
@@ -314,11 +316,11 @@ export class UserController {
             const userId = req.params.userId;
             const addressId = req.params.addressId;
 
-            if (!Validators.checkUuidV4(userId)) {
+            if (!Validators.validateUuidV4(userId)) {
                 return res.status(422).json({ success: false, error: 'MISSING_USER_ID' });
             }
 
-            if (!Validators.checkUuidV4(addressId)) {
+            if (!Validators.validateUuidV4(addressId)) {
                 return res.status(422).json({ success: false, error: 'MISSING_ADDRESS_ID' });
             }
 
@@ -348,11 +350,11 @@ export class UserController {
             const userId = req.params.userId;
             const addressId = req.params.addressId;
 
-            if (!Validators.checkUuidV4(userId)) {
+            if (!Validators.validateUuidV4(userId)) {
                 return res.status(422).json({ success: false, error: 'MISSING_USER_ID' });
             }
 
-            if (!Validators.checkUuidV4(addressId)) {
+            if (!Validators.validateUuidV4(addressId)) {
                 return res.status(422).json({ success: false, error: 'MISSING_ADDRESS_ID' });
             }
 
@@ -384,7 +386,7 @@ export class UserController {
 
     public getUserOrders = async (req: Request, res: Response) => {
         try {
-            if (!Validators.checkUuidV4(req.params.userId)) {
+            if (!Validators.validateUuidV4(req.params.userId)) {
                 return res.status(422).json({ success: false, error: 'MISSING_USER_ID' });
             }
 

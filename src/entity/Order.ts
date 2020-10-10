@@ -13,7 +13,6 @@ export class Order {
     public orderNumber: string;
 
     @Column()
-    // FIXME OrderStatus, sqlite doesnt support enum
     public status: string;
 
     @Column()

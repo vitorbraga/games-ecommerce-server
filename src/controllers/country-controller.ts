@@ -19,7 +19,7 @@ export class CountryController {
 
     public getCountry = async (req: Request, res: Response) => {
         try {
-            if (!Validators.checkUuidV4(req.params.id)) {
+            if (!Validators.validateUuidV4(req.params.id)) {
                 return res.status(422).json({ success: false, error: 'MISSING_COUNTRY_ID' });
             }
 

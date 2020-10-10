@@ -4,7 +4,7 @@ import { Order } from '../../../src/entity/Order';
 import { PasswordReset } from '../../../src/entity/PasswordReset';
 import { User } from '../../../src/entity/User';
 import { OrderStatus } from '../../../src/entity/model';
-import { AddressOutput, OrderOutput, PasswordResetOutput, UserOutput } from '../../../src/utils/data-filters';
+import { AddressOutput, CountryOutput, OrderOutput, PasswordResetOutput, UserOutput } from '../../../src/utils/data-filters';
 
 export const regularUserId = '693ecd5a-c8d9-4648-9e32-f200db2831d8';
 
@@ -134,6 +134,11 @@ export const country: Country = {
     addresses: []
 };
 
+export const countryOutput: CountryOutput = {
+    id: '11cd04b9-8350-447e-8fbe-cf6e90fa2f40',
+    name: 'Netherlands'
+};
+
 export const addressId = '87ec3ad0-092f-422f-814c-507ba8bc7af8';
 
 export const address: Address = {
@@ -158,7 +163,7 @@ export const addressOutput: AddressOutput = {
     line2: 'Address line 2',
     city: 'Amsterdam',
     zipCode: '1234 NH',
-    country,
+    country: countryOutput,
     info: 'information',
     createdAt: 1602226598184,
     updatedAt: 1602226598184
@@ -178,6 +183,24 @@ export function getRegularUserWithMainAddress(): User {
     regularUser.passwordResets = [];
     regularUser.createdAt = new Date(1602226598184);
     regularUser.updatedAt = new Date(1602226598184);
+
+    return regularUser;
+};
+
+export function getRegularUserWithAddresses(): User {
+    const regularUser = new User();
+    regularUser.id = regularUserId;
+    regularUser.firstName = 'Vitor';
+    regularUser.lastName = 'Braga';
+    regularUser.email = 'vitor@email.com';
+    regularUser.password = 'sad8gfasdydsa8gyuvbhasdua';
+    regularUser.mainAddress = address;
+    regularUser.orders = [];
+    regularUser.role = 'USER';
+    regularUser.passwordResets = [];
+    regularUser.createdAt = new Date(1602226598184);
+    regularUser.updatedAt = new Date(1602226598184);
+    regularUser.addresses = [address];
 
     return regularUser;
 };

@@ -26,6 +26,8 @@ describe('Country API', function () {
             });
 
         server = await app.start();
+
+        return Promise.resolve();
     });
 
     this.beforeEach(async () => {
@@ -39,6 +41,8 @@ describe('Country API', function () {
     this.afterAll(async () => {
         await server.close();
         app.shutdown();
+
+        return Promise.resolve();
     });
 
     describe('GET /', () => {

@@ -2,7 +2,7 @@ import * as Dinero from 'dinero.js';
 import { Order } from '../entity/Order';
 import { OrderItem } from '../entity/OrderItem';
 
-function calculateOrderItemsTotal(orderItems: OrderItem[]): number {
+export function calculateOrderItemsTotal(orderItems: OrderItem[]): number {
     return orderItems.reduce((prev, cur) => {
         return Dinero({ amount: cur.product.price }).multiply(cur.quantity).add(Dinero({ amount: prev })).getAmount();
     }, 0);

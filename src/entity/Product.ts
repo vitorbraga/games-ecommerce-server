@@ -16,7 +16,6 @@ export class Product {
     public description: string;
 
     @Column()
-    // FIXME ProductStatus, sqlite doesnt support enum
     public status: string;
 
     @Column()

@@ -219,11 +219,11 @@ export function buildOrderOutput(order: Order): OrderOutput {
         status: order.status,
         shippingCosts: order.shippingCosts,
         total: order.total,
-        coupon: order.coupon,
+        coupon: order.coupon || null,
         orderNumber: order.orderNumber,
         deliveryAddress: buildAddressOutput(order.deliveryAddress),
         orderItems: order.orderItems.map(buildOrderItemOutput),
-        user: buildUserOutput(order.user),
+        user: buildUserOutput(order.user!),
         createdAt: order.createdAt.getTime(),
         updatedAt: order.updatedAt.getTime()
     };

@@ -4,7 +4,7 @@ import { User } from '../entity/User';
 import { PasswordReset } from '../entity/PasswordReset';
 import { sendEmail, EmailOptions } from '../utils/email-sender';
 import { encrypt, decrypt } from '../utils/encrypter';
-import { checkPasswordComplexity } from '../utils/validators';
+import { validatePasswordComplexity } from '../utils/validators';
 import { UserRole } from '../entity/model';
 import { UserDAO } from '../dao/user-dao';
 import { NotFoundError } from '../errors/not-found-error';
@@ -141,7 +141,7 @@ export class AuthController {
                 return res.status(422).send({ success: false, error: 'PASSWORD_RESET_MISSING_DATA' });
             }
 
-            if (!checkPasswordComplexity(newPassword)) {
+            if (!validatePasswordComplexity(newPassword)) {
                 return res.status(422).send({ success: false, error: 'PASSWORD_RESET_COMPLEXITY' });
             }
 
