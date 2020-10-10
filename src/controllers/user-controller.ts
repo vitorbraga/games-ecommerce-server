@@ -5,13 +5,14 @@ import { UserRole } from '../entity/model';
 import { UserDAO } from '../dao/user-dao';
 import { NotFoundError } from '../errors/not-found-error';
 import { CustomRequest } from '../utils/api-utils';
-import { buildAddressOutput, buildOrderOutput, buildUserOutput } from '../utils/data-filters';
+import { buildAddressOutput, buildOrderOutput, buildPasswordResetOutput, buildUserOutput } from '../utils/data-filters';
 import { Address } from '../entity/Address';
 import { validationErrorsToErrorFields } from '../utils/validators';
 import { AddressDAO } from '../dao/address-dao';
 import { CountryDAO } from '../dao/country-dao';
 import logger from '../utils/logger';
 import { OrderDAO } from '../dao/order-dao';
+import * as Validators from '../utils/validators';
 
 interface UpdateUserBody {
     firstName: string;
@@ -50,13 +51,13 @@ export class UserController {
     }
 
     public listAll = async (req: Request, res: Response) => {
-        const users = await this.userDAO.list();
+        const users = await this.userDAO.findAll();
         return res.send({ success: true, users: users.map(buildUserOutput) });
     };
 
     public getUserById = async (req: Request, res: Response) => {
         try {
-            if (!req.params.userId) {
+            if (!Validators.checkUuidV4(req.params.userId)) {
                 return res.status(422).json({ success: false, error: 'MISSING_USER_ID' });
             }
 
@@ -72,7 +73,7 @@ export class UserController {
 
     public getUserFullDataById = async (req: Request, res: Response) => {
         try {
-            if (!req.params.userId) {
+            if (!Validators.checkUuidV4(req.params.userId)) {
                 return res.status(422).json({ success: false, error: 'MISSING_USER_ID' });
             }
 
@@ -88,14 +89,15 @@ export class UserController {
 
     public getUserPasswordResets = async (req: Request, res: Response) => {
         try {
-            if (!req.params.userId) {
+            if (!Validators.checkUuidV4(req.params.userId)) {
                 return res.status(422).json({ success: false, error: 'MISSING_USER_ID' });
             }
 
             const userId: string = req.params.userId;
 
             const passwordResets = await this.userDAO.getPasswordResetsByUserIdOrFail(userId);
-            return res.json({ success: true, passwordResets });
+
+            return res.json({ success: true, passwordResets: passwordResets.map(buildPasswordResetOutput) });
         } catch (error) {
             return res.status(404).send({ success: false, error: 'USER_NOT_FOUND' });
         }
@@ -119,7 +121,11 @@ export class UserController {
             const errors: ValidationError[] = await validate(user);
             if (errors.length > 0) {
                 const fields = validationErrorsToErrorFields(errors);
-                return res.status(400).send({ success: false, fields });
+                return res.status(422).send({ success: false, fields });
+            }
+
+            if (!Validators.checkPasswordComplexity(user.password)) {
+                return res.status(422).send({ success: false, error: 'REGISTER_PASSWORD_COMPLEXITY' });
             }
 
             if (await this.userDAO.findByEmail(user.email)) {
@@ -139,26 +145,28 @@ export class UserController {
 
     public changePassword = async (req: Request, res: Response) => {
         try {
-            const id = res.locals.jwtPayload.userSession.id;
+            if (!Validators.checkUuidV4(req.params.userId)) {
+                return res.status(422).json({ success: false, error: 'MISSING_USER_ID' });
+            }
+
+            const userId = req.params.userId;
 
             const { currentPassword, newPassword } = req.body;
             if (!(currentPassword && newPassword)) {
-                return res.status(400).send({ success: false, error: 'CHANGE_PASSWORD_MISSING_PASSWORDS' });
+                return res.status(422).send({ success: false, error: 'CHANGE_PASSWORD_MISSING_DATA' });
             }
 
-            const user = await this.userDAO.findByIdOrFail(id);
+            if (!Validators.checkPasswordComplexity(newPassword)) {
+                return res.status(422).send({ success: false, error: 'CHANGE_PASSWORD_COMPLEXITY' });
+            }
+
+            const user = await this.userDAO.findByIdOrFail(userId);
 
             if (!await user.checkIfUnencryptedPasswordIsValid(currentPassword)) {
                 return res.status(401).send({ success: false, error: 'CHANGE_PASSWORD_INCORRECT_CURRENT_PASSWORD' });
             }
 
             user.password = newPassword;
-            const errors = await validate(user);
-            if (errors.length > 0) {
-                // TODO check this
-                return res.status(400).send({ success: false, error: 'CHANGE_PASSWORD_PASSWORD_COMPLEXITY' });
-            }
-
             await user.hashPassword();
             const updatedUser = await this.userDAO.save(user);
 
@@ -175,24 +183,21 @@ export class UserController {
 
     public updateUser = async (req: CustomRequest<UpdateUserBody>, res: Response) => {
         try {
-            if (!req.params.userId) {
+            if (!Validators.checkUuidV4(req.params.userId)) {
                 return res.status(422).json({ success: false, error: 'MISSING_USER_ID' });
             }
 
             const userId = req.params.userId;
             const { firstName, lastName } = req.body;
 
+            if (!(firstName && lastName)) {
+                return res.status(422).json({ success: false, error: 'UPDATE_USER_MISSING_DATA' });
+            }
+
             const user = await this.userDAO.findByIdOrFail(userId);
 
             user.firstName = firstName;
             user.lastName = lastName;
-
-            const errors = await validate(user);
-            if (errors.length > 0) {
-                const fields = validationErrorsToErrorFields(errors);
-                return res.status(400).send({ success: false, fields });
-            }
-
             const updatedUser = await this.userDAO.save(user);
 
             return res.status(200).send({ success: true, user: buildUserOutput(updatedUser) });
@@ -226,21 +231,9 @@ export class UserController {
         }
     };
 
-    private buildAddressFromBody(createAddressBody: CreateAddressBody): Address {
-        const address = new Address();
-        address.fullName = createAddressBody.fullName;
-        address.line1 = createAddressBody.line1;
-        address.line2 = createAddressBody.line2;
-        address.city = createAddressBody.city;
-        address.zipCode = createAddressBody.zipCode;
-        address.info = createAddressBody.info;
-
-        return address;
-    }
-
     public getUserAddresses = async (req: Request, res: Response) => {
         try {
-            if (!req.params.userId) {
+            if (!Validators.checkUuidV4(req.params.userId)) {
                 return res.status(422).json({ success: false, error: 'MISSING_USER_ID' });
             }
 
@@ -258,19 +251,34 @@ export class UserController {
         }
     };
 
+    private buildAddressFromBody(createAddressBody: CreateAddressBody): Address {
+        const address = new Address();
+        address.fullName = createAddressBody.fullName;
+        address.line1 = createAddressBody.line1;
+        address.line2 = createAddressBody.line2;
+        address.city = createAddressBody.city;
+        address.zipCode = createAddressBody.zipCode;
+        address.info = createAddressBody.info;
+
+        return address;
+    }
+
     public createAddress = async (req: CustomRequest<CreateAddressBody>, res: Response) => {
         try {
-            if (!req.params.userId) {
+            if (!Validators.checkUuidV4(req.params.userId)) {
                 return res.status(422).json({ success: false, error: 'MISSING_USER_ID' });
             }
 
-            if (!req.body.countryId) {
+            if (!Validators.checkUuidV4(req.body.countryId)) {
                 return res.status(422).json({ success: false, error: 'MISSING_COUNTRY_ID' });
             }
 
             const userId: string = req.params.userId;
 
-            const user = await this.userDAO.findByIdOrFail(userId, ['addresses']);
+            const user = await this.userDAO.findById(userId, ['addresses']);
+            if (!user) {
+                return res.status(404).send({ success: false, error: 'USER_NOT_FOUND' });
+            }
 
             const address = this.buildAddressFromBody(req.body);
 
@@ -283,7 +291,7 @@ export class UserController {
             const errors = await validate(address);
             if (errors.length > 0) {
                 const fields = validationErrorsToErrorFields(errors);
-                return res.status(400).send({ success: false, fields });
+                return res.status(422).send({ success: false, fields });
             }
 
             if (req.body.mainAddress) {
@@ -296,12 +304,8 @@ export class UserController {
 
             return res.json({ success: true, user: buildUserOutput(updatedUser) });
         } catch (error) {
-            if (error instanceof NotFoundError) {
-                return res.status(404).send({ success: false, error: 'USER_NOT_FOUND' });
-            } else {
-                logger.error(error.stack);
-                return res.status(500).send({ success: false, error: 'FAILED_CREATING_ADDRESS' });
-            }
+            logger.error(error.stack);
+            return res.status(500).send({ success: false, error: 'FAILED_CREATING_ADDRESS' });
         }
     };
 
@@ -310,22 +314,22 @@ export class UserController {
             const userId = req.params.userId;
             const addressId = req.params.addressId;
 
-            if (!userId) {
+            if (!Validators.checkUuidV4(userId)) {
                 return res.status(422).json({ success: false, error: 'MISSING_USER_ID' });
             }
 
-            if (!addressId) {
+            if (!Validators.checkUuidV4(addressId)) {
                 return res.status(422).json({ success: false, error: 'MISSING_ADDRESS_ID' });
             }
 
             const user = await this.userDAO.findById(userId);
             if (!user) {
-                return res.status(422).json({ success: false, error: 'USER_NOT_FOUND' });
+                return res.status(404).json({ success: false, error: 'USER_NOT_FOUND' });
             }
 
             const address = await this.addressDAO.findById(addressId);
             if (!address) {
-                return res.status(422).json({ success: false, error: 'ADDRESS_NOT_FOUND' });
+                return res.status(404).json({ success: false, error: 'ADDRESS_NOT_FOUND' });
             }
 
             user.mainAddress = address;
@@ -344,28 +348,29 @@ export class UserController {
             const userId = req.params.userId;
             const addressId = req.params.addressId;
 
-            if (!userId) {
+            if (!Validators.checkUuidV4(userId)) {
                 return res.status(422).json({ success: false, error: 'MISSING_USER_ID' });
             }
 
-            if (!addressId) {
+            if (!Validators.checkUuidV4(addressId)) {
                 return res.status(422).json({ success: false, error: 'MISSING_ADDRESS_ID' });
             }
 
             const user = await this.userDAO.findById(userId);
             if (!user) {
-                return res.status(422).json({ success: false, error: 'USER_NOT_FOUND' });
+                return res.status(404).json({ success: false, error: 'USER_NOT_FOUND' });
             }
 
             const address = await this.addressDAO.findById(addressId);
             if (!address) {
-                return res.status(422).json({ success: false, error: 'ADDRESS_NOT_FOUND' });
+                return res.status(404).json({ success: false, error: 'ADDRESS_NOT_FOUND' });
             }
 
             if (user.mainAddress && user.mainAddress.id === addressId) {
                 user.mainAddress = null;
             }
 
+            // TODO make transaction out of this
             const updatedUser = await this.userDAO.save(user);
 
             await this.addressDAO.delete(addressId);
@@ -379,21 +384,21 @@ export class UserController {
 
     public getUserOrders = async (req: Request, res: Response) => {
         try {
-            if (!req.params.userId) {
+            if (!Validators.checkUuidV4(req.params.userId)) {
                 return res.status(422).json({ success: false, error: 'MISSING_USER_ID' });
             }
 
             const userId: string = req.params.userId;
+            if (!await this.userDAO.findById(userId)) {
+                return res.status(404).json({ success: false, error: 'USER_NOT_FOUND' });
+            }
 
             const orders = await this.orderDAO.getOrdersByUser(userId);
+
             return res.json({ success: true, orders: orders.map(buildOrderOutput) });
         } catch (error) {
-            if (error instanceof NotFoundError) {
-                return res.status(404).send({ success: false, error: 'USER_NOT_FOUND' });
-            } else {
-                logger.error(error.stack);
-                return res.status(500).send({ success: false, error: 'FETCHING_USER_ORDERS_FAILED' });
-            }
+            logger.error(error.stack);
+            return res.status(500).send({ success: false, error: 'FETCHING_USER_ORDERS_FAILED' });
         }
     };
 }

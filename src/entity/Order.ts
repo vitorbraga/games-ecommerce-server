@@ -23,7 +23,7 @@ export class Order {
     public total: number;
 
     @Column({ nullable: true })
-    public coupon: string;
+    public coupon?: string;
 
     @Column()
     @CreateDateColumn()
@@ -37,7 +37,7 @@ export class Order {
     public orderItems!: OrderItem[];
 
     @ManyToOne((type) => User, (user) => user.orders, { eager: true })
-    public user!: User;
+    public user!: User | null;
 
     @ManyToOne((type) => Address, (address) => address.orders, { eager: true })
     public deliveryAddress!: Address;

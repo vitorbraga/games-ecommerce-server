@@ -4,6 +4,7 @@ import * as argon2 from 'argon2';
 import { PasswordReset } from './PasswordReset';
 import { Address } from './Address';
 import { Order } from './Order';
+import logger from '../utils/logger';
 
 @Entity()
 @Unique(['email'])
@@ -53,16 +54,20 @@ export class User {
     public orders!: Order[];
 
     async hashPassword(): Promise<void> {
-        const hash = await argon2.hash(this.password);
-        this.password = hash;
+        try {
+            const hash = await argon2.hash(this.password);
+            this.password = hash;
+        } catch (error) {
+            throw new Error(error);
+        }
     }
 
     async checkIfUnencryptedPasswordIsValid(unencryptedPassword: string): Promise<boolean> {
         try {
             const isValid = await argon2.verify(this.password, unencryptedPassword);
             return isValid;
-        } catch (err) {
-            console.log('Failed checking password.', err);
+        } catch (error) {
+            logger.error('Failed checking password.', error);
             return false;
         }
     }

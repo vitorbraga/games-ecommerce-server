@@ -11,10 +11,8 @@ export class UserDAO {
         this.userRepository = getRepository(User);
     }
 
-    public async list(): Promise<User[]> {
-        const users = await this.userRepository.find({
-            select: ['id', 'email', 'role'] // We dont want to send the passwords on response
-        });
+    public async findAll(): Promise<User[]> {
+        const users = await this.userRepository.find();
 
         return users;
     }

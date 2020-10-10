@@ -19,5 +19,5 @@ export class PasswordReset {
     public updatedAt: Date;
 
     @ManyToOne((type) => User, (user) => user.passwordResets)
-    public user: User;
+    public user: User | null;
 }

@@ -85,7 +85,7 @@
         "start:prod": "node ./build/index.js",
         "start": "pm2-runtime start ecosystem.config.js --env production",
         "migration:run": "ts-node ./node_modules/typeorm/cli.js migration:run",
-        "test": "cross-env mocha",
-        "test:coverage": "cross-env nyc mocha"
+        "test": "cross-env mocha --config=test/.mocharc.json --exit",
+        "test:coverage": "cross-env nyc mocha --config=test/.mocharc.json --exit"
     }
 }

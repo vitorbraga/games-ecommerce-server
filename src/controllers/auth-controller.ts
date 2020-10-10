@@ -153,7 +153,7 @@ export class AuthController {
 
             const decryptedUserId = decrypt(encryptedUserId);
 
-            if (decryptedUserId !== passwordReset.user.id) {
+            if (decryptedUserId !== passwordReset.user!.id) {
                 return res.status(401).send({ success: false, error: 'PASSWORD_RESET_TOKEN_AND_ID_NOT_MATCH' });
             }
 
@@ -201,7 +201,7 @@ export class AuthController {
 
             const decryptedUserId = decrypt(encryptedUserId);
 
-            if (decryptedUserId !== passwordReset.user.id) {
+            if (decryptedUserId !== passwordReset.user!.id) {
                 return res.status(401).send({ success: false, error: 'PASSWORD_RESET_TOKEN_AND_ID_NOT_MATCH' });
             }
 

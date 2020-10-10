@@ -10,7 +10,7 @@ export class Picture {
     public filename: string;
 
     @ManyToOne((type) => Product, (product) => product.pictures)
-    public product: Product;
+    public product: Product | null;
 
     @Column()
     @CreateDateColumn()

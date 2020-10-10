@@ -43,7 +43,7 @@ export class Address {
     public updatedAt: Date;
 
     @ManyToOne((type) => User, (user) => user.addresses)
-    public user: User;
+    public user: User | null;
 
     @OneToMany((type) => Order, (order) => order.deliveryAddress)
     public orders!: Order[];

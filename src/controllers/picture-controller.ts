@@ -3,6 +3,7 @@ import { PictureDAO } from '../dao/picture-dao';
 import { buildPictureOutput } from '../utils/data-filters';
 import logger from '../utils/logger';
 import * as PicturesUtils from '../utils/pictures-utils';
+import * as Validators from '../utils/validators';
 
 export class PictureController {
     private pictureDAO: PictureDAO;
@@ -18,7 +19,7 @@ export class PictureController {
 
     public getPicture = async (req: Request, res: Response) => {
         try {
-            if (!req.params.id) {
+            if (!Validators.checkUuidV4(req.params.id)) {
                 return res.status(422).json({ success: false, error: 'MISSING_PICTURE_ID' });
             }
 
@@ -33,7 +34,7 @@ export class PictureController {
 
     public deletePicture = async (req: Request, res: Response) => {
         try {
-            if (!req.params.id) {
+            if (!Validators.checkUuidV4(req.params.id)) {
                 return res.status(422).json({ success: false, error: 'MISSING_PICTURE_ID' });
             }
 

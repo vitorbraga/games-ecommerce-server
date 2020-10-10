@@ -24,19 +24,21 @@ describe('Auth API', function () {
         sinon.stub(logger, 'info').returns();
 
         server = await app.start();
+        Promise.resolve();
     });
 
-    this.beforeEach(async () => {
+    this.beforeEach(() => {
         sinon.stub(logger, 'error').returns();
     });
 
-    this.afterEach(async () => {
+    this.afterEach(() => {
         sinon.restore();
     });
 
     this.afterAll(async () => {
         await server.close();
         app.shutdown();
+        Promise.resolve();
     });
 
     describe('POST /login', () => {
@@ -94,7 +96,7 @@ describe('Auth API', function () {
             expect(response.body).to.deep.equal({ success: false, error: 'LOGIN_USER_NOT_FOUND' });
         });
 
-        it('Should  not login because some unexpected error ocurred', async () => {
+        it('Should  not login because some unexpected error occurred', async () => {
             sinon.stub(UserDAO.prototype, 'findByEmailOrFail').resolves(Mocks.getRegularUser());
             sinon.stub(User.prototype, 'checkIfUnencryptedPasswordIsValid').resolves(true);
             sinon.stub(AuthUtils, 'createSignedToken').throws(new Error('Unexpected error'));
@@ -181,7 +183,7 @@ describe('Auth API', function () {
             expect(response.body).to.deep.equal({ success: false, error: 'LOGIN_ADMIN_USER_NOT_FOUND' });
         });
 
-        it('Should  not login because some unexpected error ocurred', async () => {
+        it('Should  not login because some unexpected error occurred', async () => {
             sinon.stub(UserDAO.prototype, 'findByEmailOrFail').resolves(Mocks.getAdminUser());
             sinon.stub(User.prototype, 'checkIfUnencryptedPasswordIsValid').resolves(true);
             sinon.stub(AuthUtils, 'createSignedToken').throws(new Error('Unexpected error'));
