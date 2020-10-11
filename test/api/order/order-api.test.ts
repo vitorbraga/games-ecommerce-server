@@ -15,7 +15,7 @@ import { AddressDAO } from '../../../src/dao/address-dao';
 import { ProductDAO } from '../../../src/dao/product-dao';
 import { NotFoundError } from '../../../src/errors/not-found-error';
 
-describe('Country API', function () {
+describe('Order API', function () {
     let server: http.Server;
 
     this.beforeAll(async () => {
@@ -32,8 +32,6 @@ describe('Country API', function () {
             });
 
         server = await app.start();
-
-        return Promise.resolve();
     });
 
     this.beforeEach(async () => {
@@ -47,8 +45,6 @@ describe('Country API', function () {
     this.afterAll(async () => {
         await server.close();
         app.shutdown();
-
-        return Promise.resolve();
     });
 
     describe('GET /:orderId', () => {
@@ -307,7 +303,7 @@ describe('Country API', function () {
                         securityCode: '123'
                     }
                 })
-                .expect(500); // TODO better http status for payment failed
+                .expect(400);
 
             expect(response.body).to.deep.equal({ success: false, error: 'PAYMENT_FAILED' });
             expect(createOrderStub.callCount).equal(0);

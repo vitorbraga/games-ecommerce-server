@@ -3,6 +3,7 @@ import { Review } from './Review';
 import { Picture } from './Picture';
 import { Category } from './Category';
 import { OrderItem } from './OrderItem';
+import { IsNotEmpty } from 'class-validator';
 
 @Entity()
 export class Product {
@@ -10,15 +11,18 @@ export class Product {
     public id: string;
 
     @Column()
+    @IsNotEmpty()
     public title: string;
 
     @Column()
+    @IsNotEmpty()
     public description: string;
 
     @Column()
     public status: string;
 
     @Column()
+    @IsNotEmpty()
     public price: number; // 5000 represents $50.00
 
     @Column({ nullable: true, type: 'float' })

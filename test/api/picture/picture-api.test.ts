@@ -25,8 +25,6 @@ describe('Picture API', function () {
             });
 
         server = await app.start();
-
-        return Promise.resolve();
     });
 
     this.beforeEach(() => {
@@ -40,8 +38,6 @@ describe('Picture API', function () {
     this.afterAll(async () => {
         await server.close();
         app.shutdown();
-
-        return Promise.resolve();
     });
 
     describe('GET /', () => {

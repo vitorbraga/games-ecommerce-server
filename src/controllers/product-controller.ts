@@ -5,11 +5,11 @@ import { ProductDAO } from '../dao/product-dao';
 import { ProductStatus } from '../entity/model';
 import { Picture } from '../entity/Picture';
 import { Product } from '../entity/Product';
-import { NotFoundError } from '../errors/not-found-error';
-import { CustomRequest } from '../utils/api-utils';
+import * as ApiUtils from '../utils/api-utils';
 import { buildProductOutput, buildReviewOutput, buildPictureOutput } from '../utils/data-filters';
 import logger from '../utils/logger';
 import * as PicturesUtils from '../utils/pictures-utils';
+import * as Validators from '../utils/validators';
 
 interface CreateProductBody {
     title: string;
@@ -97,13 +97,14 @@ export class ProductController {
 
     public getProduct = async (req: Request, res: Response) => {
         try {
-            if (!req.params.id) {
+            if (!Validators.validateUuidV4(req.params.id)) {
                 return res.status(422).json({ success: false, error: 'MISSING_PRODUCT_ID' });
             }
 
             const productId: string = req.params.id;
 
             const product = await this.productDAO.findByIdOrFail(productId);
+
             return res.json({ success: true, product: buildProductOutput(product) });
         } catch (error) {
             return res.status(404).send({ success: false, error: 'PRODUCT_NOT_FOUND' });
@@ -119,39 +120,39 @@ export class ProductController {
         product.tags = body.tags;
         product.rating = 0;
 
-        const category = await this.categoryDAO.findByIdOrFail(body.categoryId);
-        product.category = category;
-
         return product;
     }
 
-    public createProduct = async (req: CustomRequest<CreateProductBody>, res: Response) => {
+    public createProduct = async (req: ApiUtils.CustomRequest<CreateProductBody>, res: Response) => {
         try {
             const product = await this.buildProductFromBody(req.body);
+
+            const category = await this.categoryDAO.findById(req.body.categoryId);
+            if (!category) {
+                return res.status(404).send({ success: false, error: 'CATEGORY_NOT_FOUND' });
+            }
+            product.category = category;
+
+            product.status = ProductStatus.NOT_AVAILABLE;
 
             const errors: ValidationError[] = await validate(product);
             if (errors.length > 0) {
                 const fields = errors.map((item) => ({ field: item.property, constraints: item.constraints }));
-                return res.status(400).send({ success: false, fields });
+                return res.status(422).send({ success: false, fields });
             }
-
-            product.status = ProductStatus.NOT_AVAILABLE;
 
             const newProduct = await this.productDAO.save(product);
+
             return res.status(200).send({ success: true, product: buildProductOutput(newProduct) });
         } catch (error) {
-            if (error instanceof NotFoundError) {
-                return res.status(404).send({ success: false, error: 'CATEGORY_NOT_FOUND' });
-            } else {
-                logger.error(error.stack);
-                return res.status(500).send({ success: false, error: 'FAILED_INSERTING_PRODUCT' });
-            }
+            logger.error(error.stack);
+            return res.status(500).send({ success: false, error: 'FAILED_INSERTING_PRODUCT' });
         }
     };
 
-    public updateProduct = async (req: CustomRequest<UpdateProductBody>, res: Response) => {
+    public updateProduct = async (req: ApiUtils.CustomRequest<UpdateProductBody>, res: Response) => {
         try {
-            if (!req.params.id) {
+            if (!Validators.validateUuidV4(req.params.id)) {
                 return res.status(422).json({ success: false, error: 'MISSING_PRODUCT_ID' });
             }
 
@@ -167,24 +168,21 @@ export class ProductController {
             const errors: ValidationError[] = await validate(productFromBody);
             if (errors.length > 0) {
                 const fields = errors.map((item) => ({ field: item.property, constraints: item.constraints }));
-                return res.status(400).send({ success: false, fields });
+                return res.status(422).send({ success: false, fields });
             }
 
             const updatedProduct = await this.productDAO.save({ ...product, ...productFromBody });
+
             return res.json({ success: true, product: buildProductOutput(updatedProduct) });
         } catch (error) {
-            if (error instanceof NotFoundError) {
-                return res.status(404).send({ success: false, error: 'CATEGORY_NOT_FOUND' });
-            } else {
-                logger.error(error.stack);
-                return res.status(500).send({ success: false, error: 'FAILED_UPDATING_PRODUCT' });
-            }
+            logger.error(error.stack);
+            return res.status(500).send({ success: false, error: 'FAILED_UPDATING_PRODUCT' });
         }
     };
 
-    public changeProductStatus = async (req: CustomRequest<ChangeProductStatusBody>, res: Response) => {
+    public changeProductStatus = async (req: ApiUtils.CustomRequest<ChangeProductStatusBody>, res: Response) => {
         try {
-            if (!req.params.id) {
+            if (!Validators.validateUuidV4(req.params.id)) {
                 return res.status(422).json({ success: false, error: 'MISSING_PRODUCT_ID' });
             }
 
@@ -202,6 +200,7 @@ export class ProductController {
             const { newStatus } = req.body;
 
             const updatedProduct = await this.productDAO.save({ ...product, status: newStatus });
+
             return res.json({ success: true, product: buildProductOutput(updatedProduct) });
         } catch (error) {
             logger.error(error.stack);
@@ -212,7 +211,7 @@ export class ProductController {
     // FIXME currently it's not possible to delete a product
     public deleteProduct = async (req: Request, res: Response) => {
         try {
-            if (!req.params.id) {
+            if (!Validators.validateUuidV4(req.params.id)) {
                 return res.status(422).json({ success: false, error: 'MISSING_PRODUCT_ID' });
             }
 
@@ -240,13 +239,14 @@ export class ProductController {
 
     public getProductReviews = async (req: Request, res: Response) => {
         try {
-            if (!req.params.id) {
+            if (!Validators.validateUuidV4(req.params.id)) {
                 return res.status(422).json({ success: false, error: 'MISSING_PRODUCT_ID' });
             }
 
             const productId: string = req.params.id;
 
             const reviews = await this.productDAO.getReviewsByProductIdOrFail(productId);
+
             return res.json({ success: true, reviews: reviews.map(buildReviewOutput) });
         } catch (error) {
             return res.status(404).send({ success: false, error: 'PRODUCT_NOT_FOUND' });
@@ -255,7 +255,7 @@ export class ProductController {
 
     public getProductPictures = async (req: Request, res: Response) => {
         try {
-            if (!req.params.id) {
+            if (!Validators.validateUuidV4(req.params.id)) {
                 return res.status(422).json({ success: false, error: 'MISSING_PRODUCT_ID' });
             }
 
@@ -268,22 +268,23 @@ export class ProductController {
         }
     };
 
-    // private buildPath(picturepath: string) {
-    //     return picturepath.substring(0, picturepath.indexOf('.')) + '-new' + picturepath.substring(picturepath.indexOf('.'), picturepath.length);
-    // }
-
     public uploadPictures = async (req: Request, res: Response) => {
         try {
-            if (!req.params.id) {
+            if (!Validators.validateUuidV4(req.params.id)) {
                 return res.status(422).json({ success: false, error: 'MISSING_PRODUCT_ID' });
             }
 
             const productId: string = req.params.id;
 
-            const product = await this.productDAO.findByIdOrFail(productId);
+            const product = await this.productDAO.findById(productId);
+            if (!product) {
+                return res.status(404).send({ success: false, error: 'PRODUCT_NOT_FOUND' });
+            }
 
             const pictures: Picture[] = [];
-            for (const file of req.files as Express.MulterS3.File[]) {
+            const files = ApiUtils.getFilesFromRequest(req);
+
+            for (const file of files) {
                 const picture = new Picture();
                 picture.filename = file.key;
                 picture.product = product;
@@ -297,12 +298,8 @@ export class ProductController {
 
             return res.json({ success: true, pictures: updatedProduct.pictures.map(buildPictureOutput) });
         } catch (error) {
-            if (error instanceof NotFoundError) {
-                return res.status(404).send({ success: false, error: 'PRODUCT_NOT_FOUND' });
-            } else {
-                logger.error(error.stack);
-                return res.status(500).send({ success: false, error: 'FAILED_UPLOADING_PICTURES' });
-            }
+            logger.error(error.stack);
+            return res.status(500).send({ success: false, error: 'FAILED_UPLOADING_PICTURES' });
         }
     };
 }

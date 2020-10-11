@@ -151,7 +151,7 @@ export class OrderController {
                 return res.status(200).send({ success: true, order: buildOrderOutput(newOrder) });
             } else {
                 // Payment failed. Order will not be created.
-                return res.status(500).send({ success: false, error: 'PAYMENT_FAILED' });
+                return res.status(400).send({ success: false, error: 'PAYMENT_FAILED' });
             }
         } catch (error) {
             logger.error(error.stack);

@@ -7,3 +7,7 @@ export interface CustomRequest<T> extends Request {
 export function getUserIdFromSession(res: Response) {
     return res.locals.jwtPayload.userSession.id;
 };
+
+export function getFilesFromRequest(req: Request): Express.MulterS3.File[] {
+    return req.files as Express.MulterS3.File[];
+};

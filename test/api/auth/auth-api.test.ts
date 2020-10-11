@@ -24,7 +24,6 @@ describe('Auth API', function () {
         sinon.stub(logger, 'info').returns();
 
         server = await app.start();
-        return Promise.resolve();
     });
 
     this.beforeEach(() => {
@@ -38,7 +37,6 @@ describe('Auth API', function () {
     this.afterAll(async () => {
         await server.close();
         app.shutdown();
-        return Promise.resolve();
     });
 
     describe('POST /login', () => {

@@ -2,6 +2,7 @@ import * as request from 'supertest';
 import { expect } from 'chai';
 import * as sinon from 'sinon';
 import * as http from 'http';
+import * as ClassValidator from 'class-validator';
 import * as Mocks from './mocks';
 import logger from '../../../src/utils/logger';
 import * as app from '../../../src/app';
@@ -10,7 +11,6 @@ import * as RoleMiddleware from '../../../src/middlewares/checkRole';
 import * as UserIdMiddleware from '../../../src/middlewares/checkUserId';
 import { UserDAO } from '../../../src/dao/user-dao';
 import { NotFoundError } from '../../../src/errors/not-found-error';
-import * as ClassValidator from 'class-validator';
 import * as Validators from '../../../src/utils/validators';
 import { User } from '../../../src/entity/User';
 import { CountryDAO } from '../../../src/dao/country-dao';
@@ -32,7 +32,6 @@ describe('User API', function () {
         sinon.stub(UserIdMiddleware, 'checkUserId').callsFake((req, res, next): any => next());
 
         server = await app.start();
-        return Promise.resolve();
     });
 
     this.beforeEach(() => {
@@ -46,8 +45,6 @@ describe('User API', function () {
     this.afterAll(async () => {
         await server.close();
         app.shutdown();
-
-        return Promise.resolve();
     });
 
     describe('GET /', () => {
