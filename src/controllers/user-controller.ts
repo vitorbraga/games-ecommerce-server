@@ -358,7 +358,7 @@ export class UserController {
                 return res.status(422).json({ success: false, error: 'MISSING_ADDRESS_ID' });
             }
 
-            const user = await this.userDAO.findById(userId);
+            const user = await this.userDAO.findById(userId, ['mainAddress']);
             if (!user) {
                 return res.status(404).json({ success: false, error: 'USER_NOT_FOUND' });
             }
@@ -372,12 +372,9 @@ export class UserController {
                 user.mainAddress = null;
             }
 
-            // TODO make transaction out of this
-            const updatedUser = await this.userDAO.save(user);
+            const result = await this.addressDAO.deleteUserAddressTransaction(addressId, user);
 
-            await this.addressDAO.delete(addressId);
-
-            return res.status(200).send({ success: true, user: buildUserOutput(updatedUser) });
+            return res.status(200).send({ success: true, user: buildUserOutput(result || user) });
         } catch (error) {
             logger.error(error.stack);
             return res.status(500).send({ success: false, error: 'DELETE_ADDRESS_FAILED' });

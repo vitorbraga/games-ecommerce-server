@@ -1,5 +1,6 @@
-import { getRepository, Repository } from 'typeorm';
+import { getManager, getRepository, Repository } from 'typeorm';
 import { Address } from '../entity/Address';
+import { User } from '../entity/User';
 import { NotFoundError } from '../errors/not-found-error';
 
 export class AddressDAO {
@@ -30,5 +31,15 @@ export class AddressDAO {
 
     public async delete(addressId: string): Promise<void> {
         await this.addressRepository.delete(addressId);
+    }
+
+    public async deleteUserAddressTransaction(addressId: string, user: User): Promise<User | undefined> {
+        let updatedUser: User | undefined;
+        await getManager().transaction(async (transactionalEntityManager) => {
+            updatedUser = await transactionalEntityManager.save(user);
+            await transactionalEntityManager.delete(Address, addressId);
+        });
+
+        return updatedUser;
     }
 }

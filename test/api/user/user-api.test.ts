@@ -832,123 +832,90 @@ describe('User API', function () {
         it('Should delete user address sucessfully', async () => {
             sinon.stub(UserDAO.prototype, 'findById').resolves(Mocks.getRegularUser());
             sinon.stub(AddressDAO.prototype, 'findById').resolves(Mocks.address);
-            const userDaoSaveStub = sinon.stub(UserDAO.prototype, 'save');
-            userDaoSaveStub.resolves(Mocks.getNewRegularUser());
-            const addressDaoDeleteStub = sinon.stub(AddressDAO.prototype, 'delete');
-            addressDaoDeleteStub.resolves();
+            const deleteUserAddressTransactionStub = sinon.stub(AddressDAO.prototype, 'deleteUserAddressTransaction');
+            deleteUserAddressTransactionStub.resolves(Mocks.getNewRegularUser());
 
             const response = await request(server)
                 .delete(`${baseUrl}/${Mocks.regularUserId}/addresses/${Mocks.addressId}`)
                 .expect(200);
 
             expect(response.body).to.deep.equal({ success: true, user: Mocks.newRegularUserOutput });
-            expect(userDaoSaveStub.callCount).equal(1);
-            expect(addressDaoDeleteStub.callCount).equal(1);
+            expect(deleteUserAddressTransactionStub.callCount).equal(1);
         });
 
         it('Should delete user address sucessfully with main address', async () => {
             sinon.stub(UserDAO.prototype, 'findById').resolves(Mocks.getRegularUserWithMainAddress());
             sinon.stub(AddressDAO.prototype, 'findById').resolves(Mocks.address);
-            const userDaoSaveStub = sinon.stub(UserDAO.prototype, 'save');
-            userDaoSaveStub.resolves(Mocks.getNewRegularUser());
-            const addressDaoDeleteStub = sinon.stub(AddressDAO.prototype, 'delete');
-            addressDaoDeleteStub.resolves();
+            const deleteUserAddressTransactionStub = sinon.stub(AddressDAO.prototype, 'deleteUserAddressTransaction');
+            deleteUserAddressTransactionStub.resolves(Mocks.getNewRegularUser());
 
             const response = await request(server)
                 .delete(`${baseUrl}/${Mocks.regularUserId}/addresses/${Mocks.addressId}`)
                 .expect(200);
 
             expect(response.body).to.deep.equal({ success: true, user: Mocks.newRegularUserOutput });
-            expect(userDaoSaveStub.callCount).equal(1);
-            expect(addressDaoDeleteStub.callCount).equal(1);
+            expect(deleteUserAddressTransactionStub.callCount).equal(1);
         });
 
         it('Should not delete user address because of invalid userId', async () => {
-            const userDaoSaveStub = sinon.stub(UserDAO.prototype, 'save');
-            const addressDaoDeleteStub = sinon.stub(AddressDAO.prototype, 'delete');
+            const deleteUserAddressTransactionStub = sinon.stub(AddressDAO.prototype, 'deleteUserAddressTransaction');
 
             const response = await request(server)
                 .delete(`${baseUrl}/not-a-valid-uuid/addresses/${Mocks.addressId}`)
                 .expect(422);
 
             expect(response.body).to.deep.equal({ success: false, error: 'MISSING_USER_ID' });
-            expect(userDaoSaveStub.callCount).equal(0);
-            expect(addressDaoDeleteStub.callCount).equal(0);
+            expect(deleteUserAddressTransactionStub.callCount).equal(0);
         });
 
         it('Should not delete user address because of invalid addressId', async () => {
-            const userDaoSaveStub = sinon.stub(UserDAO.prototype, 'save');
-            const addressDaoDeleteStub = sinon.stub(AddressDAO.prototype, 'delete');
+            const deleteUserAddressTransactionStub = sinon.stub(AddressDAO.prototype, 'deleteUserAddressTransaction');
 
             const response = await request(server)
                 .delete(`${baseUrl}/${Mocks.regularUserId}/addresses/not-a-valid-uuid`)
                 .expect(422);
 
             expect(response.body).to.deep.equal({ success: false, error: 'MISSING_ADDRESS_ID' });
-            expect(userDaoSaveStub.callCount).equal(0);
-            expect(addressDaoDeleteStub.callCount).equal(0);
+            expect(deleteUserAddressTransactionStub.callCount).equal(0);
         });
 
         it('Should not delete user address because user was not found', async () => {
             sinon.stub(UserDAO.prototype, 'findById').resolves(undefined);
-            const userDaoSaveStub = sinon.stub(UserDAO.prototype, 'save');
-            const addressDaoDeleteStub = sinon.stub(AddressDAO.prototype, 'delete');
+            const deleteUserAddressTransactionStub = sinon.stub(AddressDAO.prototype, 'deleteUserAddressTransaction');
 
             const response = await request(server)
                 .delete(`${baseUrl}/${Mocks.regularUserId}/addresses/${Mocks.addressId}`)
                 .expect(404);
 
             expect(response.body).to.deep.equal({ success: false, error: 'USER_NOT_FOUND' });
-            expect(userDaoSaveStub.callCount).equal(0);
-            expect(addressDaoDeleteStub.callCount).equal(0);
+            expect(deleteUserAddressTransactionStub.callCount).equal(0);
         });
 
         it('Should not delete user address because address was not found', async () => {
             sinon.stub(UserDAO.prototype, 'findById').resolves(Mocks.getRegularUser());
             sinon.stub(AddressDAO.prototype, 'findById').resolves(undefined);
-            const userDaoSaveStub = sinon.stub(UserDAO.prototype, 'save');
-            const addressDaoDeleteStub = sinon.stub(AddressDAO.prototype, 'delete');
+            const deleteUserAddressTransactionStub = sinon.stub(AddressDAO.prototype, 'deleteUserAddressTransaction');
 
             const response = await request(server)
                 .delete(`${baseUrl}/${Mocks.regularUserId}/addresses/${Mocks.addressId}`)
                 .expect(404);
 
             expect(response.body).to.deep.equal({ success: false, error: 'ADDRESS_NOT_FOUND' });
-            expect(userDaoSaveStub.callCount).equal(0);
-            expect(addressDaoDeleteStub.callCount).equal(0);
+            expect(deleteUserAddressTransactionStub.callCount).equal(0);
         });
 
-        it('Should not delete user address because some error occurred on save', async () => {
+        it('Should not delete user address because some error occurred on transaction', async () => {
             sinon.stub(UserDAO.prototype, 'findById').resolves(Mocks.getRegularUser());
             sinon.stub(AddressDAO.prototype, 'findById').resolves(Mocks.address);
-            const userDaoSaveStub = sinon.stub(UserDAO.prototype, 'save');
-            userDaoSaveStub.throws(new Error('Error saving user'));
-            const addressDaoDeleteStub = sinon.stub(AddressDAO.prototype, 'delete');
+            const deleteUserAddressTransactionStub = sinon.stub(AddressDAO.prototype, 'deleteUserAddressTransaction');
+            deleteUserAddressTransactionStub.throws(new Error('Uncexpected error on transaction'));
 
             const response = await request(server)
                 .delete(`${baseUrl}/${Mocks.regularUserId}/addresses/${Mocks.addressId}`)
                 .expect(500);
 
             expect(response.body).to.deep.equal({ success: false, error: 'DELETE_ADDRESS_FAILED' });
-            expect(userDaoSaveStub.callCount).equal(1);
-            expect(addressDaoDeleteStub.callCount).equal(0);
-        });
-
-        it('Should not delete user address because some error occurred on delete', async () => {
-            sinon.stub(UserDAO.prototype, 'findById').resolves(Mocks.getRegularUser());
-            sinon.stub(AddressDAO.prototype, 'findById').resolves(Mocks.address);
-            const userDaoSaveStub = sinon.stub(UserDAO.prototype, 'save');
-            userDaoSaveStub.resolves(Mocks.getRegularUser());
-            const addressDaoDeleteStub = sinon.stub(AddressDAO.prototype, 'delete');
-            addressDaoDeleteStub.throws(new Error('Error deleting address'));
-
-            const response = await request(server)
-                .delete(`${baseUrl}/${Mocks.regularUserId}/addresses/${Mocks.addressId}`)
-                .expect(500);
-
-            expect(response.body).to.deep.equal({ success: false, error: 'DELETE_ADDRESS_FAILED' });
-            expect(userDaoSaveStub.callCount).equal(1);
-            expect(addressDaoDeleteStub.callCount).equal(1);
+            expect(deleteUserAddressTransactionStub.callCount).equal(1);
         });
     });
 
