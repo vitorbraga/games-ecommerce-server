@@ -24,6 +24,8 @@ export interface ProductOutput {
     category: CategoryOutput;
     reviews: ReviewOutput[];
     pictures: PictureOutput[];
+    createdAt: number;
+    updatedAt: number;
 }
 
 export interface CategoryOutput {
@@ -115,14 +117,16 @@ export function buildProductOutput(product: Product): ProductOutput {
         title: product.title,
         description: product.description,
         quantityInStock: product.quantityInStock,
-        discount: product.discount,
+        discount: product.discount || null,
         tags: product.tags,
         status: product.status,
         price: product.price,
         rating: product.rating,
         category: buildCategoryOutput(product.category),
         reviews: product.reviews ? product.reviews.map(buildReviewOutput) : [],
-        pictures: product.pictures ? product.pictures.map(buildPictureOutput) : []
+        pictures: product.pictures ? product.pictures.map(buildPictureOutput) : [],
+        createdAt: product.createdAt.getTime(),
+        updatedAt: product.updatedAt.getTime()
     };
 }
 

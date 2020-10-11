@@ -7,10 +7,11 @@ import { OrderStatus } from '../entity/model';
 import { Order } from '../entity/Order';
 import { OrderItem } from '../entity/OrderItem';
 import { NotFoundError } from '../errors/not-found-error';
-import { CustomRequest } from '../utils/api-utils';
+import { CustomRequest, getUserIdFromSession } from '../utils/api-utils';
 import * as CalculationUtils from '../utils/calculation-utils';
 import * as PaymentValidator from '../utils/payment-validator';
 import { buildOrderOutput } from '../utils/data-filters';
+import * as Validators from '../utils/validators';
 import logger from '../utils/logger';
 
 interface CreateOrderBody {
@@ -20,7 +21,7 @@ interface CreateOrderBody {
     }[];
     addressId: string;
     shippingCosts: number;
-    paymentInfo: { // FIXME Im not using it yet, but I will
+    paymentInfo: {
         name: string;
         cardNumber: string;
         expirationDate: string;
@@ -43,31 +44,37 @@ export class OrderController {
 
     public getOrder = async (req: Request, res: Response) => {
         try {
-            if (!req.params.id) {
+            if (!Validators.validateUuidV4(req.params.id)) {
                 return res.status(422).json({ success: false, error: 'MISSING_ORDER_ID' });
             }
 
             const orderId: string = req.params.id;
 
-            const order = await this.orderDAO.findByIdOrFail(orderId);
+            const order = await this.orderDAO.findById(orderId);
+            if (!order) {
+                return res.status(404).send({ success: false, error: 'ORDER_NOT_FOUND' });
+            }
+
             return res.json({ success: true, order: buildOrderOutput(order) });
         } catch (error) {
-            return res.status(404).send({ success: false, error: 'ORDER_NOT_FOUND' });
+            logger.error(error.stack);
+            return res.status(500).send({ success: false, error: 'FAILED_RETRIEVING_ORDER' });
         }
     };
 
     public getByOrderNumber = async (req: Request, res: Response) => {
         try {
-            if (!req.params.orderNumber) {
-                return res.status(422).json({ success: false, error: 'MISSING_ORDER_NUMBER' });
-            }
-
             const orderNumber: string = req.params.orderNumber;
 
-            const order = await this.orderDAO.findByOrderNumberOrFail(orderNumber);
+            const order = await this.orderDAO.findByOrderNumber(orderNumber);
+            if (!order) {
+                return res.status(404).send({ success: false, error: 'ORDER_NOT_FOUND' });
+            }
+
             return res.json({ success: true, order: buildOrderOutput(order) });
         } catch (error) {
-            return res.status(404).send({ success: false, error: 'ORDER_NOT_FOUND' });
+            logger.error(error.stack);
+            return res.status(500).send({ success: false, error: 'FAILED_RETRIEVING_ORDER' });
         }
     };
 
@@ -85,7 +92,7 @@ export class OrderController {
     };
 
     public createOrder = async (req: CustomRequest<CreateOrderBody>, res: Response) => {
-        const id = res.locals.jwtPayload.userSession.id;
+        const id = getUserIdFromSession(res);
 
         const order = new Order();
         order.shippingCosts = req.body.shippingCosts;
@@ -137,8 +144,11 @@ export class OrderController {
                 order.orderNumber = await this.generateOrderNumber();
 
                 const newOrder = await this.orderDAO.createOrderTransaction(order);
+                if (!newOrder) {
+                    throw new Error('Failed creating order');
+                }
 
-                return res.status(200).send({ success: true, order: newOrder });
+                return res.status(200).send({ success: true, order: buildOrderOutput(newOrder) });
             } else {
                 // Payment failed. Order will not be created.
                 return res.status(500).send({ success: false, error: 'PAYMENT_FAILED' });

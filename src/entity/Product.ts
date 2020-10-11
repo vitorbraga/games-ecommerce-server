@@ -22,7 +22,7 @@ export class Product {
     public price: number; // 5000 represents $50.00
 
     @Column({ nullable: true, type: 'float' })
-    public discount: number;
+    public discount?: number;
 
     @Column()
     public rating: number;
