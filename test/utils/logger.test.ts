@@ -3,16 +3,6 @@ import * as sinon from 'sinon';
 import { expect } from 'chai';
 
 describe('logger', function () {
-    // this.beforeAll(async () => {
-    //     // TODO Use a sqlite database for test, configure, etc
-    //     // sinon.stub(console, 'error').returns();
-    //     // sinon.stub(console, 'warn').returns();
-    //     // sinon.stub(console, 'info').returns();
-    //     // sinon.stub(console, 'debug').returns();
-
-    //     return Promise.resolve();
-    // });
-
     it('generateDate', () => {
         const result = logger.generateDate();
         expect(result.length).equal(24);
