@@ -68,9 +68,12 @@
         "extension": [
             ".ts"
         ],
+        "include": "src",
         "exclude": [
             "**/*.d.ts",
-            "**/*.js"
+            "**/*.js",
+            "src/utils/email-templates.ts",
+            "src/migration/*.ts"
         ],
         "reporter": [
             "lcov"

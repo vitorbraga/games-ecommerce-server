@@ -1,4 +1,5 @@
 import * as nodemailer from 'nodemailer';
+import logger from './logger';
 import Email = require('email-templates');
 
 const env = process.env.NODE_ENV || 'development';
@@ -42,9 +43,9 @@ export const sendEmail = (emailOptions: EmailOptions) => {
             locals: emailOptions.localValues
         })
         .then((result) => {
-            console.log('Email sent to ', emailOptions.destinationEmail);
+            logger.info('Email sent to ', emailOptions.destinationEmail);
         })
         .catch((err) => {
-            console.error('Email not sent', err);
+            logger.error('Email not sent', err);
         });
 };

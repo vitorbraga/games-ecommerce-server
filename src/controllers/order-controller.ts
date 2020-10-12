@@ -99,7 +99,7 @@ export class OrderController {
         order.orderItems = [];
 
         try {
-            const user = await this.userDAO.findByIdOrFail(id);
+            const user = await this.userDAO.findByIdOrFail(id!);
             order.user = user;
         } catch (error) {
             return res.status(404).send({ success: false, error: 'USER_NOT_FOUND' });

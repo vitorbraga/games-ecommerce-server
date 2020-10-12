@@ -10,7 +10,7 @@ import * as app from '../../../src/app';
 import { User } from '../../../src/entity/User';
 import * as AuthUtils from '../../../src/utils/auth-utils';
 import * as Validators from '../../../src/utils/validators';
-import * as Encrypter from '../../../src/utils/encrypter';
+import * as EncryptionUtils from '../../../src/utils/encryption-utils';
 import { PasswordResetDAO } from '../../../src/dao/password-reset-dao';
 import { NotFoundError } from '../../../src/errors/not-found-error';
 import { AuthController } from '../../../src/controllers/auth-controller';
@@ -308,7 +308,7 @@ describe('Auth API', function () {
             sinon.stub(PasswordResetDAO.prototype, 'findByTokenOrFail').resolves(Mocks.passwordReset);
             const notExpiredDate = Mocks.createdAt + 1500;
             const clock = sinon.useFakeTimers(notExpiredDate);
-            sinon.stub(Encrypter, 'decrypt').returns('693ecd5a-c8d9-4648-9e32-f200db2831d8');
+            sinon.stub(EncryptionUtils, 'decrypt').returns('693ecd5a-c8d9-4648-9e32-f200db2831d8');
             sinon.stub(UserDAO.prototype, 'findByIdOrFail').resolves(Mocks.getRegularUser());
             // sinon.stub(ClassValidator, 'validate').resolves([]); TODO will use this
             sinon.stub(User.prototype, 'hashPassword').resolves();
@@ -420,7 +420,7 @@ describe('Auth API', function () {
             sinon.stub(PasswordResetDAO.prototype, 'findByTokenOrFail').resolves(Mocks.passwordReset);
             const notExpiredDate = Mocks.createdAt + 1500;
             const clock = sinon.useFakeTimers(notExpiredDate);
-            sinon.stub(Encrypter, 'decrypt').throws(new DecryptError('Decrypt error'));
+            sinon.stub(EncryptionUtils, 'decrypt').throws(new DecryptError('Decrypt error'));
 
             const response = await request(server)
                 .post(route)
@@ -441,7 +441,7 @@ describe('Auth API', function () {
             sinon.stub(PasswordResetDAO.prototype, 'findByTokenOrFail').resolves(Mocks.passwordReset);
             const notExpiredDate = Mocks.createdAt + 1500;
             const clock = sinon.useFakeTimers(notExpiredDate);
-            sinon.stub(Encrypter, 'decrypt').returns('this-is-a-different-user-id');
+            sinon.stub(EncryptionUtils, 'decrypt').returns('this-is-a-different-user-id');
 
             const response = await request(server)
                 .post(route)
@@ -462,7 +462,7 @@ describe('Auth API', function () {
             sinon.stub(PasswordResetDAO.prototype, 'findByTokenOrFail').resolves(Mocks.passwordReset);
             const notExpiredDate = Mocks.createdAt + 1500;
             const clock = sinon.useFakeTimers(notExpiredDate);
-            sinon.stub(Encrypter, 'decrypt').returns('693ecd5a-c8d9-4648-9e32-f200db2831d8');
+            sinon.stub(EncryptionUtils, 'decrypt').returns('693ecd5a-c8d9-4648-9e32-f200db2831d8');
             sinon.stub(UserDAO.prototype, 'findByIdOrFail').throws(new NotFoundError('User not found'));
 
             const response = await request(server)
@@ -484,7 +484,7 @@ describe('Auth API', function () {
             sinon.stub(PasswordResetDAO.prototype, 'findByTokenOrFail').resolves(Mocks.passwordReset);
             const notExpiredDate = Mocks.createdAt + 1500;
             const clock = sinon.useFakeTimers(notExpiredDate);
-            sinon.stub(Encrypter, 'decrypt').returns('693ecd5a-c8d9-4648-9e32-f200db2831d8');
+            sinon.stub(EncryptionUtils, 'decrypt').returns('693ecd5a-c8d9-4648-9e32-f200db2831d8');
             sinon.stub(UserDAO.prototype, 'findByIdOrFail').resolves(Mocks.getRegularUser());
             sinon.stub(User.prototype, 'hashPassword').throws(new Error('Password encrypt error'));
 
@@ -507,7 +507,7 @@ describe('Auth API', function () {
             sinon.stub(PasswordResetDAO.prototype, 'findByTokenOrFail').resolves(Mocks.passwordReset);
             const notExpiredDate = Mocks.createdAt + 1500;
             const clock = sinon.useFakeTimers(notExpiredDate);
-            sinon.stub(Encrypter, 'decrypt').returns('693ecd5a-c8d9-4648-9e32-f200db2831d8');
+            sinon.stub(EncryptionUtils, 'decrypt').returns('693ecd5a-c8d9-4648-9e32-f200db2831d8');
             sinon.stub(UserDAO.prototype, 'findByIdOrFail').resolves(Mocks.getRegularUser());
             sinon.stub(User.prototype, 'hashPassword').resolves();
             sinon.stub(UserDAO.prototype, 'save').throws(new Error('Failed saving user'));
@@ -532,7 +532,7 @@ describe('Auth API', function () {
 
         it('Should return password reset token is valid', async () => {
             sinon.stub(PasswordResetDAO.prototype, 'findByTokenOrFail').resolves(Mocks.passwordReset);
-            sinon.stub(Encrypter, 'decrypt').returns('693ecd5a-c8d9-4648-9e32-f200db2831d8');
+            sinon.stub(EncryptionUtils, 'decrypt').returns('693ecd5a-c8d9-4648-9e32-f200db2831d8');
             const notExpiredDate = Mocks.createdAt + 1500;
             const clock = sinon.useFakeTimers(notExpiredDate);
 
@@ -573,7 +573,7 @@ describe('Auth API', function () {
 
         it('Should return invalid because userId is not valid', async () => {
             sinon.stub(PasswordResetDAO.prototype, 'findByTokenOrFail').resolves(Mocks.passwordReset);
-            sinon.stub(Encrypter, 'decrypt').throws(new DecryptError('Decrypt error'));
+            sinon.stub(EncryptionUtils, 'decrypt').throws(new DecryptError('Decrypt error'));
 
             const response = await request(server)
                 .get(`${baseUrl}?token=${Mocks.passwordRecoveryToken}&userId=${Mocks.regularUserId}`)
@@ -584,7 +584,7 @@ describe('Auth API', function () {
 
         it('Should return invalid because provided userId does not match with the userId from password reset process', async () => {
             sinon.stub(PasswordResetDAO.prototype, 'findByTokenOrFail').resolves(Mocks.passwordReset);
-            sinon.stub(Encrypter, 'decrypt').returns('this-is-a-different-user-id');
+            sinon.stub(EncryptionUtils, 'decrypt').returns('this-is-a-different-user-id');
 
             const response = await request(server)
                 .get(`${baseUrl}?token=${Mocks.passwordRecoveryToken}&userId=${Mocks.regularUserId}`)
@@ -595,7 +595,7 @@ describe('Auth API', function () {
 
         it('Should return invalid because token is expired', async () => {
             sinon.stub(PasswordResetDAO.prototype, 'findByTokenOrFail').resolves(Mocks.passwordReset);
-            sinon.stub(Encrypter, 'decrypt').returns('693ecd5a-c8d9-4648-9e32-f200db2831d8');
+            sinon.stub(EncryptionUtils, 'decrypt').returns('693ecd5a-c8d9-4648-9e32-f200db2831d8');
             const expiredDate = Mocks.createdAt + 20000000;
             const clock = sinon.useFakeTimers(expiredDate);
 
@@ -610,7 +610,7 @@ describe('Auth API', function () {
 
         it('Should return invalid because some unexpected error happened', async () => {
             sinon.stub(PasswordResetDAO.prototype, 'findByTokenOrFail').resolves(Mocks.passwordReset);
-            sinon.stub(Encrypter, 'decrypt').throws(new Error('Unexpected error'));
+            sinon.stub(EncryptionUtils, 'decrypt').throws(new Error('Unexpected error'));
 
             const response = await request(server)
                 .get(`${baseUrl}?token=${Mocks.passwordRecoveryToken}&userId=${Mocks.regularUserId}`)

@@ -1,6 +1,8 @@
+import * as express from 'express';
 import { Order } from '../../src/entity/Order';
 import { OrderItem } from '../../src/entity/OrderItem';
 import { Product } from '../../src/entity/Product';
+import { UserSessionOutput } from '../../src/utils/data-filters';
 
 export function getOrder(): Order {
     const product1 = new Product();
@@ -26,3 +28,41 @@ export function getOrder(): Order {
 
     return order;
 }
+
+export const userIdInsideResponse = '8b07ff13-8580-41ff-8f8c-b51b7fee3511';
+export function getResponseWithJwt(): express.Response {
+    const response = express.response;
+
+    response.locals = {};
+    response.locals.jwtPayload = {
+        userSession: {
+            id: userIdInsideResponse
+        }
+    };
+
+    return response as unknown as express.Response;
+}
+
+export function getResponseWithoutJwt(): express.Response {
+    const response = express.response;
+    response.locals = {};
+    return response as unknown as express.Response;
+}
+
+export function getRequestWithFiles(): express.Request {
+    const request = express.request;
+    request.files = [];
+    return request as unknown as express.Request;
+}
+
+export function getUserSessionOutput(): UserSessionOutput {
+    return {
+        id: userIdInsideResponse,
+        firstName: 'Vitor'
+    };
+}
+
+export const validJwtToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c';
+
+export const rawText = 'text-to-encrypt';
+export const encryptedText = '9de3fa48aed34efdd6a3352b710bf9d2';

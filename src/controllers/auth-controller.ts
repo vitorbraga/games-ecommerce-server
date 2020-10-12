@@ -3,7 +3,7 @@ import * as uuid from 'uuid';
 import { User } from '../entity/User';
 import { PasswordReset } from '../entity/PasswordReset';
 import { sendEmail, EmailOptions } from '../utils/email-sender';
-import { encrypt, decrypt } from '../utils/encrypter';
+import * as EncryptionUtils from '../utils/encryption-utils';
 import { validatePasswordComplexity } from '../utils/validators';
 import { UserRole } from '../entity/model';
 import { UserDAO } from '../dao/user-dao';
@@ -81,7 +81,7 @@ export class AuthController {
     };
 
     private sendPasswordRecoveryEmail(user: User, token: string) {
-        const encryptedUserId = encrypt(user.id.toString());
+        const encryptedUserId = EncryptionUtils.encrypt(user.id.toString());
         const url = `${process.env.APP_SERVER_URL}/reset-password?token=${token}&u=${encryptedUserId}`;
 
         const emailOptions: EmailOptions = {
@@ -151,7 +151,7 @@ export class AuthController {
                 return res.status(401).send({ success: false, error: 'PASSWORD_TOKEN_EXPIRED' });
             }
 
-            const decryptedUserId = decrypt(encryptedUserId);
+            const decryptedUserId = EncryptionUtils.decrypt(encryptedUserId);
 
             if (decryptedUserId !== passwordReset.user!.id) {
                 return res.status(401).send({ success: false, error: 'PASSWORD_RESET_TOKEN_AND_ID_NOT_MATCH' });
@@ -199,7 +199,7 @@ export class AuthController {
 
             const passwordReset = await this.passwordResetDAO.findByTokenOrFail(token);
 
-            const decryptedUserId = decrypt(encryptedUserId);
+            const decryptedUserId = EncryptionUtils.decrypt(encryptedUserId);
 
             if (decryptedUserId !== passwordReset.user!.id) {
                 return res.status(401).send({ success: false, error: 'PASSWORD_RESET_TOKEN_AND_ID_NOT_MATCH' });

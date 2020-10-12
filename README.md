@@ -80,7 +80,11 @@ The list above contains the main features of the server.
 ## Next features in the backlog
 
 - [ ] Delete product: currently not working due to the relation with OrderItem
-- [ ] Testing
+- [ ] Testing 80% Coverage
+  - [x] API/Controllers tests (92%)
+  - [x] Utils test (89%)
+  - [ ] Middlewares
+  - [ ] DAO and database access
 - [ ] Products Pagination
 - [ ] Prevent same order to be generated
 - [ ] Rate limiting to prevent repeated requests and server flooding
@@ -132,7 +136,7 @@ This application is complex, then we have lots of configuration to do. As this c
 | EMAIL_USERNAME        | Email account username to send emails to the users           |
 | EMAIL_PASSWORD        | Email account password to send emails to the users           |
 | ENCRYPT_IV            | Encryption IV. Can be any **16-letter string**.<br />Used for encrypting the user ID for password recovery. |
-| ENCRYPT_SECRET        | Encryption secret. Can be any string.                        |
+| ENCRYPT_SECRET        | Encryption secret. Can be any **16-letter string**.                        |
 | APP_SERVER_URL        | URL to the Store. Something like: http://localhost:3000      |
 
 
