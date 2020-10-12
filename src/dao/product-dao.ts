@@ -68,11 +68,13 @@ export class ProductDAO {
         if (searchTerm) {
             queryBuilder = queryBuilder.where('document_with_weights @@ plainto_tsquery(:query)', {
                 query: searchTerm
-            }).andWhere('product.status = :status', { status: ProductStatus.AVAILABLE }).orderBy(
+            }).orderBy(
                 'ts_rank(document_with_weights, plainto_tsquery(:query))',
                 'DESC'
             );
         }
+
+        queryBuilder = queryBuilder.andWhere('product.status = :status', { status: ProductStatus.AVAILABLE });
 
         if (categories.length > 0) {
             queryBuilder = queryBuilder.andWhere('category.id IN (:...categories)', { categories });
