@@ -15,8 +15,8 @@ There are other two repositories that complement *games-ecommerce-server*:
 ## Current State
 
 The project is in an MVP state. It has a basic e-commerce functionality. I still have a lot of features and improvements to make and I plan to implement them over time.
-There are no tests implemented yet. I focused on features, like it is in a real-world company. Stakeholders want features, especially in the early stages when we are building a MVP. As this project is still a MVP, I decided to focus on fast delivering of the core features first.
-Implementing tests is in my backlog, with a high priority.
+There are only some tests implemented. I focused on features, like it is in a real-world company. Stakeholders want features, especially in the early stages when we are building a MVP. As this project is still a MVP, I decided to focus on fast delivering of the core features first.
+I'm currently implementing tests. It has a high priority in my backlog.
 
 
 

@@ -8,3 +8,4 @@ temp/
 public/product-pictures/
 coverage/
 .nyc_output
+app.vbs
