@@ -83,7 +83,7 @@ The list above contains the main features of the server.
 - [ ] Testing 80% Coverage
   - [x] API/Controllers tests (92%)
   - [x] Utils test (89%)
-  - [ ] Middlewares
+  - [x] Middlewares (84%)
   - [ ] DAO and database access
 - [ ] Products Pagination
 - [ ] Prevent same order to be generated

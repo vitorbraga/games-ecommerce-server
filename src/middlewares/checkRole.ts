@@ -1,6 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { getRepository } from 'typeorm';
-import { User } from '../entity/User';
+import { UserDAO } from '../dao/user-dao';
 
 export const checkRole = (roles: Array<string>) => {
     return async (req: Request, res: Response, next: NextFunction) => {
@@ -8,14 +7,12 @@ export const checkRole = (roles: Array<string>) => {
         const userPayload = res.locals.jwtPayload.userSession;
 
         // Get user role from the database
-        const userRepository = getRepository(User);
-        let user: User;
-        try {
-            user = await userRepository.findOneOrFail(userPayload.id);
-        } catch (id) {
+        const userDAO = new UserDAO();
+
+        const user = await userDAO.findById(userPayload.id);
+        if (!user) {
             res.setHeader('WWW-Authenticate', 'Bearer realm="DefaultRealm"');
-            res.status(401).send({ success: false, error: 'Could not find user from token.' });
-            return;
+            return res.status(401).send({ success: false, error: 'Could not find user from token.' });
         }
 
         // Check if array of authorized roles includes the user's role
