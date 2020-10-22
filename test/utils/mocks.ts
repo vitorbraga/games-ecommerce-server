@@ -1,7 +1,7 @@
 import * as express from 'express';
-import { Order } from '../../src/entity/Order';
-import { OrderItem } from '../../src/entity/OrderItem';
-import { Product } from '../../src/entity/Product';
+import { Order } from '../../src/entities/Order';
+import { OrderItem } from '../../src/entities/OrderItem';
+import { Product } from '../../src/entities/Product';
 import { UserSessionOutput } from '../../src/utils/data-filters';
 
 export function getOrder(): Order {

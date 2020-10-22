@@ -1,12 +1,12 @@
 import { Request, Response } from 'express';
 import { validate, ValidationError } from 'class-validator';
-import { User } from '../entity/User';
-import { UserRole } from '../entity/model';
+import { User } from '../entities/User';
+import { UserRole } from '../entities/model';
 import { UserDAO } from '../dao/user-dao';
 import { NotFoundError } from '../errors/not-found-error';
 import { CustomRequest } from '../utils/api-utils';
 import { buildAddressOutput, buildOrderOutput, buildPasswordResetOutput, buildUserOutput } from '../utils/data-filters';
-import { Address } from '../entity/Address';
+import { Address } from '../entities/Address';
 import { validationErrorsToErrorFields } from '../utils/validators';
 import { AddressDAO } from '../dao/address-dao';
 import { CountryDAO } from '../dao/country-dao';

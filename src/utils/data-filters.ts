@@ -1,13 +1,13 @@
-import { Product } from '../entity/Product';
-import { Category } from '../entity/Category';
-import { Review } from '../entity/Review';
-import { Picture } from '../entity/Picture';
-import { User } from '../entity/User';
-import { Address } from '../entity/Address';
-import { Country } from '../entity/Country';
-import { PasswordReset } from '../entity/PasswordReset';
-import { Order } from '../entity/Order';
-import { OrderItem } from '../entity/OrderItem';
+import { Product } from '../entities/Product';
+import { Category } from '../entities/Category';
+import { Review } from '../entities/Review';
+import { Picture } from '../entities/Picture';
+import { User } from '../entities/User';
+import { Address } from '../entities/Address';
+import { Country } from '../entities/Country';
+import { PasswordReset } from '../entities/PasswordReset';
+import { Order } from '../entities/Order';
+import { OrderItem } from '../entities/OrderItem';
 
 // FIXME separate this, improve it (naming, place, where to put - rethink it)
 

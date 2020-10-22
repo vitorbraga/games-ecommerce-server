@@ -1,6 +1,6 @@
 import { getManager, getRepository, Repository } from 'typeorm';
-import { Address } from '../entity/Address';
-import { User } from '../entity/User';
+import { Address } from '../entities/Address';
+import { User } from '../entities/User';
 import { NotFoundError } from '../errors/not-found-error';
 
 export class AddressDAO {

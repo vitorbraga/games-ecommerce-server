@@ -12,7 +12,7 @@ import * as UserIdMiddleware from '../../../src/middlewares/checkUserId';
 import { UserDAO } from '../../../src/dao/user-dao';
 import { NotFoundError } from '../../../src/errors/not-found-error';
 import * as Validators from '../../../src/utils/validators';
-import { User } from '../../../src/entity/User';
+import { User } from '../../../src/entities/User';
 import { CountryDAO } from '../../../src/dao/country-dao';
 import { AddressDAO } from '../../../src/dao/address-dao';
 import { OrderDAO } from '../../../src/dao/order-dao';

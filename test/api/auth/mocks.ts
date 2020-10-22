@@ -1,5 +1,5 @@
-import { PasswordReset } from '../../../src/entity/PasswordReset';
-import { User } from '../../../src/entity/User';
+import { PasswordReset } from '../../../src/entities/PasswordReset';
+import { User } from '../../../src/entities/User';
 
 export const regularUserId = '693ecd5a-c8d9-4648-9e32-f200db2831d8';
 

@@ -1,6 +1,6 @@
 import { getRepository, Repository } from 'typeorm';
 import { NotFoundError } from '../errors/not-found-error';
-import { PasswordReset } from '../entity/PasswordReset';
+import { PasswordReset } from '../entities/PasswordReset';
 
 export class PasswordResetDAO {
     private passwordResetRepository: Repository<PasswordReset>;

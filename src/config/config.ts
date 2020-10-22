@@ -1,1 +1,1 @@
-export const jwtConfig = { secret: '@QEGTUI' };
+export const jwtSecret = process.env.JWT_SECRET || '@QEGTUI';

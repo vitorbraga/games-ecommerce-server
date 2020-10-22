@@ -1,5 +1,5 @@
 import { getRepository, MigrationInterface, QueryRunner } from 'typeorm';
-import { Category } from '../entity/Category';
+import { Category } from '../entities/Category';
 
 export class InsertCategories1601877608278 implements MigrationInterface {
     public async up(queryRunner: QueryRunner): Promise<void> {

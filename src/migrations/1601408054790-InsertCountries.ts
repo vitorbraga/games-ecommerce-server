@@ -1,5 +1,5 @@
 import { getRepository, MigrationInterface, QueryRunner } from 'typeorm';
-import { Country } from '../entity/Country';
+import { Country } from '../entities/Country';
 
 const allCountries = [
     'Andorra',

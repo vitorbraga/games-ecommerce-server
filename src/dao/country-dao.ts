@@ -1,5 +1,5 @@
 import { getRepository, Repository } from 'typeorm';
-import { Country } from '../entity/Country';
+import { Country } from '../entities/Country';
 import { NotFoundError } from '../errors/not-found-error';
 
 export class CountryDAO {

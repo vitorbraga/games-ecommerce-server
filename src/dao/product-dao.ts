@@ -1,9 +1,9 @@
 import { getRepository, Repository } from 'typeorm';
-import { Product } from '../entity/Product';
+import { Product } from '../entities/Product';
 import { NotFoundError } from '../errors/not-found-error';
-import { Review } from '../entity/Review';
-import { Picture } from '../entity/Picture';
-import { ProductStatus, SearchSortType } from '../entity/model';
+import { Review } from '../entities/Review';
+import { Picture } from '../entities/Picture';
+import { ProductStatus, SearchSortType } from '../entities/model';
 
 export class ProductDAO {
     private productRepository: Repository<Product>;

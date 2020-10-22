@@ -1,8 +1,8 @@
 import { Repository, getRepository } from 'typeorm';
-import { User } from '../entity/User';
+import { User } from '../entities/User';
 import { NotFoundError } from '../errors/not-found-error';
-import { PasswordReset } from '../entity/PasswordReset';
-import { Order } from '../entity/Order';
+import { PasswordReset } from '../entities/PasswordReset';
+import { Order } from '../entities/Order';
 
 export class UserDAO {
     private userRepository: Repository<User>;

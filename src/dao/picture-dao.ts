@@ -1,5 +1,5 @@
 import { getRepository, Repository } from 'typeorm';
-import { Picture } from '../entity/Picture';
+import { Picture } from '../entities/Picture';
 import { NotFoundError } from '../errors/not-found-error';
 
 export class PictureDAO {

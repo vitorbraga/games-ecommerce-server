@@ -1,4 +1,4 @@
-import { Country } from '../../../src/entity/Country';
+import { Country } from '../../../src/entities/Country';
 import { CountryOutput } from '../../../src/utils/data-filters';
 
 export const country1Id = 'b577f9f0-09cf-40f3-9156-066561a99056';

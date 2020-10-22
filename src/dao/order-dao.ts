@@ -1,5 +1,5 @@
 import { getManager, getRepository, Repository } from 'typeorm';
-import { Order } from '../entity/Order';
+import { Order } from '../entities/Order';
 import { NotFoundError } from '../errors/not-found-error';
 
 export class OrderDAO {

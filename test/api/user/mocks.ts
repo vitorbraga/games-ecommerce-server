@@ -1,9 +1,9 @@
-import { Address } from '../../../src/entity/Address';
-import { Country } from '../../../src/entity/Country';
-import { Order } from '../../../src/entity/Order';
-import { PasswordReset } from '../../../src/entity/PasswordReset';
-import { User } from '../../../src/entity/User';
-import { OrderStatus } from '../../../src/entity/model';
+import { Address } from '../../../src/entities/Address';
+import { Country } from '../../../src/entities/Country';
+import { Order } from '../../../src/entities/Order';
+import { PasswordReset } from '../../../src/entities/PasswordReset';
+import { User } from '../../../src/entities/User';
+import { OrderStatus } from '../../../src/entities/model';
 import { AddressOutput, CountryOutput, OrderOutput, PasswordResetOutput, UserOutput } from '../../../src/utils/data-filters';
 
 export const regularUserId = '693ecd5a-c8d9-4648-9e32-f200db2831d8';

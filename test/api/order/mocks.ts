@@ -1,11 +1,11 @@
-import { Address } from '../../../src/entity/Address';
-import { Category } from '../../../src/entity/Category';
-import { Country } from '../../../src/entity/Country';
-import { OrderStatus, ProductStatus } from '../../../src/entity/model';
-import { Order } from '../../../src/entity/Order';
-import { OrderItem } from '../../../src/entity/OrderItem';
-import { Product } from '../../../src/entity/Product';
-import { User } from '../../../src/entity/User';
+import { Address } from '../../../src/entities/Address';
+import { Category } from '../../../src/entities/Category';
+import { Country } from '../../../src/entities/Country';
+import { OrderStatus, ProductStatus } from '../../../src/entities/model';
+import { Order } from '../../../src/entities/Order';
+import { OrderItem } from '../../../src/entities/OrderItem';
+import { Product } from '../../../src/entities/Product';
+import { User } from '../../../src/entities/User';
 import { AddressOutput, CategoryOutput, CountryOutput, OrderOutput, ProductOutput, UserOutput } from '../../../src/utils/data-filters';
 
 export const orderId = '63863de1-eb2a-4b1e-bdf0-29241f91fe50';

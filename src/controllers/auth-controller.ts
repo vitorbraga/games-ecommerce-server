@@ -1,11 +1,11 @@
 import { Request, Response } from 'express';
 import * as uuid from 'uuid';
-import { User } from '../entity/User';
-import { PasswordReset } from '../entity/PasswordReset';
+import { User } from '../entities/User';
+import { PasswordReset } from '../entities/PasswordReset';
 import { sendEmail, EmailOptions } from '../utils/email-sender';
 import * as EncryptionUtils from '../utils/encryption-utils';
 import { validatePasswordComplexity } from '../utils/validators';
-import { UserRole } from '../entity/model';
+import { UserRole } from '../entities/model';
 import { UserDAO } from '../dao/user-dao';
 import { NotFoundError } from '../errors/not-found-error';
 import { PasswordResetDAO } from '../dao/password-reset-dao';

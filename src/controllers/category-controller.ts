@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { Category } from '../entity/Category';
+import { Category } from '../entities/Category';
 import { CategoryDAO } from '../dao/category-dao';
 import { buildCategoryOutput } from '../utils/data-filters';
 import logger from '../utils/logger';

@@ -1,7 +1,7 @@
-import { Category } from '../../../src/entity/Category';
-import { ProductStatus } from '../../../src/entity/model';
-import { Picture } from '../../../src/entity/Picture';
-import { Product } from '../../../src/entity/Product';
+import { Category } from '../../../src/entities/Category';
+import { ProductStatus } from '../../../src/entities/model';
+import { Picture } from '../../../src/entities/Picture';
+import { Product } from '../../../src/entities/Product';
 import { CategoryOutput, PictureOutput, ProductOutput } from '../../../src/utils/data-filters';
 
 export const productId1 = 'e2f4be6b-ea8b-4a52-b1f8-843b32ddb55e';

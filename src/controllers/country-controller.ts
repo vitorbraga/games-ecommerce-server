@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { CountryDAO } from '../dao/country-dao';
-import { Country } from '../entity/Country';
+import { Country } from '../entities/Country';
 import { buildCountryOutput } from '../utils/data-filters';
 import logger from '../utils/logger';
 import * as Validators from '../utils/validators';

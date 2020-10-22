@@ -1,6 +1,6 @@
 import { getRepository, Repository, getManager, IsNull, getConnection, QueryRunner } from 'typeorm';
 import { NotFoundError } from '../errors/not-found-error';
-import { Category } from '../entity/Category';
+import { Category } from '../entities/Category';
 
 export class CategoryDAO {
     private categoryRepository: Repository<Category>;

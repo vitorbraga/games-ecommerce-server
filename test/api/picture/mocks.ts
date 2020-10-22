@@ -1,4 +1,4 @@
-import { Picture } from '../../../src/entity/Picture';
+import { Picture } from '../../../src/entities/Picture';
 import { PictureOutput } from '../../../src/utils/data-filters';
 
 export const pictureId1 = '055cbaba-9986-4816-b728-73eef0161468';

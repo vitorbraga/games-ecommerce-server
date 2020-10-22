@@ -7,7 +7,7 @@ import * as Mocks from './mocks';
 import logger from '../../../src/utils/logger';
 import { UserDAO } from '../../../src/dao/user-dao';
 import * as app from '../../../src/app';
-import { User } from '../../../src/entity/User';
+import { User } from '../../../src/entities/User';
 import * as AuthUtils from '../../../src/utils/auth-utils';
 import * as Validators from '../../../src/utils/validators';
 import * as EncryptionUtils from '../../../src/utils/encryption-utils';

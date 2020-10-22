@@ -1,6 +1,6 @@
 import * as Dinero from 'dinero.js';
-import { Order } from '../entity/Order';
-import { OrderItem } from '../entity/OrderItem';
+import { Order } from '../entities/Order';
+import { OrderItem } from '../entities/OrderItem';
 
 export function calculateOrderItemsTotal(orderItems: OrderItem[]): number {
     return orderItems.reduce((prev, cur) => {

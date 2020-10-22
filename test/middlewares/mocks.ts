@@ -1,10 +1,10 @@
-import { User } from '../../src/entity/User';
+import { User } from '../../src/entities/User';
 
-export const validJwtToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyU2Vzc2lvbiI6eyJpZCI6IjY5M2VjZDVhLWM4ZDktND'
-    + 'Y0OC05ZTMyLWYyMDBkYjI4MzFkOCIsImZpcnN0TmFtZSI6IlZpdG9yIn0sImlhdCI6MTYwMzIxODg3NywiZXhwIjoxNjAzMjI2MDc3fQ.PthzLb2AmANky2EEC5VyUHRX5kEmhXqDCd24suduVew';
+export const validJwtToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyU2Vzc2lvbiI6eyJpZCI6IjY5M2VjZDVhLW'
+    + 'M4ZDktNDY0OC05ZTMyLWYyMDBkYjI4MzFkOCIsImZpcnN0TmFtZSI6IlZpdG9yIn0sImlhdCI6MTYwMzM3NzMxMSwiZXhwIjoyNDY3Mzc3MzExfQ.eX_9PDGrN7FiLs4HkVsWPGmGaSk-Mf7T6yMA7M60XC4';
 
-export const invalidJwtToken = 'ciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyU2Vzc2lvbiI6eyJpZCI6IjY5M2VjZDVhLWM4ZDktND'
-    + 'Y0OC05ZTMyLWYyMDBkYjI4MzFkOCIsImZpcnN0TmFtZSI6IlZpdG9yIn0sImlhdCI6MTYwMzIxODg3NywiZXhwIjoxNjAzMjI2MDc3fQ.PthzLb2AmANky2EEC5VyUHRX5kEmhXqDCd24suduVew';
+export const invalidJwtToken = 'ciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyU2Vzc2lvbiI6eyJpZCI6IjY5M2VjZDVhLW'
++ 'M4ZDktNDY0OC05ZTMyLWYyMDBkYjI4MzFkOCIsImZpcnN0TmFtZSI6IlZpdG9yIn0sImlhdCI6MTYwMzM3NzMxMSwiZXhwIjoyNDY3Mzc3MzExfQ.eX_9PDGrN7FiLs4HkVsWPGmGaSk-Mf7T6yMA7M60XC4';
 
 export const validAuthorizationHeader = `Bearer ${validJwtToken}`;
 
@@ -20,8 +20,8 @@ export const invalidHeaders = {
 
 export const validLocals = {
     jwtPayload: {
-        exp: 1603226077,
-        iat: 1603218877,
+        exp: 2467377311,
+        iat: 1603377311,
         userSession: {
             firstName: 'Vitor',
             id: '693ecd5a-c8d9-4648-9e32-f200db2831d8'
