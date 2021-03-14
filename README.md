@@ -128,8 +128,8 @@ This application is complex, then we have lots of configuration to do. As this c
 | --------------------- | ------------------------------------------------------------ |
 | NODE_ENV              | Environment: *development* or *production*                   |
 | DATABASE_URL          | Something like postgres://username:password@host:port/database<br />*Example: postgres://postgres:root@127.0.0.1:5432/games-ecommerce*<br /><br />*OBS: if you're trying to access an external database that requires TLS connection, you will need to uncomment the commented code in ormconfig.js* |
-| TYPEORM_ENTITIES      | Folder for TypeORM look to your entities and build your database.<br />*production: src/entities/.t*s<br/>*development: build/entities/*.js*<br/> |
-| TYPEORM_MIGRATIONS    | Folder with database migrations you want TypeORM to run.<br />*production: src/migration/.t*s<br/>*development: build/migrations/*.js<br/> |
+| TYPEORM_ENTITIES      | Folder for TypeORM look to your entities and build your database.<br />*development: src/entities/\*.ts*<br/>*production: build/entities/\*.js*<br/> |
+| TYPEORM_MIGRATIONS    | Folder with database migrations you want TypeORM to run.<br />*development: src/migration/\*.ts*<br/>*production: build/migrations/\*.js*<br/> |
 | S3_BUCKET_NAME        | Name of the S3 bucket where you will store the product pictures |
 | AWS_ACCESS_KEY_ID     | AWS Access Key: something like *AKIAIOSFODNN7EXAMPLE*        |
 | AWS_SECRET_ACCESS_KEY | AWS Secret Access key: something like *wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY* |
