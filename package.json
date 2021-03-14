@@ -2,17 +2,6 @@
     "name": "games-ecommerce-server",
     "version": "0.0.1",
     "description": "Awesome project developed with TypeORM.",
-    "scripts": {
-        "tsc": "tsc",
-        "lint": "eslint \"src/**/*.ts\"",
-        "build": "rimraf build/ && npm run lint && tsc",
-        "start:dev": "ts-node-dev --respawn --transpileOnly ./src/index.ts",
-        "start:prod": "node ./build/index.js",
-        "start": "pm2-runtime start ecosystem.config.js --env production",
-        "migration:run": "ts-node ./node_modules/typeorm/cli.js migration:run",
-        "test": "cross-env mocha --config=test/.mocharc.json --timeout 12000 --exit",
-        "test:coverage": "cross-env nyc mocha --config=test/.mocharc.json --timeout 12000 --exit"
-    },
     "devDependencies": {
         "@types/bcryptjs": "^2.4.2",
         "@types/body-parser": "^1.17.1",
@@ -68,8 +57,8 @@
         "multer-s3": "^2.9.0",
         "nodemailer": "^6.3.1",
         "pg": "^8.3.3",
-        "pm2": "^4.5.5",
-        "pug": "^2.0.4",
+        "pm2": "^4.4.1",
+        "pug": "^3.0.1",
         "reflect-metadata": "^0.1.10",
         "ts-node-dev": "^1.0.0-pre.43",
         "tsc": "^1.20150623.0",
@@ -91,5 +80,16 @@
             "lcov"
         ],
         "all": true
+    },
+    "scripts": {
+        "tsc": "tsc",
+        "lint": "eslint \"src/**/*.ts\"",
+        "build": "rimraf build/ && npm run lint && tsc",
+        "start:dev": "ts-node-dev --respawn --transpileOnly ./src/index.ts",
+        "start:prod": "node ./build/index.js",
+        "start": "pm2-runtime start ecosystem.config.js --env production",
+        "migration:run": "ts-node ./node_modules/typeorm/cli.js migration:run",
+        "test": "cross-env mocha --config=test/.mocharc.json --timeout 12000 --exit",
+        "test:coverage": "cross-env nyc mocha --config=test/.mocharc.json --timeout 12000 --exit"
     }
 }
