@@ -152,8 +152,9 @@ export class UserController {
             const userId = req.params.userId;
 
             const { currentPassword, newPassword } = req.body;
+
             if (!(currentPassword && newPassword)) {
-                return res.status(422).send({ success: false, error: 'CHANGE_PASSWORD_MISSING_DATA' });
+                return res.status(422).send({ success: false, error: 'CHANGE_PASSWORD_MISSING_PASSWORDS' });
             }
 
             if (!Validators.validatePasswordComplexity(newPassword)) {

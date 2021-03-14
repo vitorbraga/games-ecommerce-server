@@ -379,7 +379,7 @@ describe('User API', function () {
                 })
                 .expect(422);
 
-            expect(response.body).to.deep.equal({ success: false, error: 'CHANGE_PASSWORD_MISSING_DATA' });
+            expect(response.body).to.deep.equal({ success: false, error: 'CHANGE_PASSWORD_MISSING_PASSWORDS' });
             expect(userDaoSaveStub.callCount).equal(0);
         });
 
@@ -393,7 +393,7 @@ describe('User API', function () {
                 })
                 .expect(422);
 
-            expect(response.body).to.deep.equal({ success: false, error: 'CHANGE_PASSWORD_MISSING_DATA' });
+            expect(response.body).to.deep.equal({ success: false, error: 'CHANGE_PASSWORD_MISSING_PASSWORDS' });
             expect(userDaoSaveStub.callCount).equal(0);
         });
 
