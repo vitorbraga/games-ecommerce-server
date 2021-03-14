@@ -9,11 +9,11 @@ module.exports = {
     cli: {
         migrationsDir: 'src/migration'
     },
-    migrationsRun: false
-    // ssl: true, // Uncomment to connect to Heroku's database locally
-    // extra: {
-    //     ssl: {
-    //         rejectUnauthorized: false
-    //     }
-    // }
+    migrationsRun: false,
+    ssl: true,
+    extra: {
+        ssl: {
+            rejectUnauthorized: false
+        }
+    }
 };
