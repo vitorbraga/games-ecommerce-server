@@ -48,7 +48,7 @@ export class PictureController {
             const fileName = picture.filename;
             await this.pictureDAO.delete(pictureId);
 
-            PicturesUtils.removePicture(fileName);
+            PicturesUtils.removePictureFromS3(fileName);
 
             return res.json({ success: true });
         } catch (error) {

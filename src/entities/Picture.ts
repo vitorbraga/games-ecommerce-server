@@ -9,7 +9,7 @@ export class Picture {
     @Column()
     public filename: string;
 
-    @ManyToOne((type) => Product, (product) => product.pictures)
+    @ManyToOne((type) => Product, (product) => product.pictures, { onDelete: 'CASCADE' })
     public product: Product | null;
 
     @Column()

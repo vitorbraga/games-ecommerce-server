@@ -23,6 +23,6 @@ export class Review {
     @UpdateDateColumn()
     public updatedAt: Date;
 
-    @ManyToOne((type) => Product, (product) => product.reviews)
+    @ManyToOne((type) => Product, (product) => product.reviews, { onDelete: 'CASCADE' })
     public product: Product;
 }

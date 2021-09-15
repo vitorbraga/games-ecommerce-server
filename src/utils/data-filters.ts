@@ -40,6 +40,8 @@ export interface ReviewOutput {
     title: string;
     description: string;
     rating: number;
+    createdAt: number;
+    updatedAt: number;
 }
 
 export interface PictureOutput {
@@ -144,7 +146,9 @@ export function buildReviewOutput(review: Review): ReviewOutput {
         id: review.id,
         title: review.title,
         description: review.description,
-        rating: review.rating
+        rating: review.rating,
+        createdAt: review.createdAt.getTime(),
+        updatedAt: review.updatedAt.getTime()
     };
 }
 

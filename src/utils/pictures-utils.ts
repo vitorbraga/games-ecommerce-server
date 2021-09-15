@@ -1,7 +1,7 @@
 import s3 from './aws-s3';
 import logger from './logger';
 
-export function removePicture(fileName: string) {
+export function removePictureFromS3(fileName: string) {
     const bucketName = process.env.S3_BUCKET_NAME || 'games-ecommerce-dev';
     const params = { Bucket: bucketName, Key: fileName };
 

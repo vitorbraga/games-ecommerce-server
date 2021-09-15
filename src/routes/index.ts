@@ -8,6 +8,7 @@ import { getCountriesRouter } from './country';
 import { getOrdersRouter } from './order';
 import { getTestRouter } from './test';
 import { getOverviewRouter } from './overview';
+import { getReviewRouter } from './review';
 
 export function getRoutes() {
     const routes = Router();
@@ -20,6 +21,7 @@ export function getRoutes() {
     routes.use('/countries', getCountriesRouter());
     routes.use('/orders', getOrdersRouter());
     routes.use('/overview', getOverviewRouter());
+    routes.use('/reviews', getReviewRouter());
     routes.use('/test', getTestRouter());
 
     return routes;

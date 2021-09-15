@@ -5,7 +5,9 @@ import { ProductDAO } from '../dao/product-dao';
 import { ProductStatus } from '../entities/model';
 import { Picture } from '../entities/Picture';
 import { Product } from '../entities/Product';
+import { Review } from '../entities/Review';
 import * as ApiUtils from '../utils/api-utils';
+import * as ReviewUtils from '../utils/review-utils';
 import { buildProductOutput, buildReviewOutput, buildPictureOutput } from '../utils/data-filters';
 import logger from '../utils/logger';
 import * as PicturesUtils from '../utils/pictures-utils';
@@ -27,6 +29,12 @@ interface UpdateProductBody {
     quantityInStock: number;
     tags: string;
     categoryId: string;
+}
+
+interface CreateReviewBody {
+    title: string;
+    description: string;
+    rating: string;
 }
 
 interface ChangeProductStatusBody {
@@ -111,7 +119,7 @@ export class ProductController {
         }
     };
 
-    private async buildProductFromBody(body: CreateProductBody | UpdateProductBody): Promise<Product> {
+    private buildProductFromBody(body: CreateProductBody | UpdateProductBody): Product {
         const product = new Product();
         product.title = body.title;
         product.description = body.description;
@@ -125,7 +133,7 @@ export class ProductController {
 
     public createProduct = async (req: ApiUtils.CustomRequest<CreateProductBody>, res: Response) => {
         try {
-            const product = await this.buildProductFromBody(req.body);
+            const product = this.buildProductFromBody(req.body);
 
             const category = await this.categoryDAO.findById(req.body.categoryId);
             if (!category) {
@@ -163,7 +171,7 @@ export class ProductController {
                 return res.status(404).send({ success: false, error: 'PRODUCT_NOT_FOUND' });
             }
 
-            const productFromBody = await this.buildProductFromBody(req.body);
+            const productFromBody = this.buildProductFromBody(req.body);
 
             const errors: ValidationError[] = await validate(productFromBody);
             if (errors.length > 0) {
@@ -208,7 +216,6 @@ export class ProductController {
         }
     };
 
-    // FIXME currently it's not possible to delete a product
     public deleteProduct = async (req: Request, res: Response) => {
         try {
             if (!Validators.validateUuidV4(req.params.id)) {
@@ -223,11 +230,10 @@ export class ProductController {
             }
             const pictures = product.pictures.map((item) => item.filename);
 
-            // TODO need to think about a solution, because currently it's not possible to remove
             await this.productDAO.delete(productId);
 
             for (const picture of pictures) {
-                PicturesUtils.removePicture(picture);
+                PicturesUtils.removePictureFromS3(picture);
             }
 
             return res.json({ success: true });
@@ -251,6 +257,38 @@ export class ProductController {
         } catch (error) {
             return res.status(404).send({ success: false, error: 'PRODUCT_NOT_FOUND' });
         }
+    };
+
+    private buildReviewFromBody(body: CreateReviewBody): Review {
+        const review = new Review();
+        review.title = body.title;
+        review.description = body.description;
+        review.rating = parseInt(body.rating, 10);
+
+        return review;
+    }
+
+    public createReviewForProduct = async (req: Request, res: Response) => {
+        const productId: string = req.params.id;
+
+        if (!Validators.validateUuidV4(productId)) {
+            return res.status(422).json({ success: false, error: 'MISSING_PRODUCT_ID' });
+        }
+
+        const product = await this.productDAO.findById(productId);
+        if (!product) {
+            return res.status(404).send({ success: false, error: 'PRODUCT_NOT_FOUND' });
+        }
+
+        const review = this.buildReviewFromBody(req.body);
+        review.product = product;
+
+        product.reviews = [...product.reviews, review];
+        product.rating = ReviewUtils.calculateRating(product.reviews);
+
+        const updatedProduct = await this.productDAO.save(product);
+
+        return res.json({ success: true, product: buildProductOutput(updatedProduct) });
     };
 
     public getProductPictures = async (req: Request, res: Response) => {

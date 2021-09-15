@@ -26,6 +26,8 @@ export function getProductRouter(): Router {
 
     productRouter.get('/:id/reviews', productController.getProductReviews);
 
+    productRouter.post('/:id/reviews', [checkJwt, checkRole(['USER'])], productController.createReviewForProduct);
+
     productRouter.get('/:id/pictures', productController.getProductPictures);
 
     productRouter.post('/:id/pictures', [checkJwt, checkRole(['ADMIN']), uploadFilterMiddleware.array('pictures', 6)], productController.uploadPictures);
