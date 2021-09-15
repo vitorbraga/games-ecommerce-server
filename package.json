@@ -91,5 +91,8 @@
         "migration:run": "ts-node ./node_modules/typeorm/cli.js migration:run",
         "test": "cross-env mocha --config=test/.mocharc.json --timeout 12000 --exit",
         "test:coverage": "cross-env nyc mocha --config=test/.mocharc.json --timeout 12000 --exit"
+    },
+    "engines": {
+        "node": "14.x"
     }
 }
