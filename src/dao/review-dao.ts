@@ -34,10 +34,9 @@ export class ReviewDAO {
     }
 
     public async removeReviewTransaction(review: Review, product: Product): Promise<void> {
-        let updatedProduct: Product | null = null;
         await getManager().transaction(async (transactionalEntityManager) => {
             await transactionalEntityManager.remove(review);
-            updatedProduct = await transactionalEntityManager.save(product);
+            await transactionalEntityManager.save(product);
         });
     }
 }
