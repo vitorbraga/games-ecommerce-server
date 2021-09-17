@@ -28,6 +28,14 @@ export interface ProductOutput {
     updatedAt: number;
 }
 
+export interface BasicProductOutput {
+    id: string;
+    title: string;
+    price: number;
+    rating: number;
+    picture: PictureOutput;
+}
+
 export interface CategoryOutput {
     id: string;
     key: string;
@@ -40,6 +48,7 @@ export interface ReviewOutput {
     title: string;
     description: string;
     rating: number;
+    product?: BasicProductOutput;
     createdAt: number;
     updatedAt: number;
 }
@@ -113,6 +122,10 @@ export interface OrderOutput {
     updatedAt: number;
 }
 
+function comparableReviewDesc(a: Review, b: Review): number {
+    return b.createdAt.getTime() - a.createdAt.getTime();
+}
+
 export function buildProductOutput(product: Product): ProductOutput {
     return {
         id: product.id,
@@ -125,10 +138,22 @@ export function buildProductOutput(product: Product): ProductOutput {
         price: product.price,
         rating: product.rating,
         category: buildCategoryOutput(product.category),
-        reviews: product.reviews ? product.reviews.map(buildReviewOutput) : [],
+        reviews: product.reviews
+            ? product.reviews.sort(comparableReviewDesc).map(buildReviewOutput)
+            : [],
         pictures: product.pictures ? product.pictures.map(buildPictureOutput) : [],
         createdAt: product.createdAt.getTime(),
         updatedAt: product.updatedAt.getTime()
+    };
+}
+
+export function buildBasicProductOutput(product: Product): BasicProductOutput {
+    return {
+        id: product.id,
+        title: product.title,
+        price: product.price,
+        rating: product.rating,
+        picture: buildPictureOutput(product.pictures[0])
     };
 }
 
@@ -147,6 +172,7 @@ export function buildReviewOutput(review: Review): ReviewOutput {
         title: review.title,
         description: review.description,
         rating: review.rating,
+        ...(review.product ? { product: buildBasicProductOutput(review.product) } : undefined),
         createdAt: review.createdAt.getTime(),
         updatedAt: review.updatedAt.getTime()
     };

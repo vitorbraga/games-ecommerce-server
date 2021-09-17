@@ -39,4 +39,9 @@ export class ReviewDAO {
             await transactionalEntityManager.save(product);
         });
     }
+
+    public async getReviewsByUser(userId: string): Promise<Review[]> {
+        const reviews = await this.reviewRepository.find({ where: { user: { id: userId } }, order: { createdAt: 'DESC' }, relations: ['product'] });
+        return reviews;
+    }
 }

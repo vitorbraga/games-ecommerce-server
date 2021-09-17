@@ -50,5 +50,8 @@ export function getUserRoutes(): Router {
     // Get user's orders
     userRouter.get('/:userId/orders', [checkJwt, checkRole(['USER']), checkUserId], userController.getUserOrders);
 
+    // Get user's reviews
+    userRouter.get('/:userId/reviews', [checkJwt, checkRole(['USER']), checkUserId], userController.getUserReviews);
+
     return userRouter;
 }

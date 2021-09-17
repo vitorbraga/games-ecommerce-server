@@ -5,6 +5,7 @@ import { PasswordReset } from './PasswordReset';
 import { Address } from './Address';
 import { Order } from './Order';
 import logger from '../utils/logger';
+import { Review } from './Review';
 
 @Entity()
 @Unique(['email'])
@@ -52,6 +53,9 @@ export class User {
 
     @OneToMany((type) => Order, (order) => order.user)
     public orders!: Order[];
+
+    @OneToMany((type) => Review, (review) => review.user)
+    public reviews: Review[];
 
     async hashPassword(): Promise<void> {
         try {

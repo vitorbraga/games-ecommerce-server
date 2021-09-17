@@ -28,7 +28,7 @@ export class Product {
     @Column({ nullable: true, type: 'float' })
     public discount?: number;
 
-    @Column()
+    @Column({ nullable: true, type: 'float' })
     public rating: number;
 
     @Column()

@@ -1,12 +1,13 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne } from 'typeorm';
 import { Product } from './Product';
+import { User } from './User';
 
 @Entity()
 export class Review {
     @PrimaryGeneratedColumn('uuid')
     public id: string;
 
-    @Column()
+    @Column({ nullable: true, type: 'float' })
     public rating: number;
 
     @Column()
@@ -25,4 +26,7 @@ export class Review {
 
     @ManyToOne((type) => Product, (product) => product.reviews, { onDelete: 'CASCADE' })
     public product: Product;
+
+    @ManyToOne((type) => User, (product) => product.reviews, { onDelete: 'CASCADE' })
+    public user: User;
 }

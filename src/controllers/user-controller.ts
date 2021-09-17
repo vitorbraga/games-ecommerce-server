@@ -5,7 +5,7 @@ import { UserRole } from '../entities/model';
 import { UserDAO } from '../dao/user-dao';
 import { NotFoundError } from '../errors/not-found-error';
 import { CustomRequest } from '../utils/api-utils';
-import { buildAddressOutput, buildOrderOutput, buildPasswordResetOutput, buildUserOutput } from '../utils/data-filters';
+import { buildAddressOutput, buildOrderOutput, buildPasswordResetOutput, buildReviewOutput, buildUserOutput } from '../utils/data-filters';
 import { Address } from '../entities/Address';
 import { validationErrorsToErrorFields } from '../utils/validators';
 import { AddressDAO } from '../dao/address-dao';
@@ -13,6 +13,7 @@ import { CountryDAO } from '../dao/country-dao';
 import logger from '../utils/logger';
 import { OrderDAO } from '../dao/order-dao';
 import * as Validators from '../utils/validators';
+import { ReviewDAO } from '../dao/review-dao';
 
 interface UpdateUserBody {
     firstName: string;
@@ -42,12 +43,14 @@ export class UserController {
     private addressDAO: AddressDAO;
     private countryDAO: CountryDAO;
     private orderDAO: OrderDAO;
+    private reviewDAO: ReviewDAO;
 
     constructor() {
         this.userDAO = new UserDAO();
         this.addressDAO = new AddressDAO();
         this.countryDAO = new CountryDAO();
         this.orderDAO = new OrderDAO();
+        this.reviewDAO = new ReviewDAO();
     }
 
     public listAll = async (req: Request, res: Response) => {
@@ -399,6 +402,26 @@ export class UserController {
         } catch (error) {
             logger.error(error.stack);
             return res.status(500).send({ success: false, error: 'FETCHING_USER_ORDERS_FAILED' });
+        }
+    };
+
+    public getUserReviews = async (req: Request, res: Response) => {
+        try {
+            if (!Validators.validateUuidV4(req.params.userId)) {
+                return res.status(422).json({ success: false, error: 'MISSING_USER_ID' });
+            }
+
+            const userId: string = req.params.userId;
+            if (!await this.userDAO.findById(userId)) {
+                return res.status(404).json({ success: false, error: 'USER_NOT_FOUND' });
+            }
+
+            const reviews = await this.reviewDAO.getReviewsByUser(userId);
+
+            return res.json({ success: true, reviews: reviews.map(buildReviewOutput) });
+        } catch (error) {
+            logger.error(error.stack);
+            return res.status(500).send({ success: false, error: 'FETCHING_USER_REVIEWS_FAILED' });
         }
     };
 }

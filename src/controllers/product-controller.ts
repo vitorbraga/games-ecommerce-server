@@ -12,6 +12,7 @@ import { buildProductOutput, buildReviewOutput, buildPictureOutput } from '../ut
 import logger from '../utils/logger';
 import * as PicturesUtils from '../utils/pictures-utils';
 import * as Validators from '../utils/validators';
+import { UserDAO } from '../dao/user-dao';
 
 interface CreateProductBody {
     title: string;
@@ -47,10 +48,12 @@ export class ProductController {
 
     private productDAO: ProductDAO;
     private categoryDAO: CategoryDAO;
+    private userDAO: UserDAO;
 
     constructor() {
         this.productDAO = new ProductDAO();
         this.categoryDAO = new CategoryDAO();
+        this.userDAO = new UserDAO();
     }
 
     public getAllProducts = async (req: Request, res: Response) => {
@@ -268,27 +271,39 @@ export class ProductController {
         return review;
     }
 
-    public createReviewForProduct = async (req: Request, res: Response) => {
-        const productId: string = req.params.id;
+    public createReviewForProduct = async (req: ApiUtils.CustomRequest<CreateReviewBody>, res: Response) => {
+        try {
+            const productId: string = req.params.id;
 
-        if (!Validators.validateUuidV4(productId)) {
-            return res.status(422).json({ success: false, error: 'MISSING_PRODUCT_ID' });
+            if (!Validators.validateUuidV4(productId)) {
+                return res.status(422).json({ success: false, error: 'MISSING_PRODUCT_ID' });
+            }
+
+            const product = await this.productDAO.findById(productId);
+            if (!product) {
+                return res.status(404).send({ success: false, error: 'PRODUCT_NOT_FOUND' });
+            }
+
+            const userId = ApiUtils.getUserIdFromSession(res);
+            const user = await this.userDAO.findById(userId!);
+            if (!user) {
+                return res.status(404).send({ success: false, error: 'USER_NOT_FOUND' });
+            }
+
+            const review = this.buildReviewFromBody(req.body);
+            review.product = product;
+            review.user = user;
+
+            product.reviews.push(review);
+            product.rating = ReviewUtils.calculateRating(product.reviews);
+
+            const updatedProduct = await this.productDAO.save(product);
+
+            return res.json({ success: true, product: buildProductOutput(updatedProduct) });
+        } catch (error) {
+            console.log(error);
+            return res.status(404).send({ success: false, error: 'ERROR_CREATING_REVIEW' });
         }
-
-        const product = await this.productDAO.findById(productId);
-        if (!product) {
-            return res.status(404).send({ success: false, error: 'PRODUCT_NOT_FOUND' });
-        }
-
-        const review = this.buildReviewFromBody(req.body);
-        review.product = product;
-
-        product.reviews = [...product.reviews, review];
-        product.rating = ReviewUtils.calculateRating(product.reviews);
-
-        const updatedProduct = await this.productDAO.save(product);
-
-        return res.json({ success: true, product: buildProductOutput(updatedProduct) });
     };
 
     public getProductPictures = async (req: Request, res: Response) => {
