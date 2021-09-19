@@ -16,7 +16,7 @@ export class ReviewDAO {
     }
 
     public async findById(reviewId: string): Promise<Review | undefined> {
-        const review = await this.reviewRepository.findOne(reviewId);
+        const review = await this.reviewRepository.findOne(reviewId, { relations: ['user', 'product'] });
         return review;
     }
 

@@ -4,6 +4,7 @@ import { buildReviewOutput } from '../utils/data-filters';
 import logger from '../utils/logger';
 import * as Validators from '../utils/validators';
 import * as ReviewUtils from '../utils/review-utils';
+import { getUserIdFromSession } from '../utils/api-utils';
 
 export class ReviewController {
     private reviewDAO: ReviewDAO;
@@ -45,9 +46,15 @@ export class ReviewController {
                 return res.status(404).send({ success: false, error: 'REVIEW_NOT_FOUND' });
             }
 
+            const userId = getUserIdFromSession(res);
+            if (userId !== review.user.id) {
+                return res.status(403).send({ success: false, error: 'NOW_ALLOWED_REMOVE_REVIEW' });
+            }
+
             const product = review.product;
             const remainingReviews = product.reviews.filter((item) => item.id !== reviewId);
             product.rating = ReviewUtils.calculateRating(remainingReviews);
+            product.reviews = remainingReviews;
 
             await this.reviewDAO.removeReviewTransaction(review, product);
 
